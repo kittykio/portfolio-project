@@ -1,0 +1,181 @@
+---
+date: 2025-09-15
+title: "How to Write Test Code with Jest"
+description: "Mastering Unit Testing in JavaScript Applications Using Jest."
+tags: ["Testing", "JavaScript"]
+image: "/blog/images/how-to-write-test-code-with-jest.png"
+---
+
+Jest is one of the most popular JavaScript testing frameworks, designed for simplicity and efficiency. This guide walks you through writing and running tests with Jest, covering setup, best practices, and examples to improve code reliability.
+
+## Introduction
+
+Testing is an essential part of modern software development. Writing automated tests ensures that your code works as expected and remains stable as your project grows. Among the many testing frameworks available, **Jest** stands out for its speed, developer-friendly APIs, and zero-configuration setup for most JavaScript and TypeScript projects.
+
+In this article, we’ll explore how to write test code using Jest, step by step, with practical examples and best practices.
+
+## Why Jest?
+
+Jest is widely used in the JavaScript ecosystem, especially with frameworks like React, Node.js, and Next.js. Its advantages include:
+
+- **Zero configuration** – Works out of the box for most projects.
+- **Built-in mocking** – No need for extra libraries.
+- **Snapshot testing** – Easy to test UI outputs.
+- **Fast and parallelized** – Runs tests concurrently for speed.
+
+## Getting Started
+
+### Installation
+
+If Jest is not already part of your project, install it with:
+
+```
+npm install --save-dev jest
+```
+
+For TypeScript projects, also install types:
+
+```
+npm install --save-dev ts-jest @types/jest
+```
+
+Then update `package.json` with a test script:
+
+`package.json`
+
+```json
+{
+  "scripts": {
+    "test": "jest"
+  }
+}
+```
+
+## Writing Your First Test
+
+### Example Function
+
+Let’s create a simple utility function in `math.js`:
+
+`math.js`
+
+```javascript
+function add(a, b) {
+  return a + b;
+}
+
+function multiply(a, b) {
+  return a * b;
+}
+
+module.exports = { add, multiply };
+```
+
+### Example Test File
+
+Create `math.test.js`:
+
+`math.test.js`
+
+```javascript
+const { add, multiply } = require('./math');
+
+test('adds two numbers correctly', () => {
+  expect(add(2, 3)).toBe(5);
+});
+
+test('multiplies two numbers correctly', () => {
+  expect(multiply(4, 5)).toBe(20);
+});
+```
+
+### Run the Test
+
+```
+npm test
+```
+
+Output should look like:
+
+```
+PASS  ./math.test.js
+ ✓ adds two numbers correctly (5 ms)
+ ✓ multiplies two numbers correctly (2 ms)
+```
+
+## Common Jest Matchers
+
+Jest provides expressive matchers for different scenarios:
+
+```javascript
+expect(value).toBe(42);                // strict equality
+expect(value).toEqual({ a: 1 });       // deep equality
+expect(array).toContain(3);            // array contains value
+expect(string).toMatch(/regex/);       // regex matching
+expect(fn).toThrow();                  // function throws error
+```
+
+## Testing Asynchronous Code
+
+### Using Promises
+
+```javascript
+function fetchData() {
+  return Promise.resolve('Hello Jest');
+}
+
+test('resolves with Hello Jest', () => {
+  return fetchData().then((data) => {
+    expect(data).toBe('Hello Jest');
+  });
+});
+```
+
+### Using async/await
+
+```javascript
+test('resolves with Hello Jest (async/await)', async () => {
+  const data = await fetchData();
+  expect(data).toBe('Hello Jest');
+});
+```
+
+## Mocking in Jest
+
+Jest makes it easy to mock functions or modules:
+
+```javascript
+const fetchData = jest.fn(() => 'mocked data');
+
+test('fetchData returns mocked data', () => {
+  expect(fetchData()).toBe('mocked data');
+});
+```
+
+## Snapshot Testing (Great for UI)
+
+For React components, Jest can store a "snapshot" of the rendered output and compare it in future tests.
+
+```javascript
+import renderer from 'react-test-renderer';
+import MyButton from './MyButton';
+
+test('renders correctly', () => {
+  const tree = renderer.create(<MyButton label="Click me" />).toJSON();
+  expect(tree).toMatchSnapshot();
+});
+```
+
+## Best Practices
+
+1. **Keep tests small and focused** – Test one thing per test block.
+2. **Use descriptive names** – A test should read like documentation.
+3. **Mock dependencies sparingly** – Only mock what’s external or slow.
+4. **Test edge cases** – Don’t just test the happy path.
+5. **Run tests often** – Integrate into CI/CD pipelines.
+
+## Conclusion
+
+Writing tests with Jest helps you catch bugs early, maintain code quality, and build confidence in your applications. Whether you’re building a small utility library or a large-scale React application, Jest provides all the tools you need for reliable and maintainable testing.
+
+Start small by writing unit tests for your utility functions, then gradually expand into integration and snapshot testing for UI. With consistent practice, testing will become a natural part of your development workflow.

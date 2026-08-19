@@ -1,0 +1,71 @@
+---
+date: 2025-09-15
+title: "How to Safely Change a Windows User Account Folder Name"
+description: "A step-by-step guide to renaming your user profile without breaking OneDrive or system settings."
+tags: ["Windows", "Developer Setup"]
+image: "/blog/images/how-to-safely-change-a-windows-user-account-folder-name.png"
+---
+
+> Renaming the user account folder in Windows is not as simple as changing the display name. If you try to rename the folder directly, you may encounter the error **The action can’t be completed because the folder is open in another program**.
+
+This guide walks you through the safe way to change your Windows user account folder name while avoiding sync issues with OneDrive.
+
+## Step 1: Prepare a Temporary Administrator Account
+
+Before making changes, create another administrator account. This ensures you won’t be locked out of your system while modifying the original account.
+
+1. Create a new user account with **administrator privileges**.
+2. Sign out of your current account and log into the new administrator account.
+
+## Step 2: Disconnect OneDrive
+
+To prevent sync conflicts:
+
+1. Click the **OneDrive icon** in the Windows taskbar.
+2. Go to **Settings > Account > Unlink this PC**.
+3. Sign out of OneDrive for the account you plan to rename.
+
+## Step 3: Adjust Account Privileges
+
+1. Log into the new administrator account.
+2. Change the privileges of the account you want to rename from **Administrator** to **Standard User**.
+
+This prevents Windows from blocking modifications to the profile folder.
+
+## Step 4: Rename the User Profile Folder
+
+Follow this detailed guide:  
+[How to Change Name of User Profile Folder in Windows 10 (TenForums)](https://www.tenforums.com/tutorials/89060-change-name-user-profile-folder-windows-10-a.html)
+
+If you see the error **The action can’t be completed because the folder is open in another program**, proceed to the troubleshooting steps below.
+
+## Step 5: Resolve the “Folder in Use” Error
+
+If the folder cannot be renamed:
+
+1. Open **Task Manager** → go to the **Performance** tab → click **Open Resource Monitor**.
+2. In **Resource Monitor**, open the **CPU** tab and use **Associated Handles** search.
+3. Search for your **user profile folder name**.
+4. Identify which processes are locking the folder and end those tasks. (You may need to restart your computer afterwards.)
+
+## Step 6: Change the Account Name via Command Prompt
+
+1. First, rename the **user profile folder** manually (once the folder is no longer in use).
+2. Open **Command Prompt as Administrator**.
+3. Run the following command to list user accounts:`wmic useraccount get name
+`
+4. Run this command to rename the user account:`wmic useraccount where name="current name" rename "new name"
+`
+5. Restart your PC.
+
+## Step 7: Re-enable OneDrive
+
+1. Sign back into the renamed account.
+2. Open OneDrive from the Start Menu.
+3. Log in and select the location where you want to sync your OneDrive folder.
+
+## To Summarize
+
+- Always create a backup or restore point before making changes.
+- Ensure OneDrive is unlinked before renaming the account, otherwise sync paths may break.
+- Use the temporary administrator account only as a helper. Once everything works, you can delete it or leave it as a backup.

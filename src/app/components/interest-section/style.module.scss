@@ -1,0 +1,94 @@
+.main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: var(--font-body);
+
+  .expertise {
+    position: relative;
+    width: 100%;
+
+    .descriptions {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 2;
+      pointer-events: none;
+      .description {
+        background: var(--flame-500);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-inline: var(--space-16);
+        clip-path: inset(50% 0 50%);
+        transition: clip-path 0.4s;
+        color: var(--content-inverse);
+        padding-block: 0.5rem;
+
+        p {
+          &:nth-of-type(1) {
+            font-family: var(--font-heading);
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: var(--font-6xl);
+            line-height: var(--font-9xl);
+            position: relative;
+            z-index: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          &:nth-of-type(2) {
+            width: 50%;
+            line-height: 1.4em;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 100%;
+            line-clamp: 4;
+            -webkit-line-clamp: 4;
+          }
+        }
+      }
+    }
+    .titles {
+      font-family: var(--font-heading);
+      width: 100%;
+      border-top: 1px solid var(--border-subtle);
+      .title {
+        border-bottom: 1px solid var(--border-subtle);
+        cursor: default;
+        position: relative;
+        z-index: 2;
+
+        .wrapper {
+          display: inline-block;
+          padding-left: var(--space-16);
+          p {
+            padding-block: 0.5rem;
+            display: inline-block;
+            color: var(--content-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: var(--font-6xl);
+            line-height: var(--font-9xl);
+            position: relative;
+            z-index: 2;
+            text-wrap: nowrap;
+            &:nth-of-type(2) {
+              display: block;
+              position: absolute;
+              color: var(--border-subtle);
+              top: 0;
+              z-index: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+}

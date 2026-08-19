@@ -1,0 +1,15 @@
+---
+date: 2025-09-15
+title: "Jestでテストコードを書く方法"
+description: "JavaScriptアプリケーションでユニットテストを始めるための実践ガイド。"
+tags: ["テスト", "JavaScript"]
+image: "/blog/images/how-to-write-test-code-with-jest.png"
+---
+
+テストは実装の細部ではなく、利用者に見える振る舞いを守るために書きます。
+
+```ts
+expect(formatName('kiki')).toBe('Kiki');
+```
+
+ひとつのテストではひとつの意図を検証し、読みやすい名前を付けます。外部通信や時刻はモックし、失敗時に原因が分かる小さなテストを積み重ねましょう。

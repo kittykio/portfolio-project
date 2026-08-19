@@ -1,0 +1,16 @@
+---
+date: 2025-10-24
+title: "クリックで悲しい表情から笑顔に変わる、鼓動するハートアニメーション"
+description: "CSSとJavaScriptでインタラクティブなSVGハートをつくる入門。"
+tags: ["CSS", "JavaScript", "アニメーション"]
+image: "/blog/images/how-to-create-an-animated-beating-heart-that-transforms-from-sad-to-happy-on-click.png"
+---
+
+小さなSVGでも、状態を分けると表情豊かなインタラクションになります。
+
+```css
+.heart { transform-origin: center; animation: beat 1s ease-in-out infinite; }
+@keyframes beat { 50% { transform: scale(1.08); } }
+```
+
+クリック時にクラスを切り替え、目や口のパス、色、アニメーション速度を変えます。`prefers-reduced-motion` も用意し、動きが苦手な人には静かな状態を見せるのが大切です。

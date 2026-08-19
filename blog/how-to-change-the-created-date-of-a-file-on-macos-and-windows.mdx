@@ -1,0 +1,97 @@
+---
+date: 2025-09-15
+title: "How to Change the Created Date of a File on macOS and Windows"
+description: "A step-by-step guide to modifying file creation and modification timestamps using built-in tools on macOS and Windows."
+tags: ["macOS", "Windows", "Developer Workflow"]
+image: "/blog/images/how-to-change-the-created-date-of-a-file-on-macos-and-windows.png"
+---
+
+## Why Modify File Dates?
+
+File metadata such as creation date, modification date, and access date can be useful when organizing, auditing, or debugging projects. By default, operating systems automatically manage these timestamps, but sometimes you may need to adjust them manually. This guide explains how to change the created date of a file on both macOS and Windows.
+
+There are several use cases where changing file timestamps may be helpful:
+
+- Organizing project files consistently after a migration
+- Preserving original timestamps when restoring from backups
+- Correcting metadata errors
+- Testing applications that rely on file creation or modification dates
+
+## Changing the Created Date on macOS
+
+macOS supports modification of file creation and modification dates through built-in tools, but some require the Xcode Command Line Tools.
+
+### 1. Install Xcode Command Line Tools
+
+First, ensure the Xcode command line utilities are installed:
+
+```
+xcode-select --install
+```
+
+### 2. Using `SetFile` to Change the Created Date
+
+The `SetFile` command allows setting the **created date** of a file:
+
+```
+SetFile -d "09/14/2025 15:30:00" /path/to/your/file.txt
+```
+
+- `-d` specifies the creation date.
+- Format: `MM/DD/YYYY HH:MM:SS`.
+
+### 3. Changing the Modification Date with `touch`
+
+If you only need to adjust the modification date:
+
+```
+touch -mt 202509141530 /path/to/your/file.txt
+```
+
+Format: `[[CC]YY]MMDDhhmm[.SS]`
+
+### 4. Verify the Changes
+
+Check timestamps with:
+
+```
+stat /path/to/your/file.txt
+```
+
+Look at the **Birth** field for the created date and **Modify** for the last modified date.
+
+## Changing the Created Date on Windows
+
+On Windows, PowerShell provides built-in support for modifying file timestamps.
+
+### 1. Change Creation Time
+
+```
+(Get-Item "C:\path\to\your\file.txt").CreationTime=("09/14/2025 15:30:00")
+```
+
+### 2. Change Last Modified Time
+
+```
+(Get-Item "C:\path\to\your\file.txt").LastWriteTime=("09/14/2025 15:30:00")
+```
+
+### 3. Change Last Accessed Time
+
+```
+(Get-Item "C:\path\to\your\file.txt").LastAccessTime=("09/14/2025 15:30:00")
+```
+
+### 4. Verify the Changes
+
+Run:
+
+```
+Get-Item "C:\path\to\your\file.txt" | Format-List CreationTime,LastWriteTime,LastAccessTime
+```
+
+## Final Notes
+
+- On macOS, `SetFile` is part of the Xcode Command Line Tools, so it must be installed before use.
+- On Windows, PowerShell provides a straightforward way to modify file timestamps without extra tools.
+- Be cautious when editing metadata for compliance or auditing purposes, since altering timestamps may conflict with record-keeping policies.

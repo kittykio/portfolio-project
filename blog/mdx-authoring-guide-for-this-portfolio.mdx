@@ -1,0 +1,232 @@
+---
+date: 2026-08-17
+title: "Writing MDX Posts for This Portfolio"
+description: "A practical reference for every frontmatter field, Markdown pattern, and custom MDX component available in this portfolio."
+tags: ["MDX", "Developer Tools", "Documentation"]
+image: "/blog/images/mdx-authoring-guide-for-this-portfolio.png"
+---
+
+This portfolio’s posts are **MDX files** in the `blog/` directory. MDX lets you write normal Markdown, then reach for React-powered components when an article needs a little more structure or personality.
+
+<Highlight color="lemon">You do not need to write an id.</Highlight> A stable post ID is generated from the filename, so keep the filename unique and use kebab case.
+
+## 1. Start with a file and frontmatter
+
+Create a file such as `blog/my-new-post.mdx`. Every post needs the following frontmatter:
+
+```mdx
+---
+date: 2026-08-17
+title: "My New Post"
+description: "A short, useful summary for the blog card and metadata."
+tags: ["JavaScript", "Developer Workflow"]
+image: "/blog/images/my-new-post.png"
+---
+```
+
+| Field | What it does | Tip |
+| --- | --- | --- |
+| `date` | Controls the visible publish date and Newest/Oldest sorting. | Use `YYYY-MM-DD`. |
+| `title` | Appears on the blog card and article page. | Make it specific and easy to scan. |
+| `description` | Appears on the card and helps readers decide whether to open it. | Aim for one clear sentence. |
+| `tags` | Creates the filter tags for this post. | Reuse exact spelling and case, such as `Next.js`. |
+| `image` | Points to the post cover in `public/blog/images/`. | Use a kebab-case filename. |
+
+## 2. Core Markdown
+
+All familiar Markdown works: headings, paragraphs, bold text, italics, links, lists, blockquotes, code, tables, task lists, and horizontal rules.
+
+### Headings
+
+```mdx
+# Page title (normally avoid this because the page already has a title)
+## Main section
+### Smaller section
+```
+
+Use `##` for the main sections of an article. They are automatically picked up by the table of contents.
+
+### Emphasis and links
+
+```mdx
+Use **bold** for important terms and *italics* for gentle emphasis.
+
+[Visit the Projects page](/projects)
+```
+
+> A blockquote is great for a key idea, a warning, or a short pull quote.
+
+### Lists and checklists
+
+```mdx
+- Useful for related points
+- Keep each item short
+
+1. Write the first step
+2. Add the second step
+
+- [x] Draft written
+- [ ] Cover image added
+```
+
+### Code blocks and inline code
+
+Use backticks for inline code like `npm run dev`. Use three backticks and a language name for highlighted code:
+
+```ts
+type Post = {
+  title: string;
+  tags: string[];
+};
+```
+
+Supported highlighting includes TypeScript (`ts`), Dockerfiles (`dockerfile`), and plain text (`plaintext`). For other languages, use the closest readable fence and keep the snippet concise.
+
+### Tables
+
+```mdx
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the local site |
+| `npm run build` | Test a production build |
+```
+
+## 3. Custom MDX components
+
+These components are available directly in every post—no import line is required.
+
+### Highlight important text
+
+```mdx
+<Highlight color="lemon">A bright note.</Highlight>
+<Highlight color="flame">A warmer warning.</Highlight>
+
+<RainbowHighlight>A rainbow text treatment.</RainbowHighlight>
+<RainbowHighlight block>A larger rainbow callout.</RainbowHighlight>
+```
+
+`RainbowHighlight` paints the text itself with the portfolio rainbow, then adds a thin flame underline. The underline follows the words on every wrapped line instead of stretching across the entire container.
+
+<RainbowHighlight>This sentence is intentionally long enough to demonstrate the thin rainbow stroke following each line when the text wraps.</RainbowHighlight>
+
+- Use it for one memorable phrase or a compact takeaway.
+- Do not pass a `color` prop; the component owns its rainbow accent and theme-aware text color.
+- Add `block` when it should start on its own line. The inline version is best inside a normal sentence.
+
+<Highlight color="lemon">Lemon Highlight — a bright, high-priority note with a solid background that follows each line of a wrapped sentence without filling the empty space at the end.</Highlight>
+
+<Highlight color="flame">Use highlights sparingly—one strong note is more effective than five competing ones.</Highlight>
+
+### Add a wavy underline
+
+```mdx
+<Underline>Underline one key phrase.</Underline>
+```
+
+<Underline>It works best for a sentence’s main takeaway.</Underline>
+
+### Change the voice of a short phrase
+
+The typography helpers are best for tiny moments of personality, not full paragraphs.
+
+```mdx
+<Awkward>awkward and hand-drawn</Awkward>
+<Spacey>wide and futuristic</Spacey>
+<Playful>friendly and bouncy</Playful>
+<Saucy>expressive script</Saucy>
+<Loud>big announcement</Loud>
+<Sparkly>softly magical</Sparkly>
+```
+
+Here are the actual font treatments as they render in this portfolio:
+
+<Awkward block>Awkward — hand-drawn and loose</Awkward>
+<Spacey block>Spacey — wide and futuristic</Spacey>
+<Playful block>Playful — friendly and bouncy</Playful>
+<Saucy block>Saucy — expressive script</Saucy>
+<Loud block>Loud — BIG ANNOUNCEMENT</Loud>
+<Sparkly block>Sparkly — soft, magical emphasis</Sparkly>
+
+Add `block` when one of them should sit on its own line:
+
+```mdx
+<Playful block>A small celebration.</Playful>
+```
+
+### Add a divider
+
+```mdx
+<Divider />
+```
+
+<Divider />
+
+### Add an optimized image
+
+Use `Img` for an image stored in `public/`. Always provide an accurate `alt`, plus `width` and `height`.
+
+```mdx
+<Img
+  src="/blog/images/my-diagram.png"
+  alt="A diagram of a simple content workflow"
+  width={1200}
+  height={800}
+/>
+```
+
+### Link a downloadable file
+
+Place the file in `public/`, then provide its public path:
+
+```mdx
+<FileLink
+  name="/blog/files/checklist.pdf"
+  label="Download the project checklist"
+/>
+```
+
+### Show a file tree
+
+`MDXFileTree` is useful when explaining a project structure. Give every node a unique `id`; folders may include `children`.
+
+```mdx
+<MDXFileTree
+  tree={[
+    {
+      id: "src",
+      name: "src",
+      type: "folder",
+      children: [
+        { id: "page", name: "page.tsx", type: "file" }
+      ]
+    }
+  ]}
+/>
+```
+
+<MDXFileTree
+  tree={[
+    {
+      id: "guide-src",
+      name: "src",
+      type: "folder",
+      children: [
+        { id: "guide-page", name: "page.tsx", type: "file" },
+        { id: "guide-components", name: "components", type: "folder", children: [
+          { id: "guide-card", name: "Card.tsx", type: "file" }
+        ] }
+      ]
+    }
+  ]}
+/>
+
+## 4. Authoring tips
+
+1. **Name files carefully.** The filename becomes the URL and contributes to the generated like ID. Rename only when you intentionally want a new like record.
+2. **Use two or three tags.** Choose specific, reusable tags instead of broad filler labels. For example, prefer `Next.js` and `Performance` over `Tips`.
+3. **Write the description before the body.** It forces the article’s promise to be clear.
+4. **Keep sections skimmable.** Use descriptive `##` headings, short paragraphs, and code samples that can stand alone.
+5. **Use components with restraint.** A highlight, divider, or playful type treatment should help the reader’s eye—not become the whole article.
+6. **Test locally before publishing.** Run `npm run dev`, open the post, and check the cover, table of contents, code overflow, and both light and dark modes.
+
+<RainbowHighlight block>Write for the reader first; use MDX only where it makes the explanation clearer or more delightful.</RainbowHighlight>

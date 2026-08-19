@@ -1,0 +1,16 @@
+---
+date: 2025-09-15
+title: "ローカルテストサーバーの使い方"
+description: "静的ファイル用HTTPサーバーと、REST APIを模擬するJSON Serverの使い方。"
+tags: ["ローカル開発", "開発ツール"]
+image: "/blog/images/how-to-use-a-local-testing-server.png"
+---
+
+ローカルサーバーを使うと、モジュール、fetch、ルーティングを本番に近い形で確認できます。
+
+```shell
+python3 -m http.server 8000
+npx json-server --watch db.json --port 3001
+```
+
+前者は静的ページの確認、後者はAPIのプロトタイプに向いています。ポート番号と環境変数はREADMEに残し、テスト用データを実データと混ぜないようにしましょう。

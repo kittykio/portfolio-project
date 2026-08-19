@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  background-color: var(--canvas);
+  color: var(--content);
+}
+
+html[data-motion='reduce'] {
+  scroll-behavior: auto;
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.expanding_underline {
+  &::after {
+    content: '';
+    width: 0%;
+    height: 1px;
+    background-color: var(--content);
+    display: block;
+    margin-top: 2px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: width 0.2s linear;
+  }
+  &:hover {
+    &::after {
+      width: 100%;
+    }
+  }
+}
+
+.footnotes {
+  ol {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    scroll-margin-top: 108px;
+  }
+}
+
+ul li:has(input[type='checkbox']) {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+@media print {
+  header, footer, .no-print, button, [aria-label='Ask Kiki'] { display: none !important; }
+  .resume-sheet { box-shadow: none !important; }
+}

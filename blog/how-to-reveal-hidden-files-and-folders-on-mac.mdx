@@ -1,0 +1,64 @@
+---
+date: 2026-08-07
+title: "How to Reveal Hidden Files and Folders on Mac"
+description: "Learn three simple methods to access hidden files and folders in macOS using Finder, Terminal, or the hidden Library folder."
+tags: ["macOS", "Developer Workflow"]
+image: "/blog/images/how-to-reveal-hidden-files-and-folders-on-mac.png"
+---
+
+Hidden files and folders are an important part of macOS. They store system settings, application data, configuration files, and other information that helps your Mac function properly. While these files are hidden by default to prevent accidental changes, there are times when developers, power users, or anyone troubleshooting an issue may need to access them.
+
+In this guide, we'll cover three easy ways to reveal hidden files and folders on your Mac.
+
+### Method 1: Use the Finder Keyboard Shortcut
+
+The quickest way to show hidden files is by using a built-in Finder shortcut.
+
+1. Open **Finder**.
+2. Navigate to any folder.
+3. Press **Command + Shift + . (period)**.
+4. Hidden files and folders will immediately appear as translucent items.
+5. Press the same shortcut again to hide them.
+
+This method is ideal when you only need temporary access to hidden files.
+
+### Method 2: Show Hidden Files Using Terminal
+
+If you prefer using Terminal, you can configure Finder to always display hidden files.
+
+Open the **Terminal** application and run:
+
+```shell
+defaults write com.apple.finder AppleShowAllFiles true
+killall Finder
+```
+
+Finder will restart, and all hidden files will become visible.
+
+To hide them again, run:
+
+```shell
+defaults write com.apple.finder AppleShowAllFiles false
+killall Finder
+```
+
+This approach is useful if you'll be working with hidden files frequently.
+
+### Method 3: Access the Hidden Library Folder
+
+The user's **Library** folder is hidden by default but is commonly used for application settings and caches.
+
+To access it:
+
+1. Open **Finder**.
+2. Click **Go** in the menu bar.
+3. Hold the **Option (Alt)** key.
+4. Select **Library** from the menu.
+
+This is the safest way to access the Library folder without changing Finder's display settings.
+
+### Things to Keep in Mind
+
+Although hidden files are accessible, many are essential for macOS and installed applications. Avoid modifying or deleting files unless you understand their purpose, as doing so may cause applications or the operating system to behave unexpectedly.
+
+For most users, the Finder keyboard shortcut is the easiest and safest way to temporarily reveal hidden files whenever they're needed.

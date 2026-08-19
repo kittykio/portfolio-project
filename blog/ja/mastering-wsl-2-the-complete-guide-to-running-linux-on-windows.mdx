@@ -1,0 +1,15 @@
+---
+date: 2025-09-16
+title: "WSL 2完全ガイド：WindowsでLinuxを動かす方法"
+description: "仮想マシンやデュアルブートなしでWindows上のLinux開発環境を使う入門。"
+tags: ["Windows", "Linux", "開発環境"]
+image: "/blog/images/mastering-wsl-2-the-complete-guide-to-running-linux-on-windows.png"
+---
+
+WSL 2はWindowsとLinuxの開発ツールを近くに置ける環境です。
+
+```shell
+wsl --install
+```
+
+ディストリビューションを入れたら、Node.js、Git、エディタ連携を整えます。パフォーマンスのため、Linux側で使うプロジェクトはLinuxファイルシステム内に置くのがおすすめです。WindowsとLinuxのパス、改行コード、権限の違いを意識しましょう。

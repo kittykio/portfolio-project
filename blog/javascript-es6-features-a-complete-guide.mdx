@@ -1,0 +1,148 @@
+---
+date: 2025-09-20
+title: "JavaScript ES6 Features: A Complete Guide"
+description: "Master the modern features that transformed JavaScript into today’s powerful language."
+tags: ["JavaScript"]
+image: "/blog/images/javascript-es6-features-a-complete-guide.png"
+---
+
+> ECMAScript 2015, commonly known as **ES6**, introduced a set of groundbreaking features that redefined how developers write JavaScript. These features made the language more expressive, easier to maintain, and closer to modern programming paradigms. Whether you’re just starting with ES6 or brushing up, this guide will walk you through the most important features.
+
+## 1. Let and Const Declarations
+
+Before ES6, `var` was the only way to declare variables, often causing scope-related bugs.
+
+- `let` → Block-scoped, *can be* reassigned.
+- `const` → Block-scoped, *cannot be* reassigned (immutable binding).
+
+```javascript
+let count = 1;
+count = 2; // works
+
+const pi = 3.14;
+pi = 3.1415; // error
+```
+
+## 2. Arrow Functions
+
+Arrow functions provide a shorter syntax and preserve the `this` context.
+
+```javascript
+// Traditional function
+function add(a, b) {
+  return a + b;
+}
+
+// Arrow function
+const add = (a, b) => a + b;
+```
+
+They’re especially useful for callbacks and array methods like `map` or `filter`.
+
+## 3. Template Literals
+
+String concatenation became easier with **template literals**.
+
+```javascript
+const name = "Sara";
+console.log(`Hello, ${name}!`); // Hello, Sara!
+```
+
+They support multiline strings and embedded expressions.
+
+## 4. Default Parameters
+
+Functions can now have default values for parameters.
+
+```javascript
+function greet(name = "Guest") {
+  return `Hello, ${name}`;
+}
+
+console.log(greet()); // Hello, Guest
+```
+
+## 5. Destructuring Assignment
+
+Easily unpack values from arrays or objects.
+
+```javascript
+// Array destructuring
+const [a, b] = [1, 2];
+
+// Object destructuring
+const { title, author } = { title: "Book", author: "Jane" };
+```
+
+## 6. Spread and Rest Operators (`...`)
+
+- **Spread** → Expands an iterable.
+- **Rest** → Collects remaining arguments.
+
+```javascript
+// Spread
+const arr1 = [1, 2];
+const arr2 = [...arr1, 3, 4]; // [1,2,3,4]
+
+// Rest
+function sum(...nums) {
+  return nums.reduce((a, b) => a + b, 0);
+}
+```
+
+## 7. Modules (import/export)
+
+ES6 introduced a standardized module system.
+
+```javascript
+// module.js
+export const greet = () => console.log("Hello");
+
+// main.js
+import { greet } from "./module.js";
+greet();
+```
+
+## 8. Classes
+
+A cleaner syntax for prototypes and object-oriented programming.
+
+```javascript
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+  greet() {
+    console.log(`Hi, I'm ${this.name}`);
+  }
+}
+
+const user = new Person("Alex");
+user.greet();
+```
+
+## 9. Promises
+
+Promises simplified asynchronous code, replacing callback hell.
+
+```javascript
+const fetchData = () =>
+  new Promise((resolve, reject) => {
+    setTimeout(() => resolve("Data loaded"), 1000);
+  });
+
+fetchData().then(data => console.log(data));
+```
+
+## 10. Enhanced Object Literals
+
+Shorthand syntax for cleaner objects.
+
+```javascript
+const name = "Tom";
+const user = { name, greet() { console.log("Hi"); } };
+```
+
+## Conclusion
+
+ES6 marked a turning point for JavaScript. Features like `let/const`, arrow functions, modules, classes, and promises turned it into a more modern and robust language. Mastering these will not only make your code cleaner and more maintainable, but also prepare you for newer features introduced in later versions.

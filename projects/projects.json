@@ -1,0 +1,102 @@
+[
+  {
+    "name": "avatar-animation",
+    "title": "Avatar Animation",
+    "summary": "Basic avatar animation example using R3F, Ready Player Me and Mixamo.",
+    "tags": ["React", "Three.js", "3D", "Animation"],
+    "image": "/projects/avatar-animation.png",
+    "repoUrl": "https://github.com/kittykio/avatar-animation",
+    "websiteUrl": "https://mm-avatar-animation.vercel.app/",
+    "date": "2024/05/05"
+  },
+  {
+    "name": "book-log",
+    "title": "Book Log",
+    "summary": "An app for bookaholics to keep track of the books you have read and take notes.",
+    "tags": ["Next.js", "TypeScript", "Full-stack"],
+    "image": "/projects/book-log.png",
+    "repoUrl": "https://github.com/kittykio/book-log",
+    "websiteUrl": "https://mm-book-log.vercel.app/",
+    "date": "2024/02/21"
+  },
+  {
+    "name": "floating-rooms",
+    "title": "Floating Rooms",
+    "summary": "Floating Rooms 3D portfolio app using R3F and gsap.",
+    "tags": ["React", "Three.js", "3D", "Animation"],
+    "image": "/projects/floating-rooms.png",
+    "repoUrl": "https://github.com/kittykio/floating-rooms",
+    "websiteUrl": "https://mm-floating-rooms.vercel.app/",
+    "date": "2024/10/16"
+  },
+  {
+    "name": "calc-me",
+    "title": "Calculator",
+    "summary": "A basic calculator.",
+    "tags": ["JavaScript", "Utility"],
+    "image": "/projects/calc-me.png",
+    "repoUrl": "https://github.com/kittykio/calc-me",
+    "websiteUrl": "https://kittykio.github.io/calc-me/",
+    "date": "2022/04/25"
+  },
+  {
+    "name": "dev-camp",
+    "title": "Dev Camp",
+    "summary": "A static dev bootcamp landing webpage.",
+    "tags": ["HTML", "CSS", "Landing Page"],
+    "image": "/projects/dev-camp.png",
+    "repoUrl": "https://github.com/kittykio/dev-camp",
+    "websiteUrl": "https://kittykio.github.io/dev-camp/",
+    "date": "2022/08/08"
+  },
+  {
+    "name": "rock-paper-scissors",
+    "title": "Rock Paper Scissors",
+    "summary": "Simple rock, paper, scissors game with computer as an opponent.",
+    "tags": ["JavaScript", "Game"],
+    "image": "/projects/rock-paper-scissors.png",
+    "repoUrl": "https://github.com/kittykio/rock-paper-scissors",
+    "websiteUrl": "https://kittykio.github.io/rock-paper-scissors/",
+    "date": "2023/01/29"
+  },
+  {
+    "name": "ticking-room",
+    "title": "Ticking Room",
+    "summary": "An animated room with a dynamic day-to-night transition and vice versa. The scene shifts gradually between daytime and nighttime, featuring smooth lighting changes, atmospheric and simple sound effects to enhance the experience.",
+    "tags": ["JavaScript", "Animation"],
+    "image": "/projects/ticking-room.png",
+    "repoUrl": "https://github.com/kittykio/ticking-room",
+    "websiteUrl": "https://kittykio.github.io/ticking-room/",
+    "date": "2021/12/09"
+  },
+  {
+    "name": "ganvas",
+    "title": "Ganvas",
+    "summary": "A fun and interactive sketching app.",
+    "tags": ["JavaScript", "Canvas"],
+    "image": "/projects/ganvas.png",
+    "repoUrl": "https://github.com/kittykio/ganvas",
+    "websiteUrl": "https://kittykio.github.io/ganvas/",
+    "date": "2023/11/13"
+  },
+  {
+    "name": "figma-kio-hot-sauce",
+    "title": "Kio Hot Sauce",
+    "summary": "Focused on a mobile version high fidelity design of an ecommerce store.",
+    "tags": ["Figma", "UI/UX", "E-commerce"],
+    "image": "/projects/figma-kio-hot-sauce.png",
+    "repoUrl": "https://www.figma.com/design/EHyy8qGkh2HBku430le870/Kio-Hot-Sauce-Ecom-V1?node-id=195-456&t=OaaAfsERhCVtonDT-1",
+    "websiteUrl": "https://www.figma.com/proto/EHyy8qGkh2HBku430le870/Kio-Hot-Sauce-Ecom-V1?page-id=111%3A135&node-id=131-142&p=f&viewport=501%2C1543%2C0.41&t=dbALHiyfQgKIQSMd-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=131%3A142&show-proto-sidebar=1",
+    "date": "2025/08/17"
+  },
+  {
+    "name": "art-portfolio",
+    "title": "Art Portfolio",
+    "summary": "An art gallery showcase website of an artist.",
+    "tags": ["Next.js", "MongoDB", "Portfolio"],
+    "image": "/projects/art-portfolio.png",
+    "repoUrl": "https://github.com/kittykio/art-portfolio",
+    "websiteUrl": "https://momoart.vercel.app/",
+    "date": "2026/02/06"
+  }
+]

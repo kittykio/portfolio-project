@@ -1,0 +1,176 @@
+---
+date: 2025-09-16
+title: "The Most Basic but Effective CSS Tricks to Get You Started"
+description: "Simple CSS techniques that make a big difference in your web design."
+tags: ["CSS", "Frontend"]
+image: "/blog/images/the-most-basic-but-effective-css-tricks-to-get-you-started.png"
+---
+
+CSS is one of the core building blocks of web design, yet many beginners find themselves overwhelmed by its depth and flexibility. The good news is, you don’t need to master every property right away to start creating visually appealing, functional designs.
+
+Here are some of the most **basic but effective CSS tricks** that can help you step up your styling game.
+
+## 1. The Magic of Setting Your Root Font Size to 62.5%
+
+By default, most browsers set the root font size to `16px`. If you want to work with `rem` units more intuitively, you can set the root (`html`) font size to `62.5%`.
+
+```css
+html {
+  font-size: 62.5%; /* 1rem = 10px */
+}
+```
+
+Now, `1.6rem` = `16px`, `2rem` = `20px`, etc. This makes scaling text and layouts far more straightforward while keeping your design responsive.
+
+## 2. The Hidden Power of `calc()`
+
+The `calc()` function lets you perform calculations directly in CSS. This is especially useful for dynamic layouts.
+
+```css
+.container {
+  width: calc(100% - 2rem);
+  height: calc(100vh - 80px);
+}
+```
+
+With `calc()`, you can easily mix units (`%`, `px`, `rem`) and avoid hardcoding values that might break on different screen sizes.
+
+## 3. Modern Selectors: `:is()` & `:has()`
+
+- `:is()` simplifies selectors by grouping them together.
+
+```css
+:is(h1, h2, h3) {
+  font-family: 'Bai Jamjuree', sans-serif;
+  margin-bottom: 1rem;
+}
+```
+
+- `:has()` acts like a “parent selector.”
+
+```css
+.card:has(img) {
+  border: 1px solid #ddd;
+  padding: 1rem;
+}
+```
+
+These selectors reduce repetition and give CSS more expressive power.
+
+## 4. Three Ways to Center an Element
+
+Centering is one of the most common layout tasks. Here are three approaches:
+
+**Flexbox**
+
+```css
+.parent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+```
+
+**Grid**
+
+```css
+.parent {
+  display: grid;
+  place-items: center;
+}
+```
+
+**Absolute Positioning**
+
+```css
+.child {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+```
+
+## 5. Animated CSS Background Gradient
+
+Bring life to your backgrounds with a smooth gradient animation.
+
+```css
+body {
+  background: linear-gradient(270deg, #ff7e5f, #feb47b, #86a8e7, #91eae4);
+  background-size: 800% 800%;
+  animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+```
+
+This creates a subtle, visually engaging effect without using JavaScript.
+
+## 6. Three Easy Transitions
+
+Transitions add polish to your UI. A few common ones:
+
+**Hover on Links**
+
+```css
+a {
+  color: #333;
+  transition: color 0.3s ease;
+}
+a:hover {
+  color: #ff7e5f;
+}
+```
+
+**Buttons**
+
+```css
+button {
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+button:hover {
+  transform: scale(1.05);
+}
+```
+
+**Opacity Fade**
+
+```css
+.image {
+  opacity: 0.7;
+  transition: opacity 0.4s ease;
+}
+.image:hover {
+  opacity: 1;
+}
+```
+
+## 7. Realistic Shadows
+
+Box shadows can give depth to your UI, but using them subtly makes the difference.
+
+```css
+.card {
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1), 
+              0 1px 3px rgba(0,0,0,0.08);
+}
+```
+
+For a more “material” look, layer multiple shadows with varying opacity and spread.
+
+## Summary
+
+CSS may look intimidating at first, but with these simple tricks, you can:
+
+- Scale typography and layouts with ease
+- Build responsive, flexible components
+- Add polish through animations and transitions
+- Create depth and realism with shadows
+
+By mastering these essentials, you’ll have a strong foundation to tackle more advanced techniques down the road.

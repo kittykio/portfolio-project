@@ -1,0 +1,16 @@
+---
+date: 2025-09-15
+title: "Ubuntuで日本語キーボード配列に切り替える方法"
+description: "IBus Mozcとキーボード設定で日本語入力を構成する手順。"
+tags: ["Linux", "開発環境"]
+image: "/blog/images/how-to-change-to-a-japanese-keyboard-layout-in-ubuntu.png"
+---
+
+Ubuntuでは、入力メソッドとキーボード配列の両方を確認します。
+
+```shell
+sudo apt update
+sudo apt install ibus-mozc
+```
+
+設定から **Keyboard** と **Input Sources** を開き、日本語（Mozc）を追加します。反映されない場合はログアウト・ログインし、IBusの設定でMozcが有効か確認してください。切り替えショートカットは、普段の開発環境と衝突しないものに変えると快適です。

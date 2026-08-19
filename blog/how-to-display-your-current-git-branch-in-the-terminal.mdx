@@ -1,0 +1,163 @@
+---
+date: 2025-09-15
+title: "How to Display Your Current Git Branch in the Terminal"
+description: "How to display the Git Branch in Your Prompt?"
+tags: ["Git", "Terminal"]
+image: "/blog/images/how-to-display-your-current-git-branch-in-the-terminal.png"
+---
+
+When working with Git, it’s easy to lose track of which branch you’re on — especially when managing multiple projects. Displaying the current branch directly in your terminal prompt helps prevent mistakes like committing to the wrong branch.
+
+This guide shows how to set up Git branch info in your terminal across **macOS (zsh)**, **Linux (bash)**, and **Windows (PowerShell)**.
+
+## macOS (zsh)
+
+By default, macOS uses **zsh** as its shell.
+
+### 1. Edit Your zshrc
+
+```
+nano ~/.zshrc
+```
+
+### 2. Add Git Prompt Support
+
+For **Homebrew on Apple Silicon (M1/M2)**:
+
+```
+source /opt/homebrew/etc/bash_completion.d/git-prompt.sh
+```
+
+For the **official Git installer**:
+
+```
+# source /usr/local/git/contrib/completion/git-prompt.sh
+```
+
+### 3. Helper Function
+
+```
+function git_prompt_info() {
+    __git_ps1 " (%s)"
+}
+```
+
+### 4. Customize Prompt
+
+```
+setopt PROMPT_SUBST
+
+PROMPT="%{%F{green}%}%n@%m %{%F{yellow}%}%c %{%F{red}%}$(git_prompt_info)%f %{%F{blue}%}%# %{%F{white}%}"
+```
+
+### 5. Reload
+
+```
+source ~/.zshrc
+```
+
+Result:
+
+```
+username@MacBook repo-name (main) %
+```
+
+## Linux (bash)
+
+Most Linux distributions default to **bash**, which uses `PS1` to control the prompt.
+
+### 1. Locate [git-prompt.sh](http://git-prompt.sh)
+
+It’s usually installed with Git in `/usr/share/git/` or `/etc/bash_completion.d/`. Confirm with:
+
+```
+locate git-prompt.sh
+```
+
+Common path:
+
+```
+/usr/share/git/git-prompt.sh
+```
+
+### 2. Edit bashrc
+
+Open `~/.bashrc`:
+
+```
+nano ~/.bashrc
+```
+
+Add:
+
+```
+source /usr/share/git/git-prompt.sh
+```
+
+### 3. Update PS1
+
+Modify `PS1` to include `__git_ps1`:
+
+```
+export PS1="\u@\h:\w\[\033[31m\]$(__git_ps1 ' (%s)')\[\033[00m\]\$ "
+```
+
+- `\u` → username
+- `\h` → host
+- `\w` → working directory
+- `__git_ps1 ' (%s)'` → Git branch in parentheses
+
+### 4. Apply Changes
+
+```
+source ~/.bashrc
+```
+
+Result:
+
+```
+me@linuxbox:~/projects/myapp (main)$
+```
+
+## Windows (PowerShell)
+
+For Windows, use **posh-git**.
+
+### 1. Install posh-git
+
+```
+Install-Module posh-git -Scope CurrentUser
+```
+
+### 2. Import Module
+
+```
+Import-Module posh-git
+```
+
+### 3. Add to Profile
+
+```
+notepad $PROFILE
+```
+
+Add:
+
+```
+Import-Module posh-git
+```
+
+### 4. Restart PowerShell
+
+Result:
+
+```
+PS C:\Users\me\Projects\my-app [main +1 ~2 -0]>
+```
+
+## Final Notes
+
+- **macOS (zsh)** → flexible, can use Oh My Zsh themes.
+- **Linux (bash)** → works with stock Git tools, highly customizable.
+- **Windows (PowerShell)** → `posh-git` gives branch + status info.
+- For a **universal solution**, try Starship (works on zsh, bash, and PowerShell).

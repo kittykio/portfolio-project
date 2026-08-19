@@ -1,0 +1,223 @@
+---
+date: 2025-10-24
+title: "How to Create an Animated Beating Heart That Transforms from Sad to Happy on Click"
+description: "A simple guide to building an interactive SVG heart animation using CSS and JavaScript"
+tags: ["CSS", "JavaScript", "Animation"]
+image: "/blog/images/how-to-create-an-animated-beating-heart-that-transforms-from-sad-to-happy-on-click.png"
+---
+
+# Introduction
+
+Interactive animations can add delightful microinteractions to your website or app. One example is a heart that beats and changes its expression when clicked — transforming from sad to happy. This tutorial walks you through how to build that effect using a free SVG heart icon and minimal CSS and JavaScript.
+
+## 1. Choose an SVG Icon
+
+We’ll use a free heart SVG icon from a reputable source. For example:
+
+- From SVG Repo: “Heart Vector Icon” — free to download in SVG format. [SVG Repo](https://www.svgrepo.com/svg/522408/heart?utm_source=chatgpt.com)
+- Alternatively from UXWing: “Heart icon SVG vector & PNG transparent” (free to copy/paste) [UXWing](https://uxwing.com/heart-icon/?utm_source=chatgpt.com)
+
+Let’s grab a simple SVG heart and embed it in our HTML. Here’s a cleaned-up version:
+
+```
+<svg id="heart" viewBox="0 0 24 24" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+  <path id="heart-shape" d="M12 21s-6-4.35-9-8.58C-1.08 7.41 2.24 2 7.5 2A5.49 5.49 0 0 1 12 4.09 5.49 5.49 0 0 1 16.5 2C21.76 2 25.08 7.41 21 12.42 18 16.65 12 21 12 21z"
+    fill="#e63946"/>
+  <circle id="eye-left" cx="9" cy="10" r="1" fill="#000"/>
+  <circle id="eye-right" cx="15" cy="10" r="1" fill="#000"/>
+  <path id="mouth" d="M9 14q3 -1 6 0" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+</svg>
+```
+
+Here’s what we’ve done:
+
+- The main heart shape path draws the heart outline/fill.
+- Two small circles represent eyes.
+- A “mouth” path which we will toggle between sad and happy.  
+You’re free to pick another variant of heart icon from the sources above, just ensure it has a simple shape for ease of animation.
+
+## 2. Basic CSS for Layout & Animation
+
+Next, we’ll style the SVG and create a “beating” animation. We’ll also prepare for emotion-change transitions.
+
+```css
+#heart {
+  cursor: pointer;
+  display: block;
+  margin: 40px auto;
+  transform-origin: center center;
+  animation: beat 1s infinite;
+  transition: transform 0.3s ease, fill 0.3s ease;
+}
+
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* state classes */
+.sad #mouth {
+  d: path("M9 14q3 -1 6 0");
+}
+
+.happy #mouth {
+  d: path("M9 12q3 2 6 0");
+}
+```
+
+**Explanation:**
+
+- `#heart` selector targets the SVG container. We make it clickable (`cursor: pointer`), centre it, and define a `transform-origin` so scaling looks right.
+- Animation `beat` simply scales up to 1.1 at 50% cycle then back to 1. This gives a heartbeat effect.
+- We add transition rules so changes in `transform` or `fill` will animate smoothly.
+- The state classes `.sad` and `.happy` apply different `d` attributes for the `mouth` path (sad = downward curve, happy = upward curve). Note: CSS cannot animate the path’s `d` attribute smoothly in many browsers, so we’ll toggle it via JavaScript.
+
+## 3. JavaScript to Toggle Emotion on Click
+
+In this step we add logic so when the heart is clicked it flips between sad ↔ happy. We’ll also change the fill color to reinforce the emotional shift.
+
+```javascript
+<script>
+  (function(){
+    const heart = document.getElementById('heart');
+    const mouth = document.getElementById('mouth');
+    const heartShape = document.getElementById('heart-shape');
+    let isHappy = false;
+
+    // initial state: sad
+    heart.classList.add('sad');
+
+    heart.addEventListener('click', () => {
+      isHappy = !isHappy;
+
+      if (isHappy) {
+        // switch to happy
+        heart.classList.remove('sad');
+        heart.classList.add('happy');
+
+        mouth.setAttribute('d', 'M9 12q3 2 6 0');  // upward curve
+        heartShape.setAttribute('fill', '#ff4d6d'); // brighter fill
+      } else {
+        // switch to sad
+        heart.classList.remove('happy');
+        heart.classList.add('sad');
+
+        mouth.setAttribute('d', 'M9 14q3 -1 6 0');  // downward curve
+        heartShape.setAttribute('fill', '#e63946'); // original fill
+      }
+    });
+  })();
+</script>
+```
+
+**Explanation in detail:**
+
+- We immediately wrap code in an IIFE (Immediately‐Invoked Function Expression) for scope safety.
+- Grab references to SVG elements (`heart`, `mouth`, `heart-shape`).
+- Maintain a boolean `isHappy` to track current state.
+- On click event: toggle state, update CSS classes `.happy` / `.sad` for potential future styling, update `d` attribute of `mouth` path and update the `fill` attribute of the heart shape for colour change.
+- We choose two distinct fills: a deeper red when sad (`#e63946`), a brighter pinkish when happy (`#ff4d6d`). You can adjust these to fit your brand or style.
+
+## 4. Putting It All Together
+
+Here’s a full HTML file version:
+
+`index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Animated Heart: Sad to Happy</title>
+  <style>
+    #heart {
+      cursor: pointer;
+      display: block;
+      margin: 40px auto;
+      transform-origin: center center;
+      animation: beat 1s infinite;
+      transition: transform 0.3s ease, fill 0.3s ease;
+    }
+
+    @keyframes beat {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .sad #mouth {
+      /* For documentation only; actual path change done in JS */
+    }
+
+    .happy #mouth {
+      /* For documentation only */
+    }
+  </style>
+</head>
+<body>
+  <svg id="heart" viewBox="0 0 24 24" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+    <path id="heart-shape" d="M12 21s-6-4.35-9-8.58C-1.08 7.41 2.24 2 7.5 2A5.49 5.49 0 0 1 12 4.09 5.49 5.49 0 0 1 16.5 2C21.76 2 25.08 7.41 21 12.42 18 16.65 12 21 12 21z"
+      fill="#e63946"/>
+    <circle id="eye-left" cx="9" cy="10" r="1" fill="#000"/>
+    <circle id="eye-right" cx="15" cy="10" r="1" fill="#000"/>
+    <path id="mouth" d="M9 14q3 -1 6 0" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>
+
+  <script>
+    (function(){
+      const heart = document.getElementById('heart');
+      const mouth = document.getElementById('mouth');
+      const heartShape = document.getElementById('heart-shape');
+      let isHappy = false;
+
+      heart.classList.add('sad');
+
+      heart.addEventListener('click', () => {
+        isHappy = !isHappy;
+
+        if (isHappy) {
+          heart.classList.remove('sad');
+          heart.classList.add('happy');
+
+          mouth.setAttribute('d', 'M9 12q3 2 6 0');
+          heartShape.setAttribute('fill', '#ff4d6d');
+        } else {
+          heart.classList.remove('happy');
+          heart.classList.add('sad');
+
+          mouth.setAttribute('d', 'M9 14q3 -1 6 0');
+          heartShape.setAttribute('fill', '#e63946');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
+```
+
+You can copy this file, open it in a browser, and test. On every click the heart will switch state.
+
+## 5. Further Enhancements & Tips
+
+Here are some ideas and considerations to refine your implementation:
+
+- **Accessibility**: Consider adding `role="button"` and `aria-pressed="false"` to the SVG or an enclosing `div`, and toggle `aria-pressed` when clicked so screen-readers know it’s interactive.
+- **Keyboard support**: Add a `tabindex="0"` so the heart is focusable and respond to `keydown` for Enter/Space.
+- **Smooth path morphing**: If you want *really* smooth mouth morphing, you could use an animation library such as GreenSock Animation Platform (GSAP) with its MorphSVG plugin, or use SMIL / `<animate>` inside SVG for path morphing.
+- **Additional states**: Maybe add a “hover” state that enlarges the heart or glows.
+- **Color theming**: Use CSS custom-properties (`--heart-color-sad`, `--heart-color-happy`) so you can easily change color variations.
+- **Performance**: Because we use `animation: beat infinite`, ensure the animation is subtle and not too distracting. Consider pausing animation when the tab is inactive (via `document.visibilityState`).
+- **SVG optimization**: If using many SVGs or in production, use `svgo` or similar to minimize file size.
+- **Integration with UI frameworks**: If you’re using a framework like React or Vue.js, wrap this logic as a component, and manage state via props/hooks instead of directly manipulating DOM.
+
+## 6. Summary
+
+You now have:
+
+- A free heart SVG icon sourced from a free-icon site.
+- CSS to animate a “heartbeat” effect (scale up/down).
+- JavaScript to toggle between sad and happy states (changing the mouth path and fill colour).
+- Full source code you can drop into an HTML file and test.
+- Suggestions for making it more robust (accessibility, keyboard support, smooth morphing, framework integration).
+
+With this foundation you can embed this interactive icon in any webpage or UI — whether it’s a “like” button, reaction icon, playful UI element, or part of a bigger animation sequence.

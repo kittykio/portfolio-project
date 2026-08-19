@@ -1,0 +1,276 @@
+:root {
+  /* Palette: literal values live here once. Components should use semantic
+     tokens (canvas, surface, content, border) instead of light/dark aliases. */
+  --black: #000000;
+  --white: #ffffff;
+
+  --flame-300: #eb7858;
+  --flame-500: #cb4625;
+  --flame-700: #8c280d;
+  --flame-900: #591806;
+  --lemon: #e8ff38;
+
+  /* Lab-only palette; also mirrored in constants/colorPalette.ts for WebGL. */
+  --lab-sky: #87ceeb;
+  --rainbow-red: #ff6b6b;
+  --rainbow-orange: #ffad69;
+  --rainbow-yellow: #ffe66d;
+  --rainbow-green: #7bd389;
+  --rainbow-blue: #70c1ff;
+  --rainbow-violet: #b388eb;
+
+  --gray-100: #e6e6e6;
+  --gray-300: #bababa;
+  --gray-500: #8b8b8b;
+  --gray-700: #505050;
+  --gray-900: #292929;
+  --cocoa-700: #2d2926;
+  --cocoa-900: #2c2522;
+
+  /* Semantic light theme. These are the only tokens that switch in dark mode. */
+  --canvas: var(--white);
+  --surface: var(--white);
+  --surface-card: var(--gray-100);
+  --surface-muted: var(--gray-100);
+  --surface-subtle: var(--gray-300);
+  --surface-inverse: var(--gray-900);
+  --ink: var(--gray-900);
+  --content: var(--gray-900);
+  --content-muted: var(--gray-700);
+  --content-soft: var(--gray-500);
+  --content-inverse: var(--white);
+  --border: var(--gray-700);
+  --border-subtle: var(--gray-300);
+  --surface-glass: rgb(255 255 255 / 10%);
+  --surface-glass-strong: rgb(255 255 255 / 50%);
+  --inverse-glass: rgb(43 39 37 / 10%);
+  --inverse-glass-strong: rgb(43 39 37 / 50%);
+  --shadow-soft: rgb(41 41 41 / 6%);
+  --shadow: rgb(41 41 41 / 14%);
+  --shadow-strong: rgb(41 41 41 / 24%);
+  --shadow-flame: rgb(203 70 37 / 18%);
+  --shadow-inset-light: rgb(255 255 255 / 40%);
+  --shadow-inset-light-soft: rgb(255 255 255 / 30%);
+  --shadow-inset-dark: rgb(0 0 0 / 20%);
+  --glow-flame: rgb(235 120 88 / 29%);
+  --code-surface: var(--gray-900);
+  --code-content: var(--white);
+  --code-muted: var(--gray-300);
+  --code-accent: var(--flame-300);
+  --code-highlight: var(--lemon);
+  --code-border: var(--gray-700);
+
+  /* === Font Sizes === */
+  --font-xs: 0.75rem; /* 12px */
+  --font-sm: 0.875rem; /* 14px */
+  --font-base: 1rem; /* 16px */
+  --font-lg: 1.125rem; /* 18px */
+  --font-xl: 1.25rem; /* 20px */
+  --font-2xl: 1.5rem; /* 24px */
+  --font-3xl: 1.875rem; /* 30px */
+  --font-4xl: 2.25rem; /* 36px */
+  --font-5xl: 3rem; /* 48px */
+  --font-6xl: 3.75rem; /* 60px */
+  --font-7xl: 4.5rem; /* 72px */
+  --font-8xl: 6rem; /* 96px */
+  --font-9xl: 8rem; /* 128px */
+
+  /* === Spacing === */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem; /* 8px */
+  --space-3: 0.75rem; /* 12px */
+  --space-4: 1rem; /* 16px */
+  --space-5: 1.25rem; /* 20px */
+  --space-6: 1.5rem; /* 24px */
+  --space-8: 2rem; /* 32px */
+  --space-10: 2.5rem; /* 40px */
+  --space-12: 3rem; /* 48px */
+  --space-16: 4rem; /* 64px */
+  --space-18: 4.5rem; /* 72px */
+  --space-20: 5rem; /* 80px */
+  --space-24: 6rem; /* 96px */
+  --space-28: 7rem; /* 112px */
+  --space-32: 8rem; /* 128px */
+  --space-36: 9rem; /* 144px */
+  --space-40: 10rem; /* 160px */
+  --space-44: 11rem; /* 176px */
+  --space-48: 12rem; /* 192px */
+  --space-52: 13rem; /* 208px */
+}
+
+/* === xl: ≤1280px === */
+@media (max-width: 1280px) {
+  :root {
+    /* Fonts */
+    --font-5xl: 2.75rem; /* 44px */
+    --font-6xl: 3.25rem; /* 52px */
+    --font-7xl: 4rem; /* 64px */
+    --font-8xl: 5.25rem; /* 84px */
+    --font-9xl: 7rem; /* 112px */
+
+    /* Spacing */
+    --space-16: 3.5rem; /* 56px */
+    --space-20: 4.25rem; /* 68px */
+    --space-24: 5.25rem; /* 84px */
+    --space-28: 6rem; /* 96px */
+    --space-32: 7rem; /* 112px */
+    --space-36: 8rem; /* 128px */
+    --space-40: 9rem; /* 144px */
+    --space-44: 9.5rem; /* 152px */
+    --space-48: 10rem; /* 160px */
+    --space-52: 11rem; /* 172px */
+  }
+}
+
+/* === lg: ≤1024px === */
+@media (max-width: 1024px) {
+  :root {
+    /* Fonts */
+    --font-4xl: 2rem; /* 32px */
+    --font-5xl: 2.25rem; /* 36px */
+    --font-6xl: 2.75rem; /* 44px */
+    --font-7xl: 3.25rem; /* 52px */
+    --font-8xl: 4rem; /* 64px */
+    --font-9xl: 5.5rem; /* 88px */
+
+    /* Spacing */
+    --space-12: 2.5rem; /* 40px */
+    --space-16: 3rem; /* 48px */
+    --space-20: 3.5rem; /* 56px */
+    --space-24: 4.25rem; /* 68px */
+    --space-28: 5rem; /* 80px */
+    --space-32: 5.5rem; /* 88px */
+    --space-36: 6.5rem; /* 104px */
+    --space-40: 7.5rem; /* 120px */
+    --space-44: 8rem; /* 128px */
+    --space-48: 8.5rem; /* 136px */
+    --space-52: 9rem; /* 144px */
+  }
+}
+
+/* === md: ≤768px === */
+@media (max-width: 768px) {
+  :root {
+    /* Fonts */
+    --font-3xl: 1.5rem; /* 24px */
+    --font-4xl: 1.75rem; /* 28px */
+    --font-5xl: 2rem; /* 32px */
+    --font-6xl: 2.25rem; /* 36px */
+    --font-7xl: 2.75rem; /* 44px */
+    --font-8xl: 3.25rem; /* 52px */
+    --font-9xl: 4rem; /* 64px */
+
+    /* Spacing */
+    --space-8: 1.5rem; /* 24px */
+    --space-10: 1.75rem; /* 28px */
+    --space-12: 2rem; /* 32px */
+    --space-16: 2.5rem; /* 40px */
+    --space-18: 2.75rem; /* 44px */
+    --space-20: 3rem; /* 48px */
+    --space-24: 3.5rem; /* 56px */
+    --space-28: 4rem; /* 64px */
+    --space-32: 4.5rem; /* 72px */
+    --space-36: 5rem; /* 80px */
+    --space-40: 6rem; /* 96px */
+    --space-44: 6.5rem; /* 104px */
+    --space-48: 7rem; /* 112px */
+    --space-52: 7.5rem; /* 120px */
+  }
+}
+
+/* === sm: ≤640px === */
+@media (max-width: 640px) {
+  :root {
+    /* Fonts */
+    --font-2xl: 1.25rem; /* 20px */
+    --font-3xl: 1.375rem; /* 22px */
+    --font-4xl: 1.5rem; /* 24px */
+    --font-5xl: 1.75rem; /* 28px */
+    --font-6xl: 2rem; /* 32px */
+    --font-7xl: 2.5rem; /* 40px */
+
+    /* Spacing */
+    --space-6: 1rem; /* 16px */
+    --space-8: 1.25rem; /* 20px */
+    --space-10: 1.5rem; /* 24px */
+    --space-12: 1.75rem; /* 28px */
+    --space-16: 2rem; /* 32px */
+    --space-18: 2.25rem; /* 36px */
+    --space-20: 2.5rem; /* 40px */
+    --space-24: 3rem; /* 48px */
+    --space-28: 3.5rem; /* 56px */
+    --space-32: 4rem; /* 64px */
+    --space-36: 4.5rem; /* 72px */
+    --space-40: 5rem; /* 80px */
+    --space-44: 5.5rem; /* 88px */
+    --space-48: 6rem; /* 96px */
+    --space-52: 6.5rem; /* 104px */
+  }
+}
+
+/* === xs: ≤480px === */
+@media (max-width: 480px) {
+  :root {
+    /* Fonts */
+    --font-base: 0.875rem; /* 14px */
+    --font-lg: 0.9375rem; /* 15px */
+    --font-xl: 1rem; /* 16px */
+    --font-2xl: 1.125rem; /* 18px */
+    --font-3xl: 1.25rem; /* 20px */
+    --font-4xl: 1.375rem; /* 22px */
+    --font-5xl: 1.5rem; /* 24px */
+    --font-6xl: 1.75rem; /* 28px */
+
+    /* Spacing */
+    --space-4: 0.75rem; /* 12px */
+    --space-6: 0.875rem; /* 14px */
+    --space-8: 1rem; /* 16px */
+    --space-10: 1.25rem; /* 20px */
+    --space-12: 1.5rem; /* 24px */
+    --space-16: 1.75rem; /* 28px */
+    --space-18: 2rem; /* 36px */
+    --space-20: 2.25rem; /* 36px */
+    --space-24: 2.5rem; /* 40px */
+    --space-28: 3rem; /* 48px */
+    --space-32: 3.25rem; /* 52px */
+    --space-36: 3.75rem; /* 60px */
+    --space-40: 4.25rem; /* 68px */
+    --space-44: 4.625rem; /* 76px */
+    --space-48: 5rem; /* 80px */
+    --space-52: 5.5rem; /* 88px */
+  }
+}
+
+:root[class='dark'] {
+  --canvas: var(--cocoa-900);
+  --surface: var(--cocoa-700);
+  --surface-card: var(--cocoa-700);
+  --surface-muted: var(--gray-900);
+  --surface-subtle: var(--gray-700);
+  --surface-inverse: var(--gray-100);
+  --ink: var(--gray-900);
+  --content: var(--gray-100);
+  --content-muted: var(--gray-300);
+  --content-soft: var(--gray-500);
+  --content-inverse: var(--gray-900);
+  --border: var(--gray-300);
+  --border-subtle: var(--gray-700);
+  --surface-glass: rgb(43 39 37 / 10%);
+  --surface-glass-strong: rgb(43 39 37 / 50%);
+  --inverse-glass: rgb(255 255 255 / 10%);
+  --inverse-glass-strong: rgb(255 255 255 / 50%);
+  --shadow-soft: rgb(0 0 0 / 22%);
+  --shadow: rgb(0 0 0 / 24%);
+  --shadow-strong: rgb(0 0 0 / 30%);
+  --shadow-flame: rgb(203 70 37 / 18%);
+  --shadow-inset-light: rgb(255 255 255 / 40%);
+  --shadow-inset-light-soft: rgb(255 255 255 / 30%);
+  --shadow-inset-dark: rgb(0 0 0 / 20%);
+  --glow-flame: rgb(235 120 88 / 29%);
+  --code-surface: var(--black);
+  --code-content: var(--white);
+  --code-muted: var(--gray-300);
+  --code-accent: var(--flame-300);
+  --code-highlight: var(--lemon);
+  --code-border: var(--gray-700);
+}

@@ -1,0 +1,112 @@
+---
+date: 2025-09-15
+title: "How to Change to a Japanese Keyboard Layout in Ubuntu"
+description: "Configure IBus Mozc and Keyboard Settings for Japanese Input."
+tags: ["Linux", "Developer Setup"]
+image: "/blog/images/how-to-change-to-a-japanese-keyboard-layout-in-ubuntu.png"
+---
+
+Switching your Ubuntu system to a Japanese keyboard layout allows you to type in Japanese using the **Mozc input method**. Depending on your setup, you may need to adjust both **system settings** and some **configuration files** to ensure the layout works correctly. Below is a step-by-step guide.
+
+### 1. Enable Japanese Language Support in Ubuntu
+
+1. Open **Settings** → **Language Support**.
+2. Click **Install / Remove Languages…** and add **Japanese**.
+3. Apply the changes and restart if necessary.
+
+### 2. Reconfigure the Keyboard from the Command Line
+
+If the layout still defaults to English, run the following in a terminal:
+
+```
+sudo dpkg-reconfigure keyboard-configuration
+```
+
+When prompted, select these options:
+
+- **Generic 105-key PC (intl.)**
+- **Japanese** → **Japanese**
+- Use the **default keyboard layout**
+- **No compose key**
+- **Yes** to apply the changes
+
+### 3. Configure Mozc for the Japanese Layout
+
+By default, **IBus Mozc** may use a “default” layout instead of explicitly binding to `jp`. You need to update the configuration files.
+
+#### Option A: System-wide Mozc XML
+
+Edit the Mozc component file:
+
+```
+sudo vim /usr/share/ibus/component/mozc.xml
+```
+
+Find this line:
+
+```
+<layout>default</layout>
+```
+
+Replace it with:
+
+```
+<layout>jp</layout>
+```
+
+Save and restart IBus:
+
+```
+ibus restart
+```
+
+#### Option B: User Configuration (if XML does not contain `<layout>`)
+
+In newer versions, the `mozc.xml` may look like this:
+
+```
+<component>
+  <name>com.google.IBus.Mozc</name>
+  ...
+  <engines exec="/usr/lib/ibus-mozc/ibus-engine-mozc --xml" />
+</component>
+```
+
+In this case, the layout is stored in a user configuration file. Edit:
+
+```
+vim ~/.config/mozc/ibus_config.textproto
+```
+
+Look for:
+
+```
+engines {
+  name : "mozc-jp"
+  longname : "Mozc"
+  layout : "default"
+}
+```
+
+Change `layout : "default"` to:
+
+```
+layout : "jp"
+```
+
+Then restart IBus:
+
+```
+ibus restart
+```
+
+### 4. Verify the Layout
+
+1. Switch input method to **Mozc (Japanese)** using the system tray or keyboard shortcut.
+2. Open a text editor and try typing — your keyboard should now follow the Japanese layout.
+
+### Final Notes
+
+- If you are using a physical Japanese keyboard, this ensures keys match the printed layout.
+- If you are using an English keyboard but typing in Japanese, you can still switch layouts virtually, but key positions may differ.
+- Always restart IBus (or log out and log back in) after making configuration changes.

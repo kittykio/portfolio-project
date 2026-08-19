@@ -1,0 +1,32 @@
+---
+date: 2026-08-17
+title: "このポートフォリオでMDX記事を書く方法"
+description: "フロントマター、Markdown記法、カスタムMDXコンポーネントの実践リファレンス。"
+tags: ["MDX", "開発ツール", "ドキュメント"]
+image: "/blog/images/mdx-authoring-guide-for-this-portfolio.png"
+---
+
+記事は `blog/`（日本語は `blog/ja/`）に、同じslugのMDXとして置きます。フロントマターには `date`、`title`、`description`、`tags`、`image` を指定します。
+
+```mdx
+---
+date: 2026-08-17
+title: "記事タイトル"
+description: "一覧に表示する説明"
+tags: ["MDX", "開発ツール"]
+image: "/blog/images/cover.png"
+---
+```
+
+## 書き方のヒント
+
+- 見出しは `##` から使うと目次に反映されます。
+- コードには言語名を付けます（例: ```` ```ts ````）。
+- `RainbowHighlight` は文章の一部を虹色に、`Highlight` はレモン色のハイライトに使えます。
+
+```mdx
+<RainbowHighlight>大切な一文</RainbowHighlight>
+<Highlight>レモンの強調</Highlight>
+```
+
+英語と日本語は同じファイル名を使ってください。slugから安定したIDが作られるため、翻訳版でもいいねの集計が共有されます。

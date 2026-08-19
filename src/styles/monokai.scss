@@ -1,0 +1,78 @@
+// Syntax colors are kept within the portfolio palette.
+.hljs {
+  display: block;
+  overflow-x: auto;
+  background: transparent !important;
+  color: var(--code-content);
+  padding: 0 !important;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0;
+
+  &-tag {
+    color: var(--code-content);
+  }
+
+  &-params {
+    color: var(--code-muted);
+  }
+
+  &-selector-tag,
+  &-literal,
+  &-strong,
+  &-name {
+    color: var(--code-highlight);
+  }
+
+  &-code,
+  &-keyword {
+    color: var(--code-accent);
+  }
+
+  &-attr,
+  &-attribute,
+  &-symbol,
+  &-regexp,
+  &-link {
+    color: var(--code-accent);
+  }
+
+  &-string,
+  &-bullet,
+  &-subst,
+  &-title,
+  &-section,
+  &-emphasis,
+  &-type,
+  &-built_in,
+  &-selector-attr,
+  &-selector-pseudo,
+  &-addition,
+  &-variable,
+  &-template-tag,
+  &-template-variable {
+    color: var(--code-highlight);
+  }
+
+  &-title.class_,
+  &-class .hljs-title {
+    color: var(--code-accent);
+  }
+
+  &-comment,
+  &-quote,
+  &-deletion,
+  &-meta {
+    color: var(--code-muted);
+  }
+
+  &-keyword,
+  &-selector-tag,
+  &-literal,
+  &-doctag,
+  &-title,
+  &-section,
+  &-type,
+  &-selector-id {
+    font-weight: bold;
+  }
+}

@@ -1,0 +1,27 @@
+---
+date: 2025-09-15
+title: "macOSとWindowsでファイルの作成日を変更する方法"
+description: "標準ツールを使って作成日時・更新日時を扱うための手順。"
+tags: ["macOS", "Windows", "開発ワークフロー"]
+image: "/blog/images/how-to-change-the-created-date-of-a-file-on-macos-and-windows.png"
+---
+
+日時の扱いはOSとファイルシステムで異なります。大事なファイルは先にバックアップしてください。
+
+### macOS
+更新日時は `touch` で変更できます。
+
+```shell
+touch -t 202509151200 my-file.txt
+```
+
+作成日時の変更には追加ツールやメタデータ操作が必要になる場合があります。
+
+### Windows
+PowerShellでは `LastWriteTime` などを操作できます。
+
+```powershell
+(Get-Item .\my-file.txt).LastWriteTime = Get-Date "2025-09-15 12:00"
+```
+
+表示だけを整えたいのか、監査上の意味を持つ日時を変更したいのかを区別しましょう。
