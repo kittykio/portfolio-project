@@ -1,6 +1,6 @@
 # Kitty Kio Portfolio
 
-The source code for [kittykio.dev](https://kittykio.dev), the bilingual portfolio of Kitty Kio—a creative developer and artist. It brings projects, technical writing, experiments, and contact requests together in one expressive web experience.
+The source code for [kittykio.com](https://kittykio.com), the bilingual portfolio of Kitty Kio—a creative developer and artist. It brings projects, technical writing, experiments, and contact requests together in one expressive web experience.
 
 ## Features
 

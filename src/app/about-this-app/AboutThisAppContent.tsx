@@ -8,7 +8,7 @@ const English = {
   eyebrow: 'BEHIND THE PORTFOLIO',
   title: 'About this app',
   intro:
-    'This is not a template with a new coat of paint. kittykio.dev is a small, full-stack portfolio product: a home for case studies, technical writing, experiments, and thoughtful ways to start a conversation.',
+    'This is not a template with a new coat of paint. kittykio.com is a small, full-stack portfolio product: a home for case studies, technical writing, experiments, and thoughtful ways to start a conversation.',
   labels: {
     architecture: 'Architecture & stack',
     pages: 'The experience, page by page',
@@ -173,7 +173,7 @@ const English = {
   operations: [
     {
       title: 'Required production settings',
-      body: 'Set NEXT_PUBLIC_SITE_URL to the exact deployed HTTPS URL. This makes canonical links, sitemap entries, robots.txt, and OG URLs point to the real site. Replace the Vercel URL with a custom domain later if desired.',
+      body: 'NEXT_PUBLIC_SITE_URL is set to https://kittykio.com so canonical links, sitemap entries, robots.txt, and OG URLs consistently point to the production domain.',
     },
     {
       title: 'Data and email settings',
@@ -194,7 +194,7 @@ const Japanese = {
   eyebrow: 'このポートフォリオの裏側',
   title: 'このアプリについて',
   intro:
-    'これは見た目だけを変えたテンプレートではありません。kittykio.dev は、ケーススタディ、技術記事、実験、そして相談の入口をひとつにまとめた小さなフルスタック・ポートフォリオプロダクトです。',
+    'これは見た目だけを変えたテンプレートではありません。kittykio.com は、ケーススタディ、技術記事、実験、そして相談の入口をひとつにまとめた小さなフルスタック・ポートフォリオプロダクトです。',
   labels: {
     architecture: 'アーキテクチャとスタック',
     pages: 'ページごとの体験',
@@ -359,7 +359,7 @@ const Japanese = {
   operations: [
     {
       title: '本番環境で必要な設定',
-      body: 'NEXT_PUBLIC_SITE_URL にはデプロイ済みの正確な HTTPS URL を設定します。canonical link、sitemap、robots.txt、OG URL が実際のサイトを指すようになります。後からカスタムドメインを取得した場合は、Vercel URL を置き換えられます。',
+      body: 'NEXT_PUBLIC_SITE_URL は https://kittykio.com に設定され、canonical link、sitemap、robots.txt、OG URL が一貫して本番ドメインを指すようになっています。',
     },
     {
       title: 'データとメールの設定',

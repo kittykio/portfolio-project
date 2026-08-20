@@ -1,4 +1,4 @@
-const fallbackSiteUrl = 'https://portfolio-project.vercel.app';
+const fallbackSiteUrl = 'https://kittykio.com';
 
 export const getSiteUrl = () => {
   const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
