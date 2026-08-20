@@ -14,13 +14,13 @@ export type FileNode = {
 // Defines the props for the FileTree component.
 type FileTreeProps = {
   // The root array of FileNode objects to display.
-  tree: FileNode[];
+  tree?: FileNode[];
   // An optional callback function triggered when a file is clicked.
   onFileClick?: (fileId: string) => void;
 };
 
 // A recursive component that displays a file system-like tree structure.
-const FileTree: FC<FileTreeProps> = ({ tree, onFileClick }) => {
+const FileTree: FC<FileTreeProps> = ({ tree = [], onFileClick }) => {
   // State to track which folders are currently expanded, using their ID as the key.
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -30,7 +30,7 @@ const FileTree: FC<FileTreeProps> = ({ tree, onFileClick }) => {
   };
 
   // Recursively renders the file tree nodes.
-  const renderTree = (nodes: FileNode[], level = 0): JSX.Element => {
+  const renderTree = (nodes: FileNode[] = [], level = 0): JSX.Element => {
     return (
       <ul className="space-y-1">
         {nodes.map((node) => {

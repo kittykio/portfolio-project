@@ -204,21 +204,9 @@ Place the file in `public/`, then provide its public path:
 />
 ```
 
-<MDXFileTree
-  tree={[
-    {
-      id: "guide-src",
-      name: "src",
-      type: "folder",
-      children: [
-        { id: "guide-page", name: "page.tsx", type: "file" },
-        { id: "guide-components", name: "components", type: "folder", children: [
-          { id: "guide-card", name: "Card.tsx", type: "file" }
-        ] }
-      ]
-    }
-  ]}
-/>
+Here is the same structure as a live, expandable example:
+
+<MDXFileTree preset="authoringGuide" />
 
 ## 4. Authoring tips
 

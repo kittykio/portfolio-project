@@ -339,9 +339,30 @@ export const RainbowHighlight: FC<Omit<HighlightProps, 'color'>> = ({
 
 // --- MDX Component for File Tree ---
 
+const fileTreePresets = {
+  authoringGuide: [
+    {
+      id: 'guide-src',
+      name: 'src',
+      type: 'folder',
+      children: [
+        { id: 'guide-page', name: 'page.tsx', type: 'file' },
+        {
+          id: 'guide-components',
+          name: 'components',
+          type: 'folder',
+          children: [{ id: 'guide-card', name: 'Card.tsx', type: 'file' }],
+        },
+      ],
+    },
+  ] satisfies FileNode[],
+};
+
 interface MDXFileTreeProps {
   // The file tree data structure.
-  tree: FileNode[];
+  tree?: FileNode[];
+  // Named data avoids passing nested objects through an MDX client boundary.
+  preset?: keyof typeof fileTreePresets;
   // Optional file click handler.
   onFileClick?: (fileId: string) => void;
 }
@@ -349,6 +370,7 @@ interface MDXFileTreeProps {
 /**
  * MDX component that wraps the core FileTree component for use within markdown content.
  */
-export const MDXFileTree: FC<MDXFileTreeProps> = ({ tree, onFileClick }) => {
-  return <FileTree tree={tree} onFileClick={onFileClick} />;
+export const MDXFileTree: FC<MDXFileTreeProps> = ({ tree, preset, onFileClick }) => {
+  const resolvedTree = tree ?? (preset ? fileTreePresets[preset] : []);
+  return <FileTree tree={resolvedTree} onFileClick={onFileClick} />;
 };
