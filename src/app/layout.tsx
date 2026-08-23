@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import '@/styles/globals.scss';
 import '@/styles/_variables.scss';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 import {
@@ -122,6 +123,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
           </ThemeContextProvider>
           {GA_TAG_ID && <GoogleAnalytics gaId={GA_TAG_ID} />}
           <VercelAnalytics />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
