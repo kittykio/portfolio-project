@@ -76,7 +76,7 @@ export const TableOfContents = ({ headings, postItem, setPostItem }: TOCProps) =
   // Expand toggle
   // -------------------------
   const toggleExpand = (id: string) => {
-    setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
+    setExpanded((prev) => ({ ...prev, [id]: !(prev[id] ?? true) }));
   };
 
   // -------------------------

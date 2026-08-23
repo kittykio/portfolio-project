@@ -1,17 +1,11 @@
 import Image, { ImageProps } from 'next/image';
 import type { ComponentPropsWithoutRef, FC } from 'react';
-// Imports the FileTree component and its associated type for use as an MDX component.
 import FileTree, { FileNode } from './FileTree';
 
-// --- Image ---
-/**
- * Custom component for rendering images in MDX, enforcing the use of Next.js's Image component.
- */
+/** Ensures authored MDX images receive Next.js image optimization. */
 export const Img = ({ alt, ...props }: ImageProps) => <Image alt={alt} {...props} />;
 
-// --- Headings ---
-// Custom heading components with Tailwind CSS styling for consistent blog formatting,
-// including scroll-mt for smooth navigation with anchor links.
+// Scroll margins keep anchored headings visible below the fixed site header.
 
 export const h1: FC<ComponentPropsWithoutRef<'h1'>> = (props) => (
   <h1 {...props} className="font-bodyBold text-3xl my-6 scroll-mt-24" />
@@ -100,18 +94,7 @@ export const ol: FC<ComponentPropsWithoutRef<'ol'>> = (props) => (
  */
 export const li: FC<ComponentPropsWithoutRef<'li'>> = (props) => <li {...props} />;
 
-// --- Code ---
-// Note: The inline `code` component is commented out, suggesting it's handled by a syntax highlighter or left to default.
-// export const code: FC<ComponentPropsWithoutRef<'code'>> = (props) => (
-//   <code
-//     {...props}
-//     className="bg-surface-inverse text-content-inverse px-1.5 py-0.5 rounded text-sm font-mono"
-//   />
-// );
-
-/**
- * Custom pre-formatted text/code block wrapper with dark background and overflow handling.
- */
+// Inline code remains native; fenced blocks are styled by this `pre` mapping.
 export const pre: FC<ComponentPropsWithoutRef<'pre'>> = (props) => (
   <pre
     {...props}
@@ -194,7 +177,7 @@ export const FileLink: FC<FileLinkProps> = ({ name, label }) => (
 
 // --- Font/Block Props ---
 interface FontProps extends ComponentPropsWithoutRef<'span'> {
-  // If true, renders as a <div> instead of a <span>, acting as a block-level element.
+  /** Switches the authoring primitive from inline to block semantics. */
   block?: boolean;
 }
 
@@ -359,11 +342,9 @@ const fileTreePresets = {
 };
 
 interface MDXFileTreeProps {
-  // The file tree data structure.
   tree?: FileNode[];
-  // Named data avoids passing nested objects through an MDX client boundary.
+  /** Named presets avoid passing nested object literals through an MDX client boundary. */
   preset?: keyof typeof fileTreePresets;
-  // Optional file click handler.
   onFileClick?: (fileId: string) => void;
 }
 

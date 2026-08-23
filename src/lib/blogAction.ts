@@ -4,15 +4,10 @@ import BlogCollection, { IBlogLikeDocument } from '@/models/blogLikeModel';
 import { PostType } from '@/types/PostType';
 import connectToMongoDB from '@/lib/db';
 
-// --- Type Definitions for Consistency ---
 type IdInput = { _id: number };
 type LikeDocResult = IBlogLikeDocument | null;
 
-// --- Database Operations (Type-Safe & Consistent Returns) ---
-
-/**
- * Create a new document.
- */
+/** Creates a zeroed reaction record for a locally discovered article. */
 export const createNewLike = async ({ _id }: IdInput): Promise<LikeDocResult> => {
   try {
     return await BlogCollection.create({
@@ -25,12 +20,9 @@ export const createNewLike = async ({ _id }: IdInput): Promise<LikeDocResult> =>
   }
 };
 
-/**
- * Search a single document by its _id field.
- */
+/** Returns `null` on database errors so content rendering can continue. */
 export const searchLikeById = async ({ _id }: IdInput): Promise<LikeDocResult> => {
   try {
-    // Mongoose findById returns the document or null
     return await BlogCollection.findById(_id);
   } catch (error) {
     console.error(`Error searching document with ID ${_id}. Error:`, error);
@@ -38,10 +30,7 @@ export const searchLikeById = async ({ _id }: IdInput): Promise<LikeDocResult> =
   }
 };
 
-/**
- * Search a list of documents that match filter.
- * Guaranteed to return an array, empty if no documents found or on error.
- */
+/** Always returns an array; unavailable reaction storage behaves like an empty collection. */
 export const searchAllLike = async (
   params?: Partial<IBlogLikeDocument>,
 ): Promise<IBlogLikeDocument[]> => {
@@ -49,14 +38,11 @@ export const searchAllLike = async (
     return await BlogCollection.find(params || {});
   } catch (error) {
     console.error('Error searching all documents. Error:', error);
-    // Return empty array on failure for safer list processing
     return [];
   }
 };
 
-/**
- * Search the given document and deletes it.
- */
+/** Removes a reaction record that no longer has a corresponding local article. */
 export const deleteLike = async ({ _id }: IdInput): Promise<LikeDocResult> => {
   try {
     return await BlogCollection.findOneAndDelete({ _id });
@@ -67,7 +53,8 @@ export const deleteLike = async ({ _id }: IdInput): Promise<LikeDocResult> => {
 };
 
 /**
- * Searches the given document and updates its like field atomically.
+ * Applies a bounded atomic increment. The bound prevents a delayed press from
+ * producing an unexpectedly large reaction while retaining the hold interaction.
  */
 export const updateLike = async ({
   _id,
@@ -76,6 +63,7 @@ export const updateLike = async ({
   _id: number;
   seconds: number;
 }): Promise<number> => {
+  // Persistent reactions are optional; callers keep their optimistic local value without MongoDB.
   if (!process.env.MONGODB_URI) return 0;
   const increment = Math.min(Math.max(Math.floor(seconds), 1), 3);
   try {
@@ -91,7 +79,6 @@ export const updateLike = async ({
       return 0;
     }
 
-    // Return the new like count
     return updatedDoc.like ?? 0;
   } catch (error) {
     console.error(`Failed to update document with ID ${_id}. Error:`, error);
@@ -99,33 +86,28 @@ export const updateLike = async ({
   }
 };
 
+/** Reconciles reaction records with the articles currently present on disk. */
 export const buildLike = async (posts: PostType[]): Promise<void> => {
   try {
     const allDocs = await searchAllLike();
 
-    // Create Sets for fast O(1) lookups: much cleaner than filtering arrays twice
+    // Build both sets before mutating so deletion and creation decisions use one snapshot.
     const dbIds = new Set(allDocs.map((doc) => doc._id));
     const postIds = new Set(posts.map((post) => post.id));
 
-    // 1. Identify and Delete Removed Posts
-    // Find documents in DB that are NOT in the current post list
     const docsToDelete = allDocs.filter((doc) => !postIds.has(doc._id));
 
     if (docsToDelete.length > 0) {
       console.log(`Found ${docsToDelete.length} documents to delete.`);
 
-      // 💡 FIX: Use Promise.all to await all asynchronous deletions concurrently
       await Promise.all(docsToDelete.map((doc) => deleteLike({ _id: doc._id })));
     }
 
-    // 2. Identify and Create New Posts
-    // Find posts in the list that are NOT in the DB
     const postsToCreate = posts.filter((post) => !dbIds.has(post.id));
 
     if (postsToCreate.length > 0) {
       console.log(`Found ${postsToCreate.length} posts to create.`);
 
-      // 💡 FIX: Use Promise.all to await all creations concurrently
       await Promise.all(postsToCreate.map((post) => createNewLike({ _id: post.id })));
     }
 

@@ -83,7 +83,23 @@ npm run lint        # Run Next.js linting
 npm run format      # Format the project with Prettier
 npm run lint:deps   # Report potentially unused dependencies
 npm run clean:deps  # Prune and deduplicate installed packages
+npm test            # Run the Jest test suite once
+npm run test:watch  # Rerun relevant Jest tests while developing
+npm run test:coverage # Run Jest and generate a coverage report
 ```
+
+## Testing
+
+Tests use Jest and React Testing Library. Before submitting changes, run the complete suite
+and TypeScript validation:
+
+```bash
+npm test
+npx tsc --noEmit
+```
+
+See the [testing guide](./docs/TESTING.md) for the suite layout, component and API examples,
+mocking conventions, coverage workflow, debugging help, and the pre-commit checklist.
 
 ## Deployment
 

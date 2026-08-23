@@ -95,6 +95,7 @@ const PushableButton: React.FC<PushableButtonProps> = ({
   backColor = 'var(--flame-900)',
   frontColor = 'var(--flame-500)',
   className = '',
+  onClick,
 }) => {
   const reactId = useId();
   const uid = `pb-${reactId}`;
@@ -106,6 +107,7 @@ const PushableButton: React.FC<PushableButtonProps> = ({
   return (
     <button
       type="button"
+      onClick={onClick}
       className={`relative p-0 cursor-pointer outline-none focus:outline-none group${className}`}
       style={{ width: size, height: size }}
     >

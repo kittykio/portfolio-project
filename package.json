@@ -10,7 +10,10 @@
     "lint": "next lint",
     "format": "prettier --write .",
     "lint:deps": "depcheck",
-    "clean:deps": "npm prune && npm dedupe"
+    "clean:deps": "npm prune && npm dedupe",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",
@@ -67,10 +70,16 @@
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.6",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.9.0",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "autoprefixer": "^10.4.20",
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
     "typescript": "^5.6.3"

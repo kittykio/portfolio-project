@@ -5,6 +5,7 @@ import { Resend } from 'resend';
 
 export const dynamic = 'force-dynamic';
 
+/** Validates and stores visitor requests; email delivery is deliberately best-effort. */
 export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const kind = body?.kind as RequestKind;
@@ -27,6 +28,7 @@ export async function POST(request: NextRequest) {
   await connectToMongoDB();
   const savedRequest = await RequestModel.create({ kind, title, details, contact: contact || undefined, timeline: timeline || undefined, budget: budget || undefined, preferredContact: preferredContact || undefined, locale });
 
+  // Persistence is the source of truth. A Resend outage must not reject an already saved request.
   let notificationSent = false;
   if (process.env.RESEND_API_KEY && process.env.RESEND_FROM_EMAIL) {
     try {

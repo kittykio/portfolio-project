@@ -5,38 +5,29 @@ import type { PostType } from '@/types/PostType';
 import type { ProjectType } from '@/types/ProjectType';
 import { getLikeStorageKey, MAX_LIKES_PER_USER, type LikeContentType } from '@/utils/likes';
 
-// Array of paths for heart icons, used to visually indicate the number of likes per user.
+// Each locally recorded reaction advances to the next heart illustration.
 const heartImages: string[] = Array.from(
   { length: MAX_LIKES_PER_USER },
   (_, index) => `/icons/likes/heart-${index + 1}.png`,
 );
 
-// Base type that all likeable items must extend.
 type BaseLikeType = PostType | ProjectType;
 
-// Defines the properties for the LikeButton component.
 type LikeButtonProps<T extends BaseLikeType> = {
-  // The specific item (post or project) being liked.
   likeItem: T;
-  // Optional array of items, used when updating a list of liked items.
   likeItemList?: T[];
-  // Optional state setter for a single item.
   setLikeItem?: React.Dispatch<React.SetStateAction<T>>;
-  // Optional state setter for a list of items.
   setLikeItemList?: React.Dispatch<React.SetStateAction<T[]>>;
-  // Function to call the backend API to update the like count, returning the new total like count.
+  /** Persists the bounded increment and returns the new aggregate count. */
   updateLike: (payload: { _id: number; seconds: number }) => Promise<number | undefined>;
-  // The size (width/height) of the heart icon image.
   size: number;
-  // Flag to indicate if the button is active (unused in the current component logic but kept in type definition).
+  /** Retained for compatibility with existing card call sites. */
   activate: boolean;
-  // Optional click handler for external actions.
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  // Flag to hide the button's background and default styling for a cleaner look.
   hideBackground?: boolean;
 };
 
-// A reusable, generic component for liking content. It tracks click-hold duration to award multiple likes at once.
+/** Converts a press duration into one to three reactions without exceeding the local user cap. */
 const LikeButton = <T extends BaseLikeType>({
   likeItem,
   likeItemList,
@@ -47,13 +38,10 @@ const LikeButton = <T extends BaseLikeType>({
   onClick,
   hideBackground = false,
 }: LikeButtonProps<T>) => {
-  // State to determine which heart image to display based on the user's total likes for this item.
-  // State to trigger a shake animation after a successful like update.
   const [isShaking, setIsShaking] = useState(false);
   const [remoteLike, setRemoteLike] = useState(likeItem.like);
-  // Ref to store the timestamp when the mouse button is pressed down.
   const startTime = useRef<number | null>(null);
-  const type: LikeContentType = 'medium' in likeItem ? 'project' : 'blog';
+  const type: LikeContentType = Array.isArray(likeItem.slug) ? 'blog' : 'project';
   const likesPerUser = Math.min(likeItem.likesPerUser ?? 0, MAX_LIKES_PER_USER);
   const hasReachedLimit = likesPerUser >= MAX_LIKES_PER_USER;
 
@@ -64,15 +52,12 @@ const LikeButton = <T extends BaseLikeType>({
       .catch(() => setRemoteLike(likeItem.like));
   }, [likeItem.id, likeItem.like, type]);
 
-  // Records the starting time when the user presses down on the button.
   const countSeconds = (): void => {
     if (hasReachedLimit) return;
     startTime.current = Date.now();
   };
 
-  // Calculates the duration of the click, sends the update to the server, and updates local state.
   const countLikes = async (): Promise<void> => {
-    // Exits if the mouse up event occurs without a preceding mouse down event.
     const startedAt = startTime.current;
     if (!startedAt) return;
     startTime.current = null;
@@ -86,12 +71,9 @@ const LikeButton = <T extends BaseLikeType>({
       3,
       Math.max(1, Math.ceil((Date.now() - startedAt) * 0.001)),
     );
-    // Calls the external function to update the like count on the backend.
     const like = await updateLike({ _id: likeItem.id, seconds });
-    // Exits if the update failed or returned no new count.
     if (like === undefined) return;
 
-    // Creates the locally updated item object.
     const updated: T = {
       ...likeItem,
       like: like || likeItem.like + seconds, // Local fallback keeps the UI responsive without a database.
@@ -99,27 +81,22 @@ const LikeButton = <T extends BaseLikeType>({
     };
     setRemoteLike(updated.like);
 
-    // Updates the state for a list of items if the setter is provided.
     if (likeItemList && setLikeItemList) {
       setLikeItemList((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
     }
-    // Updates the state for a single item if the setter is provided.
     if (setLikeItem) setLikeItem(updated);
 
-    // Persists the new user like count to local storage for persistence across sessions.
+    // The browser-side cap is per visitor; the database stores only the aggregate total.
     localStorage.setItem(getLikeStorageKey(type, likeItem.id), String(likesPerUser + seconds));
 
-    // Triggers the shake animation for visual feedback.
     setIsShaking(true);
-    setTimeout(() => setIsShaking(false), 500); // Animation duration is 500ms.
+    setTimeout(() => setIsShaking(false), 500);
   };
 
   return (
     <button
       type="button"
-      // Starts the time tracking when the mouse is pressed down.
       onMouseDown={countSeconds}
-      // Stops the time tracking and processes the likes when the mouse is released.
       onMouseUp={() => void countLikes()}
       onClick={onClick}
       aria-label={hasReachedLimit ? `Maximum of ${MAX_LIKES_PER_USER} likes reached` : 'Like button'}

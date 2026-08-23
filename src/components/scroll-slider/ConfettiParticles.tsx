@@ -14,37 +14,29 @@ import type {
 import { getStyleFromHsl, getStyleFromRgb } from '@tsparticles/engine';
 import { colorPalette } from '@/constants/colorPalette';
 
-// Determines the stroke color for a particle based on its fill color, handling both HSL and RGB formats.
+/** Normalizes tsParticles' HSL/RGB union for the canvas drawing API. */
 const getStrokeStyle = (particle: Particle): string => {
   const fillColor = particle.getFillColor();
-  // Returns white as a fallback if no fill color is found.
   if (!fillColor) return colorPalette.white;
-
-  // Converts color object to CSS style string.
   return 'h' in fillColor ? getStyleFromHsl(fillColor) : getStyleFromRgb(fillColor);
 };
 
-// Custom shape drawer for a circular design with internal cross and circle.
+/** Registered tsParticles drawer for the portfolio's circular glyph. */
 export const circleDrawer: IShapeDrawer<Particle> = {
-  // Specifies the shape type name for configuration.
   validTypes: ['customCircle'],
-  // The drawing function executed for each particle.
   draw: ({ context, radius, particle }: IShapeDrawData<Particle>) => {
     context.save();
     context.strokeStyle = getStrokeStyle(particle);
     context.lineWidth = 2;
 
-    // Draws the outer circle.
     context.beginPath();
     context.arc(0, 0, radius, 0, Math.PI * 2);
     context.stroke();
 
-    // Draws the inner circle (half size).
     context.beginPath();
     context.arc(0, 0, radius * 0.5, 0, Math.PI * 2);
     context.stroke();
 
-    // Draws the cross lines.
     context.beginPath();
     context.moveTo(-radius, 0);
     context.lineTo(radius, 0);
@@ -56,11 +48,9 @@ export const circleDrawer: IShapeDrawer<Particle> = {
   },
 };
 
-// Custom shape drawer for a 5-pointed star with a small inner circle.
+/** Registered tsParticles drawer for a five-pointed star and center ring. */
 export const starDrawer: IShapeDrawer<Particle> = {
-  // Specifies the shape type name for configuration.
   validTypes: ['customStar'],
-  // The drawing function executed for each particle.
   draw: ({ context, radius, particle }: IShapeDrawData<Particle>) => {
     const spikes = 5;
     const outerRadius = radius;
@@ -70,7 +60,7 @@ export const starDrawer: IShapeDrawer<Particle> = {
     context.strokeStyle = getStrokeStyle(particle);
     context.lineWidth = 2;
 
-    // Draws the 5-pointed star outline.
+    // Alternating radii create outer and inner star vertices without a stored point list.
     context.beginPath();
     for (let i = 0; i < spikes * 2; i++) {
       const angle = (i * Math.PI) / spikes;
@@ -83,7 +73,6 @@ export const starDrawer: IShapeDrawer<Particle> = {
     context.closePath();
     context.stroke();
 
-    // Draws the small circle in the center.
     context.beginPath();
     context.arc(0, 0, radius * 0.2, 0, Math.PI * 2);
     context.stroke();
@@ -92,11 +81,9 @@ export const starDrawer: IShapeDrawer<Particle> = {
   },
 };
 
-// Custom shape drawer for two nested triangles rotated relative to each other.
+/** Registered drawer for nested triangles offset by half a vertex step. */
 export const triangleDrawer: IShapeDrawer<Particle> = {
-  // Specifies the shape type name for configuration.
   validTypes: ['customTriangle'],
-  // The drawing function executed for each particle.
   draw: ({ context, radius, particle }: IShapeDrawData<Particle>) => {
     const sides = 3;
     const step = (Math.PI * 2) / sides;
@@ -105,7 +92,6 @@ export const triangleDrawer: IShapeDrawer<Particle> = {
     context.strokeStyle = getStrokeStyle(particle);
     context.lineWidth = 2;
 
-    // Draws the outer triangle.
     context.beginPath();
     for (let i = 0; i < sides; i++) {
       const angle = i * step - Math.PI / 2;
@@ -117,7 +103,6 @@ export const triangleDrawer: IShapeDrawer<Particle> = {
     context.closePath();
     context.stroke();
 
-    // Draws the inner, smaller, and rotated triangle.
     context.beginPath();
     for (let i = 0; i < sides; i++) {
       const angle = i * step - Math.PI / 2 + step / 2;
@@ -133,11 +118,9 @@ export const triangleDrawer: IShapeDrawer<Particle> = {
   },
 };
 
-// Custom shape drawer for a snowflake/star-like pattern.
+/** Registered drawer for a six-arm flake with dots and forked tips. */
 export const flakeDrawer: IShapeDrawer<Particle> = {
-  // Specifies the shape type name for configuration.
   validTypes: ['customFlake'],
-  // The drawing function executed for each particle.
   draw: ({ context, radius, particle }: IShapeDrawData<Particle>) => {
     const arms = 6;
     const armLength = radius * 1.2;
@@ -153,13 +136,11 @@ export const flakeDrawer: IShapeDrawer<Particle> = {
       const x = Math.cos(angle) * armLength;
       const y = Math.sin(angle) * armLength;
 
-      // Draws the main arm line.
       context.beginPath();
       context.moveTo(0, 0);
       context.lineTo(x, y);
       context.stroke();
 
-      // Draws a small dot closer to the center.
       const ix = Math.cos(angle) * inner;
       const iy = Math.sin(angle) * inner;
       context.beginPath();
@@ -167,7 +148,7 @@ export const flakeDrawer: IShapeDrawer<Particle> = {
       context.fillStyle = context.strokeStyle;
       context.fill();
 
-      // Calculates and draws the two branches near the tip of the arm.
+      // Offset each fork by 30 degrees to keep the six arms visually distinct.
       const bx = Math.cos(angle) * outer;
       const by = Math.sin(angle) * outer;
       const branchOffset = Math.PI / 6;

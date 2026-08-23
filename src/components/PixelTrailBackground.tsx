@@ -10,7 +10,7 @@ type Props = {
   color?: ColorKey;
 };
 
-// Define a list of colors to use for the 'random' option
+// Canvas cannot resolve theme variables, so random trails use concrete palette values.
 const COLOR_PALETTE = [
   colorPalette.flame300,
   colorPalette.flame500,
@@ -37,21 +37,17 @@ export const PixelTrailBackground = ({ color = 'var(--flame-500)' }: Props) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Helper function to get a random color from the palette
   const getRandomColor = useCallback(() => {
     const index = Math.floor(Math.random() * COLOR_PALETTE.length);
     return COLOR_PALETTE[index];
   }, []);
 
-  // The main handler logic
   const colorize = useCallback(
     (el: HTMLDivElement) => {
-      // 1. Determine the color to use
       const activeColor = color === 'random' ? getRandomColor() : color;
-
-      // 2. Apply color
       el.style.backgroundColor = activeColor;
 
+      // Match the CSS transition duration before returning the cell to its transparent state.
       setTimeout(() => {
         el.style.backgroundColor = 'transparent';
       }, 300);
@@ -59,7 +55,6 @@ export const PixelTrailBackground = ({ color = 'var(--flame-500)' }: Props) => {
     [color, getRandomColor],
   );
 
-  // Use a stable handler wrapper for onMouseEnter
   const handleMouseEnter = useCallback(
     (e: MouseEvent<HTMLDivElement>) => {
       colorize(e.currentTarget);
@@ -68,15 +63,14 @@ export const PixelTrailBackground = ({ color = 'var(--flame-500)' }: Props) => {
   );
 
   const { colWidth, numCols, numBlocks } = useMemo(() => {
-    // If windowSize.width is 0, these will be based on 0, but that's fine,
-    // as the component will return null immediately after.
-    const cw = Math.floor(windowSize.width * 0.05) || 50; // Use a default if 0
+    // Five-percent cells keep the DOM bounded at roughly 20 columns on every viewport.
+    const cw = Math.floor(windowSize.width * 0.05) || 50;
     const nc = Math.ceil(windowSize.width / cw);
     const nb = Math.ceil(windowSize.height / cw);
     return { colWidth: cw, numCols: nc, numBlocks: nb };
   }, [windowSize.width, windowSize.height]);
 
-  // Conditional return (must come AFTER all hook calls)
+  // Avoid a server/client grid mismatch; the resize effect supplies real dimensions after mount.
   if (windowSize.width === 0) return null;
 
   return (
