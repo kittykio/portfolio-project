@@ -1,7 +1,5 @@
 'use client';
 
-import { useRef } from 'react';
-import { useScroll, motion, useTransform } from 'framer-motion';
 import General from './General';
 import Connect from '@/components/footer/Connect';
 import { SiBuymeacoffee } from 'react-icons/si';
@@ -13,22 +11,10 @@ import { useLocale } from '@/components/LocaleContext';
 
 const Footer = () => {
   const { locale } = useLocale();
-  const container = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: container,
-    offset: ['start end', 'end end'],
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], [-500, 0], { clamp: false });
 
   return (
     <section className="relative w-full -mt-20">
-      <motion.div
-        ref={container}
-        style={{ y }}
-        className="relative flex flex-col items-center justify-center w-full text-base bg-surface-subtle [clip-path:ellipse(100%_100%_at_50%_100%)] px-4"
-        transition={{ type: 'spring', stiffness: 50 }}
-      >
+      <div className="relative flex flex-col items-center justify-center w-full text-base bg-surface-subtle [clip-path:ellipse(100%_100%_at_50%_100%)] px-4">
         <div className="w-full max-w-7xl flex items-center justify-center lg:items-start lg:justify-between flex-wrap gap-8 lg:gap-24 mt-48 mb-24">
           {/* Brand logo and motto section */}
           <div className="flex flex-col gap-8 items-center text-center">
@@ -72,7 +58,7 @@ const Footer = () => {
             ? '© 2026 Kitty Kio. コードは MIT ライセンス、コンテンツとブランドはすべての権利を保有します。'
             : '© 2026 Kitty Kio. Code is MIT licensed; content and branding are all rights reserved.'}
         </p>
-      </motion.div>
+      </div>
     </section>
   );
 };
