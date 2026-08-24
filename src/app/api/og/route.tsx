@@ -13,7 +13,7 @@ const truncate = (value: string, length: number) =>
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const logoUrl = new URL('/kitty-kio-logo.png', request.url).toString();
+  const logoUrl = new URL('/logo-kittykio.png', request.url).toString();
   const locale = searchParams.get('locale') === 'ja' ? 'ja' : 'en';
   const typeParam = searchParams.get('type');
   const type = typeParam === 'project' || typeParam === 'post' ? typeParam : 'site';
