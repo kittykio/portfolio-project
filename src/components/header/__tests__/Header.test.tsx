@@ -15,8 +15,11 @@ jest.mock('framer-motion', () => ({ motion: { nav: ({ children, initial, animate
 describe('Header', () => {
   beforeEach(() => { locale = 'en'; theme = 'light'; });
   it('renders desktop controls and opens/closes mobile navigation', async () => {
-    render(<Header />); await waitFor(() => expect(screen.getByText('Kitty Kio')).toBeInTheDocument()); expect(screen.getAllByRole('link', { name: /projects/i })[0]).toHaveAttribute('href', '/projects'); expect(screen.getAllByText('Theme 40')).toHaveLength(2);
-    const toggle = screen.getByRole('button', { name: 'Toggle menu' }); fireEvent.click(toggle); expect(screen.getAllByRole('link', { name: /projects/i })).toHaveLength(2); fireEvent.click(screen.getAllByRole('link', { name: /projects/i })[1]); expect(screen.getAllByRole('link', { name: /projects/i })).toHaveLength(1);
+    render(<Header />); await waitFor(() => expect(screen.getByText('Kitty Kio')).toBeInTheDocument()); expect(screen.getAllByRole('link', { name: /projects/i })[0]).toHaveAttribute('href', '/projects'); expect(screen.getAllByText('Theme 40')).toHaveLength(1);
+    const toggle = screen.getByRole('button', { name: 'Open menu' }); expect(toggle).toHaveAttribute('aria-expanded', 'false'); fireEvent.click(toggle); const close = screen.getByRole('button', { name: 'Close menu' }); expect(close).toHaveAttribute('aria-expanded', 'true'); expect(screen.getAllByRole('link', { name: /projects/i })).toHaveLength(2); expect(screen.getAllByText('Theme 40')).toHaveLength(2); fireEvent.click(close); expect(screen.getAllByRole('link', { name: /projects/i })).toHaveLength(1);
+  });
+  it('closes mobile navigation with Escape', async () => {
+    render(<Header />); await waitFor(() => expect(screen.getByText('Kitty Kio')).toBeInTheDocument()); fireEvent.click(screen.getByRole('button', { name: 'Open menu' })); fireEvent.keyDown(window, { key: 'Escape' }); expect(screen.queryByRole('navigation', { name: 'Mobile navigation' })).not.toBeInTheDocument();
   });
   it('localizes routes and renders dark-theme icon choices', async () => {
     locale = 'ja'; theme = 'dark'; render(<Header />); await waitFor(() => expect(screen.getAllByRole('link', { name: /プロジェクト/ })[0]).toHaveAttribute('href', '/ja/projects')); expect(screen.getAllByRole('link', { name: /いま/ })[0]).toHaveAttribute('href', '/ja/now');

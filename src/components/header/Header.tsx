@@ -34,6 +34,17 @@ const Header = () => {
     setMounted(true);
   }, []);
 
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false);
+    };
+
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [menuOpen]);
+
   const themeForIcon = mounted ? resolvedTheme : 'light';
 
   type Navigation = {
@@ -69,15 +80,15 @@ const Header = () => {
   if (!mounted) return null;
 
   return (
-    <header className="z-30 fixed top-0 left-0 flex h-[72px] w-full items-center justify-between bg-surface-glass-strong px-4 backdrop-blur-sm sm:px-6 lg:px-8">
+    <header className="fixed left-0 top-0 z-30 flex h-[72px] w-full items-center justify-between border-b border-border/60 bg-surface-glass-strong px-4 backdrop-blur-sm sm:px-6 lg:px-8">
       <Link href={getLocalePath('/', locale)} className="flex min-w-0 items-center gap-2 sm:gap-4">
         <div className="h-9 w-9 shrink-0">
           <CatLogo />
         </div>
-        <p className="whitespace-nowrap text-2xl font-flashy text-content sm:text-[30px]">Kitty Kio</p>
+        <p className="truncate text-2xl font-flashy text-content sm:text-[30px]">Kitty Kio</p>
       </Link>
 
-      <nav className="hidden md:flex text-2xl font-heading gap-6 items-center">
+      <nav aria-label="Primary navigation" className="hidden items-center gap-5 font-heading text-xl xl:flex 2xl:gap-6 2xl:text-2xl">
         {navigation.map((nav) => {
           const Icon = nav.icon;
           return (
@@ -100,17 +111,14 @@ const Header = () => {
         </div>
       </nav>
 
-      <div className="flex shrink-0 items-center justify-center gap-1.5 sm:gap-3 md:hidden">
-        <LanguageToggle />
-        <MotionToggle compact />
-        <div className="flex items-center justify-center scale-90">
-          <ThemeToggle size={40} />
-        </div>
-
+      <div className="flex shrink-0 items-center xl:hidden">
         <button
-          className=" text-[30px]"
+          type="button"
+          className="grid h-11 w-11 place-items-center rounded-full border border-border bg-canvas/70 text-[28px] text-content transition-colors hover:border-flame-500 hover:text-flame-500"
           onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
         >
           {menuOpen ? <HiX /> : <HiMenuAlt3 />}
         </button>
@@ -119,26 +127,40 @@ const Header = () => {
       <AnimatePresence>
         {menuOpen && (
           <motion.nav
+            id="mobile-navigation"
+            aria-label="Mobile navigation"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.25 }}
-            className="absolute top-full left-0 w-full bg-canvas flex flex-col items-center gap-6 py-8 px-4 border-t border-border md:hidden z-30"
+            className="absolute left-0 top-full z-30 flex max-h-[calc(100dvh-72px)] w-full flex-col overflow-y-auto border-t border-border bg-canvas px-4 py-5 shadow-xl xl:hidden sm:px-6"
           >
-            {navigation.map((nav) => {
-              const Icon = nav.icon;
-              return (
-                <Link
-                  key={nav.label}
-                  href={nav.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center gap-3 text-xl uppercase hover:text-flame-500 transition"
-                >
-                  <Icon size={28} />
-                  <span>{nav.label}</span>
-                </Link>
-              );
-            })}
+            <div className="mx-auto flex w-full max-w-xl flex-col gap-2">
+              {navigation.map((nav) => {
+                const Icon = nav.icon;
+                return (
+                  <Link
+                    key={nav.label}
+                    href={nav.href}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex min-h-14 items-center gap-4 rounded-xl px-4 text-xl font-heading uppercase transition-colors hover:bg-surface hover:text-flame-500"
+                  >
+                    <Icon size={28} />
+                    <span>{nav.label}</span>
+                  </Link>
+                );
+              })}
+
+              <div className="mt-3 flex flex-wrap items-center gap-3 border-t border-border px-2 pt-5">
+                <LanguageToggle />
+                <MotionToggle compact />
+                <CommandPalette />
+                <SavedLink />
+                <div className="ml-auto flex items-center justify-center">
+                  <ThemeToggle size={40} />
+                </div>
+              </div>
+            </div>
           </motion.nav>
         )}
       </AnimatePresence>
