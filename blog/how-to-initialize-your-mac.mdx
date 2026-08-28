@@ -1,0 +1,211 @@
+---
+date: 2026-08-28
+title: "How to Reset Your Mac"
+description: "Reset your Mac safely with separate step-by-step guidance for everyday users and developers, including backups, Recovery, and clean reinstallation."
+tags: ["macOS", "Developer Setup", "Developer Workflow"]
+image: "/blog/images/how-to-initialize-your-mac.png"
+---
+
+Resetting a Mac means erasing your personal data and returning the computer to a clean macOS setup. You may want to reset it before selling or giving it away, to solve persistent software problems, or to rebuild a development environment from scratch.
+
+<Highlight color="flame">A reset permanently removes accounts, applications, settings, and local files. Back up anything you need before starting.</Highlight>
+
+The correct reset method depends on the Mac. Apple-silicon Macs enter Recovery by holding the power button. Intel Macs use **Command-R**. Supported newer Macs can use **Erase All Content and Settings**, which is usually the simplest option.
+
+## For normal users
+
+This section is the safest route when you use your Mac for everyday work, study, photos, documents, and personal applications.
+
+### 1. Check which Mac you have
+
+Open **Apple menu → About This Mac**.
+
+- If you see an Apple chip such as M1, M2, M3, M4, or later, you have an **Apple-silicon Mac**.
+- If you see an Intel processor, you have an **Intel Mac**.
+
+This determines how you enter macOS Recovery if the normal reset option is unavailable.
+
+### 2. Back up your files
+
+Connect an external drive and open **System Settings → General → Time Machine**. Add the drive as a backup disk and wait for the first backup to finish.
+
+Also confirm that important cloud files have finished syncing. Open a few files from the backup before continuing. A backup is useful only when its contents can actually be restored.
+
+If the Mac belongs to a company or school, contact its administrator instead of resetting it yourself.
+
+### 3. Use Erase All Content and Settings when available
+
+This is the recommended reset method for Apple-silicon Macs and Intel Macs with the Apple T2 Security Chip running macOS Monterey 12 or later.
+
+1. Open **Apple menu → System Settings**.
+2. Select **General → Transfer or Reset**.
+3. Click **Erase All Content and Settings**.
+4. Enter the administrator password.
+5. Review the items that will be removed.
+6. Follow Erase Assistant until the Mac restarts.
+
+Erase Assistant removes user accounts, applications, settings, and personal data. It also signs out of Apple services and turns off Find My and Activation Lock.
+
+When the **Hello** screen appears:
+
+- If you are keeping the Mac, complete Setup Assistant.
+- If you are selling or giving it away, do not create a new account. Shut down the Mac and leave setup for the new owner.
+
+### 4. Use macOS Recovery when the erase option is unavailable
+
+#### Apple-silicon Mac
+
+1. Shut down the Mac completely.
+2. Press and hold the **power button**.
+3. Keep holding until **Loading startup options** appears.
+4. Select **Options**, then click **Continue**.
+5. Choose an administrator and enter its password if requested.
+
+#### Intel Mac
+
+1. Restart or turn on the Mac.
+2. Immediately press and hold **Command-R**.
+3. Release the keys when the Apple logo, a spinning globe, or another startup screen appears.
+4. Enter a firmware or administrator password if requested.
+
+For Intel Macs, **Option-Command-R** offers the latest macOS compatible with the Mac through Internet Recovery. **Shift-Option-Command-R** offers the original macOS or the closest version still available.
+
+### 5. Erase the startup disk
+
+Only do this after confirming that the backup is complete.
+
+1. Open **Disk Utility** in macOS Recovery.
+2. Choose **View → Show All Devices** if the internal disk is unclear.
+3. Select the macOS volume, normally named **Macintosh HD**.
+4. Click **Erase** or **Erase Volume Group**.
+5. Use `Macintosh HD` as the name and **APFS** as the format when prompted.
+6. Confirm the erase and wait for it to finish.
+7. Quit Disk Utility.
+
+<Highlight color="flame">Check the selected disk carefully. Never erase the external drive containing your backup. If the expected internal volume is missing, stop before confirming.</Highlight>
+
+### 6. Reinstall macOS
+
+From the Recovery window, select **Reinstall macOS**, click **Continue**, and choose `Macintosh HD`. Keep the Mac connected to power and reliable internet while installation completes.
+
+The Mac may restart several times or temporarily show a blank screen. Reinstalling macOS without erasing the disk normally preserves user data; erasing first is what makes this a complete reset.
+
+### 7. Finish the reset
+
+After installation, Setup Assistant opens.
+
+- To keep using the Mac, complete setup, install macOS updates, and restore your files.
+- To transfer ownership, press **Command-Q** at Setup Assistant and shut down.
+
+If the Mac requests a previous owner's Apple Account, that person must remove the Mac from their account. Erasing the disk does not bypass Activation Lock.
+
+## For developers
+
+Developers can use the same reset steps above, but a working environment often contains important data that Time Machine or a Git remote does not fully capture. Complete this checklist before erasing, then rebuild deliberately after macOS is installed.
+
+### 1. Preserve work that is not safely stored elsewhere
+
+Check every active repository for uncommitted and untracked files:
+
+```shell
+git status --short
+```
+
+Commit and push the work that belongs in the remote repository. Back up anything that should not be committed, such as local fixtures, private notes, test certificates, and large development assets.
+
+Also export or back up:
+
+- Local databases and database containers.
+- Virtual machines and emulator data that cannot be recreated.
+- Unsynced design assets and project documents.
+- Package registry settings and private certificate files.
+- Application license information and recovery codes.
+- Browser profiles used for local testing, if they are not synchronized.
+
+Do not assume that Docker volumes, ignored files, or files outside a repository are included in Git.
+
+### 2. Inventory your environment
+
+Record the tools you actually want to reinstall. For Homebrew, save a reproducible package list:
+
+```shell
+brew bundle dump --file=~/Brewfile
+```
+
+Copy the generated `Brewfile` to your backup after reviewing it for private taps or sensitive information.
+
+Record relevant runtime versions:
+
+```shell
+node --version
+python3 --version
+git --version
+```
+
+Project files such as `.nvmrc`, `.node-version`, `.python-version`, and `.tool-versions` are better sources of truth than a global package list. Confirm that your dotfiles repository is current if you use one.
+
+### 3. Handle credentials securely
+
+List the credentials you will need after the reset, but never place secret values in a public repository.
+
+- Confirm that you can sign in to your password manager without relying only on the Mac being erased.
+- Back up SSH keys only when you deliberately want to retain them; otherwise generate new keys afterward.
+- Export GPG keys securely if old commit-signing identities must remain usable.
+- Save two-factor recovery codes outside the Mac.
+- Note which cloud, Git, package registry, and deployment accounts require new authentication.
+
+Revoking old credentials and generating new ones after a reset is often safer, especially when the reset follows a security concern.
+
+### 4. Reset the Mac
+
+Follow the appropriate reset procedure in the normal-user section:
+
+- Prefer **Erase All Content and Settings** when available.
+- On Apple silicon, hold the power button to enter Recovery.
+- On Intel, hold **Command-R** during startup.
+- If using Disk Utility, erase only the correct internal macOS volume.
+- Reinstall macOS and complete Setup Assistant.
+
+If you are resetting because of suspected malware or a compromised environment, avoid restoring the entire system from backup. Restore personal files selectively and reinstall tools from trusted sources.
+
+### 5. Rebuild a clean development environment
+
+After setup, install all macOS updates first. Then install Apple's Command Line Tools:
+
+```shell
+xcode-select --install
+```
+
+Install Homebrew using the current command from the [official Homebrew website](https://brew.sh/), then restore reviewed packages:
+
+```shell
+brew bundle --file=~/Brewfile
+```
+
+Restore dotfiles carefully, install the version manager used by your projects, and let each project declare its own runtime version. Avoid replacing system-provided tools or copying an entire old shell configuration without reviewing it.
+
+### 6. Restore access and verify projects
+
+Generate or restore SSH and GPG keys, then authenticate with Git hosting, package registries, cloud providers, and deployment platforms. Grant applications only the macOS permissions they need.
+
+Verify the environment with one representative project:
+
+```shell
+git clone YOUR_REPOSITORY_URL
+cd YOUR_PROJECT
+git status
+```
+
+Install dependencies, run the project's tests, start its local development server, and confirm access to any required database or external service.
+
+Before considering the reset complete, check that:
+
+- [ ] All important repositories were pushed or backed up.
+- [ ] Local databases and ignored project files were preserved.
+- [ ] Password-manager and two-factor access works.
+- [ ] Command Line Tools, Git, runtimes, and package managers work.
+- [ ] SSH or GPG authentication works where required.
+- [ ] At least one project installs, builds, tests, and runs locally.
+- [ ] A new Time Machine backup has completed.
+
+For both normal users and developers, the essential rule is the same: **back up first, use the reset method that matches the Mac, and verify the restored environment before deleting the old backup.**
