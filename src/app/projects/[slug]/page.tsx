@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
@@ -9,9 +9,6 @@ import { getOgCardUrl } from '@/lib/site';
 type Props = { params: { slug: string } };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = getRequestLocale();
-  if (params.slug === 'avatar-animation') {
-    return { title: 'Interactive Creative Studio | Kitty Kio' };
-  }
   const project = (await getAllProjects(locale)).find((item) => item.slug === params.slug);
   const pathname = `${locale === 'ja' ? '/ja' : ''}/projects/${params.slug}`;
   if (!project) return {};
@@ -44,9 +41,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 export default async function ProjectDetail({ params }: Props) {
   const locale = getRequestLocale();
-  if (params.slug === 'avatar-animation') {
-    redirect(`${locale === 'ja' ? '/ja' : ''}/projects/floating-rooms`);
-  }
   const project = (await getAllProjects(locale)).find((item) => item.slug === params.slug);
   if (!project) notFound();
   const details = project.caseStudy;

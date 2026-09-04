@@ -73,6 +73,11 @@ Keep real credentials in `.env.local` and never commit them.
 - Shared UI: `src/components/`
 - Routes and API handlers: `src/app/`
 
+The current project catalogue contains four flagship products: Workio, Kiki World, Kiki Arcade,
+and Booktrace. Each has matching English and Japanese case-study data, a current screenshot,
+source and live links, and an embeddable preview. Earlier standalone experiments are represented
+inside the relevant flagship case study rather than kept as duplicate project entries or media.
+
 ## Commands
 
 ```bash

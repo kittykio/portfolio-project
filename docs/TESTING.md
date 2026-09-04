@@ -181,6 +181,12 @@ that represent English and Japanese content and mock filesystem calls when testi
 sorting, filtering, heading extraction, or missing-file behavior. Do not make tests depend on
 the creation timestamps of files in a developer's checkout.
 
+The project-catalogue contract test intentionally uses the production JSON files. It protects the
+current four-project order, shared locale structure, 2026 dates, screenshot paths, repository and
+live URLs, preview availability, stable generated IDs, and complete case-study fields. Update that
+test deliberately whenever the public project catalogue changes, and remove superseded media from
+`public/projects/` in the same change.
+
 ### Animation and canvas UI
 
 Assert deterministic animation configuration and meaningful state transitions rather than
