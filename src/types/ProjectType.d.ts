@@ -13,4 +13,16 @@ export type ProjectType = {
   likesPerUser?: number;
   repoUrl?: string;
   websiteUrl?: string;
+  livePreview?: boolean;
+  caseStudy?: {
+    eyebrow?: string;
+    statement?: string;
+    problem: string;
+    role: string;
+    constraints: string;
+    process: string;
+    result: string;
+    features?: string[];
+    engineering?: string[];
+  };
 };

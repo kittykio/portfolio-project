@@ -11,6 +11,7 @@ import { DisplayTag } from '@/components/Tag';
 import ShareButton from '@/components/ShareButton';
 import SaveButton from '@/components/SaveButton';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 type ProjectModalProps = {
   isOpen: boolean;
@@ -39,14 +40,35 @@ const ProjectModal: FC<ProjectModalProps> = ({
   likeItemList,
   setLikeItemList,
 }) => {
+  const isJapanese = usePathname()?.startsWith('/ja') ?? false;
   if (!project) return null;
   const currentProject = likeItemList?.find((item) => item.id === project.id) ?? project;
+  const details = project.caseStudy;
+  const labels = isJapanese
+    ? ['課題', '担当', '制約', 'プロセス', '成果']
+    : ['Problem', 'Role', 'Constraints', 'Process', 'Result'];
   const caseStudy = [
-    ['Problem', `Create a clear, focused experience for ${project.title}.`],
-    ['Role', 'Product-minded frontend development, visual direction, and implementation.'],
-    ['Constraints', 'Keep the experience responsive, understandable, and appropriate for the chosen stack.'],
-    ['Process', `Shape the interface around the core task, then refine interaction and presentation with ${project.tags.join(', ')}.`],
-    ['Result', project.description ?? 'A documented implementation with source and live links where available.'],
+    [labels[0], details?.problem ?? `Create a clear, focused experience for ${project.title}.`],
+    [
+      labels[1],
+      details?.role ?? 'Product-minded frontend development, visual direction, and implementation.',
+    ],
+    [
+      labels[2],
+      details?.constraints ??
+        'Keep the experience responsive, understandable, and appropriate for the chosen stack.',
+    ],
+    [
+      labels[3],
+      details?.process ??
+        `Shape the interface around the core task, then refine interaction and presentation with ${project.tags.join(', ')}.`,
+    ],
+    [
+      labels[4],
+      details?.result ??
+        project.description ??
+        'A documented implementation with source and live links where available.',
+    ],
   ];
 
   return (
@@ -86,7 +108,7 @@ const ProjectModal: FC<ProjectModalProps> = ({
               {/* Title */}
               <DialogTitle className="text-3xl font-bodyBold text-center p-4">
                 <span className="block text-xs uppercase tracking-[0.25em] text-flame-500 mb-2">
-                  Project case file
+                  {details?.eyebrow ?? 'Project case file'}
                 </span>
                 {project.title}
               </DialogTitle>
@@ -132,8 +154,22 @@ const ProjectModal: FC<ProjectModalProps> = ({
                     hideBackground
                   />
                 </div>
-                <div className="flex flex-wrap gap-2"><ShareButton title={project.title} url={`/projects/${project.slug}`} /><SaveButton type="project" id={project.id} title={project.title} href={`/projects/${project.slug}`} /></div>
-                <Link href={`/projects/${project.slug}`} onClick={onClose} className="self-start font-bodyBold text-flame-500 underline">Open full case study →</Link>
+                <div className="flex flex-wrap gap-2">
+                  <ShareButton title={project.title} url={`/projects/${project.slug}`} />
+                  <SaveButton
+                    type="project"
+                    id={project.id}
+                    title={project.title}
+                    href={`/projects/${project.slug}`}
+                  />
+                </div>
+                <Link
+                  href={`/projects/${project.slug}`}
+                  onClick={onClose}
+                  className="self-start font-bodyBold text-flame-500 underline"
+                >
+                  Open full case study →
+                </Link>
 
                 {/* Two-column layout */}
                 <div className="relative flex flex-row flex-wrap md:flex-nowrap gap-4 justify-between">
@@ -166,12 +202,22 @@ const ProjectModal: FC<ProjectModalProps> = ({
                     </ul>
                     <div className="flex gap-3 flex-wrap justify-end">
                       {project.repoUrl && (
-                        <a className="text-flame-500 underline" href={project.repoUrl} target="_blank" rel="noreferrer">
+                        <a
+                          className="text-flame-500 underline"
+                          href={project.repoUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           Source code
                         </a>
                       )}
                       {project.websiteUrl && (
-                        <a className="text-flame-500 underline" href={project.websiteUrl} target="_blank" rel="noreferrer">
+                        <a
+                          className="text-flame-500 underline"
+                          href={project.websiteUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
                           Live demo
                         </a>
                       )}
@@ -179,8 +225,18 @@ const ProjectModal: FC<ProjectModalProps> = ({
                   </div>
                 </div>
                 <section className="grid gap-3 sm:grid-cols-2">
-                  {caseStudy.map(([label, content]) => <article key={label} className="rounded-2xl bg-surface-glass p-4"><h3 className="font-bodyBold text-flame-500">{label}</h3><p className="mt-2 text-sm leading-relaxed">{content}</p></article>)}
+                  {caseStudy.map(([label, content]) => (
+                    <article key={label} className="rounded-2xl bg-surface-glass p-4">
+                      <h3 className="font-bodyBold text-flame-500">{label}</h3>
+                      <p className="mt-2 text-sm leading-relaxed">{content}</p>
+                    </article>
+                  ))}
                 </section>
+                {details?.statement && (
+                  <p className="rounded-2xl border border-flame-500/30 bg-flame-500/10 p-5 text-center font-bodyBold text-content">
+                    “{details.statement}”
+                  </p>
+                )}
               </div>
             </DialogPanel>
           </TransitionChild>

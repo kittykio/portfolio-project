@@ -1,92 +1,138 @@
 [
   {
-    "name": "avatar-animation",
-    "title": "Avatar Animation",
-    "summary": "Basic avatar animation example using R3F, Ready Player Me and Mixamo.",
-    "tags": ["React", "Three.js", "3D", "Animation"],
-    "image": "/projects/avatar-animation.png",
-    "repoUrl": "https://github.com/kittykio/avatar-animation",
-    "websiteUrl": "https://mm-avatar-animation.vercel.app/",
-    "date": "2024/05/05"
+    "name": "workio",
+    "title": "Workio",
+    "summary": "A connected workspace that brings freelancers, clients, projects, messages, time, and billing together.",
+    "tags": ["Django", "Python", "PostgreSQL", "Full-stack"],
+    "image": "/projects/workio.png",
+    "repoUrl": "https://github.com/kittykio/workio",
+    "websiteUrl": "https://kiki-workio.vercel.app/",
+    "date": "2026/09/04",
+    "livePreview": true,
+    "caseStudy": {
+      "eyebrow": "Freelance client portal",
+      "statement": "I can model and build a connected, permission-aware business workflow—not just isolated CRUD screens.",
+      "problem": "Freelancers often manage leads, project scope, client communication, schedules, files, time, expenses, and invoices across disconnected tools. Workio brings that lifecycle into one workspace shared by freelancers and clients.",
+      "role": "Product design, workflow modeling, Django architecture, backend and frontend implementation, authorization, data design, testing, and deployment preparation.",
+      "constraints": "Freelancers and clients need different permissions over the same records. Financial data must stay traceable, invitations must expire safely, uploaded files must remain private, and state changes across proposals, milestones, time entries, expenses, and invoices must stay consistent.",
+      "process": "I modeled the freelance lifecycle as connected Django apps for accounts, projects, conversations, billing, and notifications. I built role-scoped querysets and permission checks first, then layered in reusable work templates, intake forms, proposals, scheduling, milestones, activity history, messaging, time tracking, expenses, invoicing, and dashboard summaries.",
+      "result": "A tested full-stack client portal where freelancers can move work from inquiry and proposal through delivery and payment while clients collaborate, review milestones, exchange files and messages, and track the same source of truth.",
+      "features": [
+        "Freelancer and client accounts with public profiles, invitations, and role-aware dashboards",
+        "Projects with tasks, milestones, files, comments, activity history, saved views, and workflow stages",
+        "Proposals, service offerings, intake questions, schedules, recurring work, and payment installments",
+        "Private conversations, attachments, unread states, and in-app or email notifications",
+        "Live timers, manual time entries, expenses, invoices, and traceable invoice line items"
+      ],
+      "engineering": [
+        "Django 5.2 domain apps keep accounts, projects, communication, billing, and notifications separated",
+        "Server-side authorization and user-scoped querysets protect shared project and financial records",
+        "Database constraints and transactional updates prevent duplicate billing and conflicting active timers",
+        "PostgreSQL is supported in production while SQLite keeps the local demo easy to run",
+        "Django test coverage exercises permissions, workflows, billing rules, notification delivery, and dashboard calculations"
+      ]
+    }
   },
   {
-    "name": "book-log",
-    "title": "Book Log",
-    "summary": "An app for bookaholics to keep track of the books you have read and take notes.",
-    "tags": ["Next.js", "TypeScript", "Full-stack"],
-    "image": "/projects/book-log.png",
-    "repoUrl": "https://github.com/kittykio/book-log",
-    "websiteUrl": "https://mm-book-log.vercel.app/",
-    "date": "2024/02/21"
+    "name": "kiki-world",
+    "title": "Kiki World",
+    "summary": "A story-driven 3D studio where an animated avatar explores a playful, interactive world.",
+    "tags": ["React", "Three.js", "R3F", "3D", "Animation"],
+    "image": "/projects/kiki-world.png",
+    "repoUrl": "https://github.com/kittykio/kiki-world",
+    "websiteUrl": "https://kiki-world.vercel.app/",
+    "date": "2026/09/04",
+    "livePreview": true,
+    "caseStudy": {
+      "eyebrow": "Kiki World",
+      "statement": "I can build polished, performant interactive 3D experiences.",
+      "problem": "Turn isolated Three.js experiments into one coherent experience with a clear journey and purpose.",
+      "role": "Creative direction, interaction design, 3D frontend architecture, animation, accessibility, and performance engineering.",
+      "constraints": "The scene needs to feel rich on desktop while remaining controllable on touch devices, respectful of reduced-motion preferences, and useful when a device cannot sustain the full visual workload.",
+      "process": "I made the rooms the narrative structure, then integrated the avatar as the visitor. Input is normalized across keyboard, pointer, and touch, while intentional camera transitions and interaction cues make each space understandable.",
+      "result": "A responsive three-room experience in which Kiki walks between Make, Rest, and Connect, changes outfits, and transitions into room-specific activities while the camera and rendering quality adapt to the device.",
+      "features": [
+        "Three explorable rooms with distinct stories, lighting, and avatar activities",
+        "Blended walking, waving, typing, sitting, dancing, and idle animation states",
+        "Four switchable outfits that preserve the active room and journey state",
+        "Wheel, keyboard, click, swipe, touch, and compact mobile navigation",
+        "Loading progress, reduced-motion behavior, and manual or automatic performance modes"
+      ],
+      "engineering": [
+        "Next.js and TypeScript provide the application shell around React Three Fiber and Three.js",
+        "Horizontal root motion is removed from Mixamo clips so the avatar remains aligned with room destinations",
+        "Responsive camera framing adapts to portrait, landscape, and short-screen layouts",
+        "Adaptive device-pixel ratio and performance monitoring reduce detail when sustained frame rate declines",
+        "Only the six animation clips used by the experience are shipped and GLB assets are preloaded"
+      ]
+    }
   },
   {
-    "name": "floating-rooms",
-    "title": "Floating Rooms",
-    "summary": "Floating Rooms 3D portfolio app using R3F and gsap.",
-    "tags": ["React", "Three.js", "3D", "Animation"],
-    "image": "/projects/floating-rooms.png",
-    "repoUrl": "https://github.com/kittykio/floating-rooms",
-    "websiteUrl": "https://mm-floating-rooms.vercel.app/",
-    "date": "2024/10/16"
+    "name": "kiki-arcade",
+    "title": "Kiki Arcade",
+    "summary": "A colorful collection of creative toys, arcade classics, and miniature browser adventures.",
+    "tags": ["JavaScript", "Vite", "Canvas", "Creative coding"],
+    "image": "/projects/kiki-arcade.png",
+    "repoUrl": "https://github.com/kittykio/kiki-arcade",
+    "websiteUrl": "https://kiki-arcade.vercel.app/",
+    "date": "2026/09/04",
+    "livePreview": true,
+    "caseStudy": {
+      "eyebrow": "Interactive browser arcade",
+      "statement": "I can turn small experiments into one cohesive, polished, and maintainable interactive product.",
+      "problem": "Several earlier projects—Ganvas, Ticking Room, Pocket Calc, and Hand Game—were too small to stand alone in a portfolio. The challenge was to preserve what made each one playful while combining them with new games into a collection that felt intentional rather than like a list of disconnected demos.",
+      "role": "Product direction, visual design, game design, frontend architecture, implementation, accessibility, testing, and deployment.",
+      "constraints": "Fourteen experiences with different controls and rendering needs had to coexist in one dependency-light app, work across keyboard, pointer, touch, and swipe input, preserve local progress, respect reduced-motion preferences, and clean up timers, animation frames, audio, and event listeners when players changed games.",
+      "process": "I grouped the collection into Featured Adventures, Creative Studio, and Arcade Classics, then gave every experience a shared launcher and game-page shell. Each game is an independently mounted module with its own state and cleanup function. I rebuilt the original experiments, added five larger adventures and familiar beginner games, unified the visual system, and extracted pure game logic so it could be tested outside the interface.",
+      "result": "A responsive arcade containing 14 complete browser experiences—from pixel drawing and ambient interaction to puzzle, strategy, platform, flight, and classic games—with persistent records, accessible controls, reduced-motion support, generated audio cues, and 22 automated logic tests.",
+      "features": [
+        "Five miniature adventures: Garden Serpent, Night Shift, Parcel Quest, Patchwork Odyssey, and Paper Skies",
+        "Five creative experiences, including Ganvas with drag drawing, erasing, flood fill, undo, rainbow paint, and PNG export",
+        "Four polished arcade classics with saved wins, streaks, move records, and personal bests",
+        "Responsive keyboard, pointer, touch, swipe, and on-screen controls",
+        "Local progress, scores, unlocks, and motion preferences without requiring an account"
+      ],
+      "engineering": [
+        "Vite and native ES modules keep the runtime small and avoid a UI-framework dependency",
+        "Independent mount and cleanup functions prevent games from leaking listeners, timers, animation frames, or audio",
+        "Canvas powers drawing, defense, delivery, platforming, flight, and Snake-style gameplay where frame-based rendering is useful",
+        "Pure domain functions cover scoring, collisions, movement, flood filling, recipes, puzzles, routes, and flight physics with Node's test runner",
+        "Semantic controls, live status text, focus states, and prefers-reduced-motion support improve accessibility"
+      ]
+    }
   },
   {
-    "name": "calc-me",
-    "title": "Calculator",
-    "summary": "A basic calculator.",
-    "tags": ["JavaScript", "Utility"],
-    "image": "/projects/calc-me.png",
-    "repoUrl": "https://github.com/kittykio/calc-me",
-    "websiteUrl": "https://kittykio.github.io/calc-me/",
-    "date": "2022/04/25"
-  },
-  {
-    "name": "dev-camp",
-    "title": "Dev Camp",
-    "summary": "A static dev bootcamp landing webpage.",
-    "tags": ["HTML", "CSS", "Landing Page"],
-    "image": "/projects/dev-camp.png",
-    "repoUrl": "https://github.com/kittykio/dev-camp",
-    "websiteUrl": "https://kittykio.github.io/dev-camp/",
-    "date": "2022/08/08"
-  },
-  {
-    "name": "rock-paper-scissors",
-    "title": "Rock Paper Scissors",
-    "summary": "Simple rock, paper, scissors game with computer as an opponent.",
-    "tags": ["JavaScript", "Game"],
-    "image": "/projects/rock-paper-scissors.png",
-    "repoUrl": "https://github.com/kittykio/rock-paper-scissors",
-    "websiteUrl": "https://kittykio.github.io/rock-paper-scissors/",
-    "date": "2023/01/29"
-  },
-  {
-    "name": "ticking-room",
-    "title": "Ticking Room",
-    "summary": "An animated room with a dynamic day-to-night transition and vice versa. The scene shifts gradually between daytime and nighttime, featuring smooth lighting changes, atmospheric and simple sound effects to enhance the experience.",
-    "tags": ["JavaScript", "Animation"],
-    "image": "/projects/ticking-room.png",
-    "repoUrl": "https://github.com/kittykio/ticking-room",
-    "websiteUrl": "https://kittykio.github.io/ticking-room/",
-    "date": "2021/12/09"
-  },
-  {
-    "name": "ganvas",
-    "title": "Ganvas",
-    "summary": "A fun and interactive sketching app.",
-    "tags": ["JavaScript", "Canvas"],
-    "image": "/projects/ganvas.png",
-    "repoUrl": "https://github.com/kittykio/ganvas",
-    "websiteUrl": "https://kittykio.github.io/ganvas/",
-    "date": "2023/11/13"
-  },
-  {
-    "name": "art-portfolio",
-    "title": "Art Portfolio",
-    "summary": "An art gallery showcase website of an artist.",
-    "tags": ["Next.js", "MongoDB", "Portfolio"],
-    "image": "/projects/art-portfolio.png",
-    "repoUrl": "https://github.com/kittykio/art-portfolio",
-    "websiteUrl": "https://momoart.vercel.app/",
-    "date": "2026/02/06"
+    "name": "booktrace",
+    "title": "Booktrace",
+    "summary": "A personal reading history for reviews, ratings, notes, and reading goals.",
+    "tags": ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Auth.js"],
+    "image": "/projects/booktrace.png",
+    "repoUrl": "https://github.com/kittykio/booktrace",
+    "websiteUrl": "https://kiki-booktrace.vercel.app/",
+    "date": "2026/09/04",
+    "livePreview": true,
+    "caseStudy": {
+      "eyebrow": "Private reading companion",
+      "statement": "I can design and ship a complete, reliable full-stack application around real user data.",
+      "problem": "A basic book log could save titles and notes, but it did not yet feel like a trustworthy personal product. Readers needed private libraries, richer reading context, useful progress views, resilient discovery, and safe ownership rules for every mutation.",
+      "role": "Product direction, UX and visual design, full-stack architecture, database modeling, authentication, validation, external API integration, accessibility, testing, and deployment.",
+      "constraints": "Every library record must remain private to its owner, external book providers can be slow or unavailable, untrusted form data needs server-side validation, and database migrations must deploy safely without sacrificing responsive loading, empty, and error states.",
+      "process": "I rebuilt the project around Auth.js sessions and owner-scoped Prisma queries, expanded the data model for reading status, ratings, tags, favorites, dates, goals, and profile settings, and validated server actions with Zod. Search uses Google Books first and automatically falls back to Open Library, while saved metadata snapshots keep personal entries useful during provider outages.",
+      "result": "A production-ready private reading companion with authentication, personal libraries, five reading states, reviews and notes, yearly goals and statistics, resilient search, account controls, accessible responsive states, and automated validation and mapping tests.",
+      "features": [
+        "Private accounts and libraries protected by Auth.js credential sessions",
+        "Reading states, 1–5 ratings, tags, favorites, reviews, notes, and reading dates",
+        "Annual goals, progress indicators, and library statistics",
+        "Google Books discovery with timeouts, caching, and automatic Open Library fallback",
+        "Profile settings and password-confirmed account deletion"
+      ],
+      "engineering": [
+        "Next.js 16 server components and server actions keep private reads and mutations on the server",
+        "Every Prisma library query is scoped by userId and the database enforces one entry per user and book",
+        "Zod validates untrusted form data before mutations and bcrypt protects stored passwords",
+        "Validated book snapshots decouple saved entries from external-provider availability",
+        "Vitest and Testing Library cover domain validation, external-data mapping, and key interface behavior"
+      ]
+    }
   }
 ]

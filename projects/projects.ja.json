@@ -1,92 +1,138 @@
 [
   {
-    "name": "avatar-animation",
-    "title": "アバターアニメーション",
-    "summary": "R3F、Ready Player Me、Mixamoを使った基本的なアバターアニメーション。",
-    "tags": ["React", "Three.js", "3D", "アニメーション"],
-    "image": "/projects/avatar-animation.png",
-    "repoUrl": "https://github.com/kittykio/avatar-animation",
-    "websiteUrl": "https://mm-avatar-animation.vercel.app/",
-    "date": "2024/05/05"
+    "name": "workio",
+    "title": "Workio",
+    "summary": "フリーランサー、クライアント、プロジェクト、メッセージ、時間管理、請求を一つにつなぐワークスペース。",
+    "tags": ["Django", "Python", "PostgreSQL", "フルスタック"],
+    "image": "/projects/workio.png",
+    "repoUrl": "https://github.com/kittykio/workio",
+    "websiteUrl": "https://kiki-workio.vercel.app/",
+    "date": "2026/09/04",
+    "livePreview": true,
+    "caseStudy": {
+      "eyebrow": "フリーランス向けクライアントポータル",
+      "statement": "単体のCRUD画面ではなく、権限と業務の流れを考慮した一貫性のあるプロダクトを設計・実装できます。",
+      "problem": "フリーランサーは、見込み客、案件範囲、顧客との連絡、予定、ファイル、作業時間、経費、請求を複数のツールで管理しがちです。Workioは、その業務サイクルをフリーランサーとクライアントが共有できる一つのワークスペースにまとめます。",
+      "role": "プロダクト設計、業務フロー設計、Djangoアーキテクチャ、フロントエンド／バックエンド実装、権限制御、データ設計、テスト、デプロイ準備。",
+      "constraints": "同じデータに対してフリーランサーとクライアントで異なる権限が必要です。財務データの追跡可能性、招待の安全な有効期限、非公開ファイルの保護、提案・マイルストーン・時間・経費・請求をまたぐ状態の整合性も保つ必要がありました。",
+      "process": "業務の流れをaccounts、projects、conversations、billing、notificationsのDjangoアプリとしてモデル化しました。まずロール別クエリと権限チェックを構築し、その上に作業テンプレート、ヒアリングフォーム、提案、予定、マイルストーン、履歴、メッセージ、時間計測、経費、請求、ダッシュボード集計を実装しました。",
+      "result": "問い合わせと提案から納品、支払いまでを一つの情報源で進められる、テスト済みのフルスタック・クライアントポータルになりました。クライアントも共同作業、マイルストーン確認、ファイルやメッセージの交換に参加できます。",
+      "features": [
+        "公開プロフィール、招待、ロール別ダッシュボードを備えたフリーランサー／クライアントアカウント",
+        "タスク、マイルストーン、ファイル、コメント、活動履歴、保存ビュー、ワークフロー段階を持つプロジェクト",
+        "提案、サービスメニュー、ヒアリング項目、予定、定期作業、分割支払い",
+        "添付、未読状態、アプリ内／メール通知に対応した非公開メッセージ",
+        "ライブタイマー、手動時間記録、経費、請求書、元データを追跡できる請求明細"
+      ],
+      "engineering": [
+        "Django 5.2のドメイン別アプリでアカウント、案件、会話、請求、通知を分離",
+        "サーバー側の認可とユーザー範囲付きクエリで共有案件と財務データを保護",
+        "データベース制約とトランザクション更新で二重請求や複数タイマーの競合を防止",
+        "本番ではPostgreSQLに対応し、ローカルデモではSQLiteで導入を簡略化",
+        "Djangoテストで権限、業務フロー、請求ルール、通知、ダッシュボード集計を検証"
+      ]
+    }
   },
   {
-    "name": "book-log",
-    "title": "読書ログ",
-    "summary": "読んだ本を記録し、メモを残せる読書好きのためのアプリ。",
-    "tags": ["Next.js", "TypeScript", "フルスタック"],
-    "image": "/projects/book-log.png",
-    "repoUrl": "https://github.com/kittykio/book-log",
-    "websiteUrl": "https://mm-book-log.vercel.app/",
-    "date": "2024/02/21"
+    "name": "kiki-world",
+    "title": "Kiki World",
+    "summary": "アニメーションするアバターと一緒に遊び心のある世界を巡る、物語仕立ての3Dスタジオ。",
+    "tags": ["React", "Three.js", "R3F", "3D", "アニメーション"],
+    "image": "/projects/kiki-world.png",
+    "repoUrl": "https://github.com/kittykio/kiki-world",
+    "websiteUrl": "https://kiki-world.vercel.app/",
+    "date": "2026/09/04",
+    "livePreview": true,
+    "caseStudy": {
+      "eyebrow": "Kiki World",
+      "statement": "洗練され、快適に動くインタラクティブな3D体験を構築できます。",
+      "problem": "複数のThree.js実験を、明確な導線と目的を持つ一つの体験にまとめること。",
+      "role": "クリエイティブディレクション、インタラクション設計、3Dフロントエンド設計、アニメーション、アクセシビリティ、パフォーマンス改善。",
+      "constraints": "デスクトップでは豊かな表現を保ちながら、タッチ端末でも操作でき、視差効果を減らす設定を尊重し、描画性能が限られる端末でも体験を成立させる必要がありました。",
+      "process": "部屋を物語の構造にし、アバターをその訪問者として統合。キーボード、ポインター、タッチの入力を共通化し、意図のあるカメラ遷移と操作ヒントで各空間を分かりやすく設計しました。",
+      "result": "KikiがMake、Rest、Connectの3部屋を歩いて巡り、衣装を変え、部屋ごとの活動へ自然に移るレスポンシブな3D体験になりました。カメラと描画品質も端末に合わせて適応します。",
+      "features": [
+        "異なる物語、照明、アバター活動を持つ3つの探索可能な部屋",
+        "歩行、手振り、タイピング、着席、ダンス、待機を滑らかにつなぐアニメーション",
+        "現在の部屋と移動状態を保ったまま切り替えられる4種類の衣装",
+        "ホイール、キーボード、クリック、スワイプ、タッチ、モバイル用ナビゲーション",
+        "読み込み進捗、モーション軽減、手動／自動パフォーマンスモード"
+      ],
+      "engineering": [
+        "Next.jsとTypeScriptのアプリ基盤にReact Three FiberとThree.jsを統合",
+        "Mixamoクリップの水平方向ルートモーションを除去し、アバターを目的の部屋に正確に配置",
+        "縦画面、横画面、高さの低い画面に合わせてカメラ構図を調整",
+        "Adaptive DPRとパフォーマンス監視で継続的なフレーム低下時に描画負荷を軽減",
+        "実際に使う6本のアニメーションクリップだけを配信し、GLBアセットを事前読み込み"
+      ]
+    }
   },
   {
-    "name": "floating-rooms",
-    "title": "Floating Rooms",
-    "summary": "R3FとGSAPで作った、浮遊する部屋の3Dポートフォリオアプリ。",
-    "tags": ["React", "Three.js", "3D", "アニメーション"],
-    "image": "/projects/floating-rooms.png",
-    "repoUrl": "https://github.com/kittykio/floating-rooms",
-    "websiteUrl": "https://mm-floating-rooms.vercel.app/",
-    "date": "2024/10/16"
+    "name": "kiki-arcade",
+    "title": "Kiki Arcade",
+    "summary": "クリエイティブなおもちゃ、アーケードの名作、小さなブラウザーアドベンチャーを集めたカラフルな遊び場。",
+    "tags": ["JavaScript", "Vite", "Canvas", "クリエイティブコーディング"],
+    "image": "/projects/kiki-arcade.png",
+    "repoUrl": "https://github.com/kittykio/kiki-arcade",
+    "websiteUrl": "https://kiki-arcade.vercel.app/",
+    "date": "2026/09/04",
+    "livePreview": true,
+    "caseStudy": {
+      "eyebrow": "インタラクティブ・ブラウザーアーケード",
+      "statement": "小さな実験を、一貫性があり、洗練され、保守しやすい一つのインタラクティブプロダクトへ発展させられます。",
+      "problem": "Ganvas、Ticking Room、Pocket Calc、Hand Gameは、それぞれ単体ではポートフォリオ作品として小さすぎました。各作品の遊び心を残しながら、新しいゲームと統合し、ばらばらなデモ一覧ではなく意図のあるコレクションにすることが課題でした。",
+      "role": "プロダクト方針、ビジュアルデザイン、ゲームデザイン、フロントエンド設計、実装、アクセシビリティ、テスト、デプロイ。",
+      "constraints": "操作方法も描画方式も異なる14作品を軽量な一つのアプリで共存させ、キーボード、ポインター、タッチ、スワイプに対応する必要がありました。さらに、進捗のローカル保存、視差効果を減らす設定への配慮、ゲーム切り替え時のタイマー・アニメーション・音声・イベントリスナーの確実な後片付けも求められました。",
+      "process": "コレクションを「Featured Adventures」「Creative Studio」「Arcade Classics」に整理し、共通のランチャーとゲーム画面を設計しました。各ゲームは独立してマウントされ、専用の状態とクリーンアップ処理を持ちます。初期作品を作り直し、5つの大型アドベンチャーと定番ゲームを追加して見た目を統一し、ゲームロジックを純粋関数として切り出してUIとは別にテストできる構成にしました。",
+      "result": "ピクセル描画やアンビエント体験から、パズル、戦略、プラットフォーム、フライト、定番ゲームまで、14の完成したブラウザー体験を収録したレスポンシブなアーケードになりました。記録保存、アクセシブルな操作、モーション軽減、生成音声、22件の自動ロジックテストを備えています。",
+      "features": [
+        "Garden Serpent、Night Shift、Parcel Quest、Patchwork Odyssey、Paper Skiesの5つのミニアドベンチャー",
+        "ドラッグ描画、消しゴム、塗りつぶし、元に戻す、レインボーブラシ、PNG保存に対応したGanvasを含む5つのクリエイティブ体験",
+        "勝利数、連勝、手数、自己ベストを保存する4つの定番アーケードゲーム",
+        "キーボード、ポインター、タッチ、スワイプ、画面上ボタンに対応したレスポンシブ操作",
+        "アカウント不要で進捗、スコア、アンロック、モーション設定を端末内に保存"
+      ],
+      "engineering": [
+        "ViteとネイティブES Modulesを採用し、UIフレームワークに依存しない軽量なランタイムを実現",
+        "ゲームごとのマウント／クリーンアップ関数で、イベント、タイマー、アニメーションフレーム、音声の残留を防止",
+        "フレーム単位の描画が適したペイント、防衛、配達、プラットフォーム、フライト、Snake系ゲームにCanvasを活用",
+        "得点、衝突、移動、塗りつぶし、レシピ、パズル、経路、飛行物理を純粋関数にし、Node標準テストランナーで検証",
+        "セマンティックな操作部品、ライブステータス、フォーカス表示、prefers-reduced-motion対応でアクセシビリティを改善"
+      ]
+    }
   },
   {
-    "name": "calc-me",
-    "title": "電卓",
-    "summary": "シンプルな電卓アプリ。",
-    "tags": ["JavaScript", "ユーティリティ"],
-    "image": "/projects/calc-me.png",
-    "repoUrl": "https://github.com/kittykio/calc-me",
-    "websiteUrl": "https://kittykio.github.io/calc-me/",
-    "date": "2022/04/25"
-  },
-  {
-    "name": "dev-camp",
-    "title": "Dev Camp",
-    "summary": "開発ブートキャンプ向けの静的ランディングページ。",
-    "tags": ["HTML", "CSS", "ランディングページ"],
-    "image": "/projects/dev-camp.png",
-    "repoUrl": "https://github.com/kittykio/dev-camp",
-    "websiteUrl": "https://kittykio.github.io/dev-camp/",
-    "date": "2022/08/08"
-  },
-  {
-    "name": "rock-paper-scissors",
-    "title": "じゃんけん",
-    "summary": "コンピューターと対戦できるシンプルなじゃんけんゲーム。",
-    "tags": ["JavaScript", "ゲーム"],
-    "image": "/projects/rock-paper-scissors.png",
-    "repoUrl": "https://github.com/kittykio/rock-paper-scissors",
-    "websiteUrl": "https://kittykio.github.io/rock-paper-scissors/",
-    "date": "2023/01/29"
-  },
-  {
-    "name": "ticking-room",
-    "title": "Ticking Room",
-    "summary": "昼と夜がゆるやかに移り変わる、アニメーション付きの部屋。照明、雰囲気、さりげない効果音でシーンを豊かにしています。",
-    "tags": ["JavaScript", "アニメーション"],
-    "image": "/projects/ticking-room.png",
-    "repoUrl": "https://github.com/kittykio/ticking-room",
-    "websiteUrl": "https://kittykio.github.io/ticking-room/",
-    "date": "2021/12/09"
-  },
-  {
-    "name": "ganvas",
-    "title": "Ganvas",
-    "summary": "楽しくインタラクティブに描けるスケッチアプリ。",
-    "tags": ["JavaScript", "Canvas"],
-    "image": "/projects/ganvas.png",
-    "repoUrl": "https://github.com/kittykio/ganvas",
-    "websiteUrl": "https://kittykio.github.io/ganvas/",
-    "date": "2023/11/13"
-  },
-  {
-    "name": "art-portfolio",
-    "title": "アートポートフォリオ",
-    "summary": "アーティストの作品を展示するアートギャラリーサイト。",
-    "tags": ["Next.js", "MongoDB", "ポートフォリオ"],
-    "image": "/projects/art-portfolio.png",
-    "repoUrl": "https://github.com/kittykio/art-portfolio",
-    "websiteUrl": "https://momoart.vercel.app/",
-    "date": "2026/02/06"
+    "name": "booktrace",
+    "title": "Booktrace",
+    "summary": "レビュー、評価、メモ、読書目標とともに、自分だけの読書履歴を残せるアプリ。",
+    "tags": ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Auth.js"],
+    "image": "/projects/booktrace.png",
+    "repoUrl": "https://github.com/kittykio/booktrace",
+    "websiteUrl": "https://kiki-booktrace.vercel.app/",
+    "date": "2026/09/04",
+    "livePreview": true,
+    "caseStudy": {
+      "eyebrow": "非公開の読書コンパニオン",
+      "statement": "実際のユーザーデータを扱う、完成度と信頼性の高いフルスタックアプリを設計・公開できます。",
+      "problem": "基本的なBook Logはタイトルとメモを保存できましたが、信頼できる個人向けプロダクトには達していませんでした。非公開ライブラリ、豊かな読書情報、役立つ進捗表示、障害に強い書籍検索、すべての更新に対する安全な所有権チェックが必要でした。",
+      "role": "プロダクト方針、UX／ビジュアルデザイン、フルスタック設計、データベース設計、認証、バリデーション、外部API連携、アクセシビリティ、テスト、デプロイ。",
+      "constraints": "ライブラリ情報を必ず所有者だけに限定し、外部書籍サービスの遅延や停止にも対応する必要がありました。信頼できないフォーム入力のサーバー検証、安全なDBマイグレーション、レスポンシブな読み込み・空・エラー状態も同時に求められました。",
+      "process": "Auth.jsセッションと所有者範囲付きPrismaクエリを中心に再構築し、読書状態、評価、タグ、お気に入り、読了日、目標、プロフィール設定へデータモデルを拡張しました。サーバーアクションはZodで検証し、検索はGoogle Booksを優先しつつOpen Libraryへ自動で切り替えます。保存時の書誌スナップショットにより外部障害中も個人記録を利用できます。",
+      "result": "認証、個人ライブラリ、5つの読書状態、レビューとメモ、年間目標と統計、障害に強い検索、アカウント管理、アクセシブルなレスポンシブ状態、自動テストを備えた本番運用可能な読書コンパニオンになりました。",
+      "features": [
+        "Auth.jsの認証情報セッションで保護された非公開アカウントとライブラリ",
+        "読書状態、1〜5評価、タグ、お気に入り、レビュー、メモ、読書日",
+        "年間目標、進捗表示、ライブラリ統計",
+        "タイムアウト、キャッシュ、Open Library自動フォールバックを備えたGoogle Books検索",
+        "プロフィール設定とパスワード再確認付きアカウント削除"
+      ],
+      "engineering": [
+        "Next.js 16のServer ComponentsとServer Actionsで非公開データの読み書きをサーバー内に保持",
+        "すべてのPrismaライブラリクエリをuserIdで限定し、ユーザーと書籍の組み合わせをDBでも一意に制約",
+        "Zodで更新前にフォームデータを検証し、bcryptで保存パスワードを保護",
+        "検証済み書誌スナップショットで保存済み記録を外部サービスの可用性から分離",
+        "VitestとTesting Libraryでドメイン検証、外部データ変換、主要UI動作をテスト"
+      ]
+    }
   }
 ]

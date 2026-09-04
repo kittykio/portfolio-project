@@ -13,7 +13,9 @@ type ProjectSource = {
   image: string;
   repoUrl: string;
   websiteUrl: string;
+  livePreview?: boolean;
   date: string;
+  caseStudy?: ProjectType['caseStudy'];
 };
 
 /**
@@ -34,9 +36,7 @@ const getGeneratedProjectId = (name: string): number => {
  * Project content is local and stable, so normal page renders never need a database.
  * The existing project-shaped UI is intentionally reused for the floating project cards.
  */
-export async function getAllProjects(
-  locale: Locale = defaultLocale,
-): Promise<ProjectType[]> {
+export async function getAllProjects(locale: Locale = defaultLocale): Promise<ProjectType[]> {
   const source = locale === 'ja' ? projectsJapanese : projects;
   const projectList = (source as ProjectSource[]).map((project) => ({
     slug: project.name,
@@ -52,6 +52,8 @@ export async function getAllProjects(
     modifiedDate: new Date(project.date),
     repoUrl: project.repoUrl,
     websiteUrl: project.websiteUrl,
+    livePreview: project.livePreview,
+    caseStudy: project.caseStudy,
   }));
 
   if (new Set(projectList.map((project) => project.id)).size !== projectList.length) {

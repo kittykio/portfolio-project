@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useAnimation, useMotionValue } from 'framer-motion';
 import SectionWrapper from '@/components/SectionWrapper';
-import { ProjectType } from '@/types/ProjectType';
+import type { ProjectType } from '@/types/ProjectType';
 import ProjectModal from '@/app/projects/components/ProjectModal';
-import ProjectItem from '../../components/ProjectItem';
+import ProjectItem from '@/components/ProjectItem';
 import { getStoredLikes } from '@/utils/likes';
 import { useLocale } from '@/components/LocaleContext';
 
@@ -29,41 +29,30 @@ const MarqueeRow = ({
   const x = useMotionValue(0);
   const [rowWidth, setRowWidth] = useState(0);
 
-  const mod = (n: number, m: number) => ((n % m) + m) % m;
-
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-
-    const update = () => setRowWidth(el.scrollWidth / 2 || 0);
-    update();
-
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    window.addEventListener('resize', update);
-
+    const element = containerRef.current;
+    if (!element) return;
+    const updateWidth = () => setRowWidth(element.scrollWidth / 2 || 0);
+    updateWidth();
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(element);
+    window.addEventListener('resize', updateWidth);
     return () => {
-      ro.disconnect();
-      window.removeEventListener('resize', update);
+      observer.disconnect();
+      window.removeEventListener('resize', updateWidth);
     };
   }, []);
 
-  const rowItems = reverse
-    ? [...projects.slice().reverse(), ...projects.slice().reverse()]
-    : [...projects, ...projects];
+  const orderedProjects = reverse ? projects.slice().reverse() : projects;
+  const rowItems = [...orderedProjects, ...orderedProjects];
+  const modulo = (value: number, divisor: number) => ((value % divisor) + divisor) % divisor;
 
   const startMarquee = async (fromX = 0) => {
-    if (!rowWidth || rowWidth <= 0) return;
+    if (rowWidth <= 0) return;
     x.set(fromX);
-
     await controls.start({
       x: [fromX, reverse ? 0 : -rowWidth],
-      transition: {
-        repeat: Infinity,
-        repeatType: 'loop',
-        ease: 'linear',
-        duration: 100,
-      },
+      transition: { repeat: Infinity, repeatType: 'loop', ease: 'linear', duration: 100 },
     });
   };
 
@@ -72,14 +61,10 @@ const MarqueeRow = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rowWidth, reverse]);
 
-  const handlePause = () => controls.stop();
-  const handleResume = () => {
-    if (!rowWidth || rowWidth <= 0) {
-      void startMarquee(0);
-      return;
-    }
+  const resumeMarquee = () => {
+    if (rowWidth <= 0) return void startMarquee(0);
     const currentX = x.get();
-    const fromX = !reverse ? -mod(-currentX, rowWidth) : -rowWidth + mod(currentX, rowWidth);
+    const fromX = reverse ? -rowWidth + modulo(currentX, rowWidth) : -modulo(-currentX, rowWidth);
     void startMarquee(fromX);
   };
 
@@ -89,17 +74,17 @@ const MarqueeRow = ({
       className="flex gap-16"
       animate={controls}
       style={{ x }}
-      onMouseEnter={handlePause}
-      onMouseLeave={handleResume}
+      onMouseEnter={() => controls.stop()}
+      onMouseLeave={resumeMarquee}
     >
-      {rowItems.map((project, i) => (
+      {rowItems.map((project, index) => (
         <ProjectItem
-          key={i}
+          key={`${project.id}-${index}`}
           project={project}
           likeItemList={likeItemList}
           setLikeItemList={setLikeItemList}
           onSelect={onSelect}
-          className="flex-shrink-0 w-[clamp(220px,25vw,360px)] cursor-pointer group pb-24"
+          className="group w-[clamp(220px,25vw,360px)] flex-shrink-0 cursor-pointer pb-24"
         />
       ))}
     </motion.div>
@@ -124,26 +109,28 @@ const ProjectSection = ({ projects }: { projects: ProjectType[] }) => {
     <>
       <SectionWrapper
         title={locale === 'ja' ? '注目のプロジェクト' : 'Featured projects'}
-        subtitle={locale === 'ja' ? '使う人にも、その裏側の仕組みにも丁寧に向き合ってつくったプロダクト、UI、創作的な実験の一部です。' : 'A selection of products, interfaces, and creative experiments—built with care for both the people using them and the systems behind them.'}
+        subtitle={
+          locale === 'ja'
+            ? '使う人にも、その裏側の仕組みにも丁寧に向き合ってつくった4つのプロダクトです。'
+            : 'Four products built with care for both the people using them and the systems behind them.'
+        }
       >
-        <section className="relative overflow-hidden py-4 md:py-16 flex flex-col gap-16 md:gap-8">
+        <section className="relative flex flex-col gap-16 overflow-hidden py-4 md:gap-8 md:py-16">
           <MarqueeRow
             projects={likeItemList}
             likeItemList={likeItemList}
             setLikeItemList={setLikeItemList}
-            reverse={false}
             onSelect={setSelectedProject}
           />
           <MarqueeRow
             projects={likeItemList}
             likeItemList={likeItemList}
             setLikeItemList={setLikeItemList}
-            reverse={true}
+            reverse
             onSelect={setSelectedProject}
           />
         </section>
       </SectionWrapper>
-
       <ProjectModal
         isOpen={!!selectedProject}
         onClose={() => setSelectedProject(null!)}
