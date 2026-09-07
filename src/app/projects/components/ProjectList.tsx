@@ -44,7 +44,7 @@ const ProjectList: FC<ProjectListProps> = ({ projects, onLikesChange }) => {
   return (
     <>
       <motion.div
-        className="columns-1 gap-8 px-0 sm:columns-2 sm:gap-10 sm:px-4 lg:gap-12 lg:px-8"
+        className="grid grid-cols-1 items-start gap-x-8 gap-y-16 px-0 sm:grid-cols-2 sm:gap-x-10 sm:px-4 lg:gap-x-12 lg:px-8"
         variants={staggerContainer(0.5, 0.5)}
         initial="hidden"
         animate="show"
@@ -52,7 +52,7 @@ const ProjectList: FC<ProjectListProps> = ({ projects, onLikesChange }) => {
         {likeItemList.map((project, i) => (
           <motion.div
             key={project.id}
-            className="relative w-full break-inside-avoid group pb-28 sm:pb-36"
+            className="relative min-w-0 w-full group"
             variants={fadeIn('up', 'spring', i * 0.1, 1)}
           >
             <ProjectItem

@@ -73,7 +73,7 @@ const ProjectModal: FC<ProjectModalProps> = ({
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-30" onClose={onClose}>
+      <Dialog as="div" className="relative z-[60]" onClose={onClose}>
         {/* BACKDROP */}
         <TransitionChild
           as={Fragment}
@@ -100,7 +100,7 @@ const ProjectModal: FC<ProjectModalProps> = ({
           >
             <DialogPanel
               className="relative w-full max-w-3xl max-h-[90vh] rounded-2xl isolate
-  bg-surface-glass backdrop-blur-md border border-border/20
+  bg-canvas border border-border/20
   shadow-[inset_1px_1px_2px_var(--shadow-inset-light),inset_-1px_-1px_2px_var(--shadow-inset-dark)]
   drop-shadow-[0_8px_24px_var(--shadow-strong)]
   text-content-muted flex flex-col overflow-hidden"
@@ -121,7 +121,7 @@ const ProjectModal: FC<ProjectModalProps> = ({
                     alt={project.title}
                     width={1000}
                     height={1000}
-                    className="w-full h-auto object-contain"
+                    className="w-full h-auto object-contain [@media(max-height:500px)]:max-h-[25svh] [@media(max-height:500px)]:w-auto"
                     priority
                   />
                 </div>

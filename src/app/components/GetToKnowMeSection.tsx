@@ -98,13 +98,13 @@ const FlipCard = ({
   }, [isArray]);
 
   return (
-    <div className="relative w-full h-full [perspective:1200px] group" style={size}>
-      <div className="relative w-full h-full transition-transform duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)] text-content">
+    <div className="profile-fact relative w-full h-full group" style={size}>
+      <div className="profile-fact-inner relative w-full h-full text-content">
         {/* Front side */}
-        <Card rounded>{front}</Card>
+        <div className="profile-fact-front"><Card rounded>{front}</Card></div>
 
         {/* Back side */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center overflow-hidden bg-flame-500 text-gray-100 p-4 text-center [transform:rotateY(180deg)] [backface-visibility:hidden] rounded-lg">
+        <div className="profile-fact-back flex flex-col items-center justify-center overflow-hidden bg-flame-500 text-gray-100 p-4 text-center rounded-lg">
           {isArray ? <AnimatedText text={back[index % back.length]} /> : <>{back}</>}
         </div>
       </div>

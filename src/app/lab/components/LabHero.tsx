@@ -162,10 +162,9 @@ export default function LabHero({ paused = false, eyebrow = 'Hi, I\'m', descript
           style={{ backgroundColor: skyTint, opacity: skyTintStrength }}
         />
       )}
-      <Leva
-        collapsed={false}
-        titleBar={{ title: 'Lab controls', position: { x: 0, y: 112 } }}
-      />
+      <div className="absolute left-3 right-3 top-3 z-20 max-h-[70svh] overflow-y-auto sm:left-auto sm:w-72">
+        <Leva fill collapsed titleBar={{ title: 'Lab controls' }} />
+      </div>
 
       <LazyMotion features={domAnimation} strict>
         <div className="relative z-10 flex h-full flex-col items-center justify-center px-4 text-center text-content pointer-events-none">

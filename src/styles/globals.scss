@@ -67,3 +67,19 @@ ul li:has(input[type='checkbox']) {
   header, footer, .no-print, button, [aria-label='Ask Kiki'] { display: none !important; }
   .resume-sheet { box-shadow: none !important; }
 }
+
+// Touch screens show both sides without relying on hover or 3D back-face rendering.
+.profile-fact-inner { display: flex; flex-direction: column; }
+.profile-fact-front { min-height: 4rem; text-align: center; }
+.profile-fact-back { flex: 1; }
+@media (hover: hover) and (pointer: fine) {
+  .profile-fact { perspective: 1200px; }
+  .profile-fact-inner { display: block; transform-style: preserve-3d; transition: transform 700ms; }
+  .profile-fact:hover .profile-fact-inner { transform: rotateY(180deg); }
+  .profile-fact-front, .profile-fact-back {
+    position: absolute; inset: 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  .profile-fact-back { transform: rotateY(180deg); }
+}

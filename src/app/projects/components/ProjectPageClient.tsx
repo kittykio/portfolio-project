@@ -110,7 +110,7 @@ const ProjectPageClient = ({ initialProjects }: ProjectPageClientProps) => {
   const paginatedProjects = sortedProjects.slice(start, end);
 
   return (
-    <SectionWrapper title={locale === 'ja' ? 'プロジェクト' : 'Projects'} subtitle={locale === 'ja' ? '技術スタックで絞り込み、カードを開いて制作の背景、ソースコード、公開サイトを見てみてください。' : 'Filter by stack, then open a card for the story, source code, and live result.'} className="px-4 max-w-7xl mx-auto pb-32 mt-[100px]">
+    <SectionWrapper title={locale === 'ja' ? 'プロジェクト' : 'Projects'} subtitle={locale === 'ja' ? '技術スタックで絞り込み、カードを開いて制作の背景、ソースコード、公開サイトを見てみてください。' : 'Filter by stack, then open a card for the story, source code, and live result.'} className="w-full min-w-0 px-4 max-w-7xl mx-auto pb-32 mt-[100px]">
       <ProjectFilter projects={initialProjects} filters={filters} onFiltersChange={handleFiltersChange} />
 
       {/* Sorting Tabs */}

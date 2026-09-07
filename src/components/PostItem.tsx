@@ -37,7 +37,7 @@ const PostItem: FC<PostItemProps> = ({ index, post, postItemList, setPostItemLis
         <div
           className="absolute -bottom-6 left-1/2 -translate-x-1/2
         opacity-0 scale-0 pointer-events-none
-        md:group-hover:opacity-100 md:group-hover:scale-100 md:group-hover:pointer-events-auto
+        [@media(hover:hover)_and_(pointer:fine)]:group-hover:opacity-100 [@media(hover:hover)_and_(pointer:fine)]:group-hover:scale-100 [@media(hover:hover)_and_(pointer:fine)]:group-hover:pointer-events-auto
         transition-transform transition-opacity duration-300 ease-out z-20"
         >
           <LikeButton
@@ -94,7 +94,7 @@ const PostItem: FC<PostItemProps> = ({ index, post, postItemList, setPostItemLis
 
           {/* --- Mobile/Permanent Like Button (Hidden on desktop) --- */}
           {/* This button is styled to be more subtle (hideBackground) and permanently visible on mobile. */}
-          <div className="z-20 self-end md:hidden">
+          <div className="z-20 self-end [@media(hover:hover)_and_(pointer:fine)]:hidden">
             <LikeButton
               likeItem={post}
               likeItemList={postItemList}

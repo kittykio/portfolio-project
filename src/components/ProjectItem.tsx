@@ -50,15 +50,15 @@ const ProjectItem = ({
             </span>
           </div>
         ) : (
-          <>
-            {!dimensions && <div className="w-full h-48 bg-surface-muted animate-pulse" />}
+          <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-muted">
+            {!dimensions && <div className="absolute inset-0 animate-pulse" />}
             <Image
               src={project.image}
               alt={project.title}
               priority
               width={dimensions?.width ?? 1000}
               height={dimensions?.height ?? 1000}
-              className="aspect-[4/3] w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
               onLoad={(e) => {
                 const target = e.target as HTMLImageElement;
                 setDimensions({
@@ -72,7 +72,7 @@ const ProjectItem = ({
                 Live preview unavailable
               </span>
             )}
-          </>
+          </div>
         )}
 
         {/* Keep the full-card target separate from overlay controls to preserve valid button markup. */}
@@ -86,7 +86,7 @@ const ProjectItem = ({
           className="absolute inset-0 z-0 focus-visible:outline focus-visible:outline-4 focus-visible:outline-flame-500 focus-visible:outline-offset-[-4px]"
         />
 
-        <div className="pointer-events-auto absolute z-10 -bottom-12 left-1/2 flex -translate-x-1/2 scale-100 flex-col items-center opacity-100 transition-transform transition-opacity duration-300 ease-out md:pointer-events-none md:-bottom-14 md:scale-0 md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:scale-100 md:group-hover:opacity-100">
+        <div className="pointer-events-auto relative z-10 flex w-full min-w-0 flex-col items-center px-3 py-4">
           <LikeButton
             likeItem={project}
             likeItemList={likeItemList}
@@ -112,9 +112,9 @@ const ProjectItem = ({
                 }
               }}
             >
-              <p className="mt-2 flex max-w-[calc(100vw-2rem)] items-center justify-center gap-2 text-center font-bodyBold text-content sm:max-w-none">
+              <p className="mt-2 flex items-center justify-center gap-2 break-words text-center font-bodyBold text-content [overflow-wrap:anywhere]">
                 {project.title}
-                <BiSolidZoomIn />
+                <BiSolidZoomIn className="shrink-0" />
               </p>
             </div>
           </Magnetic>

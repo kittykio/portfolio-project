@@ -62,9 +62,9 @@ const PostDetail = ({ post, posts }: Props) => {
   return (
     <SectionWrapper className="max-w-7xl mx-auto px-4 pb-[700px] mt-32 sm:mt-36 lg:mt-24">
       {/* === Layout Grid === */}
-      <div className="grid grid-cols-1 lg:grid-cols-[16rem_minmax(0,1fr)_16rem] gap-12 relative">
+      <div className="grid grid-cols-1 xl:grid-cols-[16rem_minmax(0,1fr)_16rem] gap-12 relative">
         {/* === TOC (Desktop) === */}
-        <aside className="hidden lg:block sticky top-36 h-fit self-start">
+        <aside className="hidden xl:block sticky top-36 h-fit self-start">
           <TableOfContents
             headings={postItem.headings}
             postItem={postItem}
@@ -73,7 +73,7 @@ const PostDetail = ({ post, posts }: Props) => {
         </aside>
 
         {/* === Main Content === */}
-        <main className="flex flex-col items-center gap-8">
+        <main className="flex min-w-0 flex-col items-center gap-8">
           {/* Title */}
           <h1 className="text-center font-bodyBold text-3xl sm:text-4xl md:text-5xl">{postItem.title}</h1>
 
@@ -90,7 +90,7 @@ const PostDetail = ({ post, posts }: Props) => {
           <div className="flex flex-wrap justify-center gap-2"><ShareButton title={postItem.title} /><SaveButton type="blog" id={postItem.id} title={postItem.title} href={getLocalePath(`/blog/post/${postItem.slug.join('/')}`, locale)} /></div>
 
           {/* Like Button (Mobile only) */}
-          <div className="flex w-full justify-end sm:w-[80%] lg:hidden">
+          <div className="flex w-full justify-end sm:w-[80%] xl:hidden">
             <LikeButton
               likeItem={postItem}
               setLikeItem={setPostItem}
@@ -114,7 +114,7 @@ const PostDetail = ({ post, posts }: Props) => {
           </div>
 
           {/* TOC (Mobile only) */}
-          <div className="lg:hidden my-12 w-full">
+          <div className="xl:hidden my-12 w-full">
             <TableOfContents
               headings={postItem.headings}
               postItem={postItem}
@@ -123,7 +123,7 @@ const PostDetail = ({ post, posts }: Props) => {
           </div>
 
           {/* Article Content */}
-          <article className="w-full max-w-[75ch] prose">{postItem.content}</article>
+          <article className="w-full min-w-0 max-w-[75ch] prose [overflow-wrap:anywhere]">{postItem.content}</article>
           {(previousPost || nextPost) && <nav aria-label={relatedCopy.label} className="grid w-full max-w-[75ch] gap-4 border-t border-border pt-8 sm:grid-cols-2">
             <p className="text-sm font-bodyBold text-content-muted sm:col-span-2">{relatedCopy.label}</p>
             {previousPost ? <Link href={getLocalePath(`/blog/post/${previousPost.slug.join('/')}`, locale)} className="rounded-2xl bg-surface-glass p-5 hover:text-flame-500"><span className="text-sm">{relatedCopy.previous}</span><strong className="mt-2 block">{previousPost.title}</strong></Link> : <div />}
@@ -132,7 +132,7 @@ const PostDetail = ({ post, posts }: Props) => {
         </main>
 
         {/* Balances the desktop table-of-contents column so the article stays centered. */}
-        <div className="hidden lg:block" aria-hidden="true" />
+        <div className="hidden xl:block" aria-hidden="true" />
       </div>
 
       {/* === Popular Posts === */}

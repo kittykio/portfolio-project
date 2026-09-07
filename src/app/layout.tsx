@@ -35,7 +35,7 @@ const GA_TAG_ID = process.env.NEXT_PUBLIC_GA_ID || '';
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
   manifest: '/favicon_io/site.webmanifest',
-  title: 'Kitty Kio | Creative Developer & Artist',
+  title: 'Kitty Kio | Creative Developer',
   description: 'Kitty Kio’s creative developer portfolio, art, experiments, projects, and technical writing.',
   keywords: [
     'Developer Portfolio',
@@ -63,29 +63,29 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: 'Kitty Kio | Creative Developer & Artist',
+    title: 'Kitty Kio | Creative Developer',
     description: 'Projects, art, experiments, and technical writing by Kitty Kio.',
     type: 'website',
     images: [
       {
         url: getOgCardUrl({
-          title: 'Kitty Kio — creative developer & artist',
+          title: 'Kitty Kio — creative developer',
           description: 'Projects, art, experiments, and technical writing by Kitty Kio.',
           type: 'site',
         }),
         width: 1200,
         height: 630,
-        alt: 'Kitty Kio creative developer and artist portfolio',
+        alt: 'Kitty Kio creative developer portfolio',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Kitty Kio | Creative Developer & Artist',
+    title: 'Kitty Kio | Creative Developer',
     description: 'Projects, art, experiments, and technical writing by Kitty Kio.',
     images: [
       getOgCardUrl({
-        title: 'Kitty Kio — creative developer & artist',
+        title: 'Kitty Kio — creative developer',
         description: 'Projects, art, experiments, and technical writing by Kitty Kio.',
         type: 'site',
       }),
