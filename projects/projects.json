@@ -1,5 +1,45 @@
 [
   {
+    "name": "tempo",
+    "title": "Tempo",
+    "tags": [
+      "React",
+      "TypeScript",
+      "FastAPI",
+      "Python",
+      "PostgreSQL"
+    ],
+    "image": "/projects/tempo.png",
+    "repoUrl": "https://github.com/kittykio/tempo",
+    "websiteUrl": "https://kiki-tempo.vercel.app/",
+    "date": "2026/09/08",
+    "livePreview": true,
+    "summary": "A personal focus workspace connecting a Kanban board, Pomodoro timer, notes, goals, and habits.",
+    "caseStudy": {
+      "eyebrow": "Personal focus workspace",
+      "statement": "I can connect everyday planning with reliable timing, private data, and meaningful progress tracking.",
+      "problem": "Tasks, focus sessions, notes, and habits often live in separate tools. Tempo brings them into one workspace so a plan can become focused work and a useful record of progress.",
+      "role": "Product design, React and TypeScript frontend, FastAPI backend, data modeling, authentication, timer behavior, and automated testing.",
+      "constraints": "Timers must survive refreshes and background tabs without losing accuracy. Private records must remain isolated between accounts, completed sessions must not be counted twice, and goals and reviews must respect calendar boundaries.",
+      "process": "I connected task cards to a shared focus timer, then added notes, subtasks, goals, habits, and review views. Server-side ownership checks protect each account, while deadline-based timing and transactional session saves keep progress consistent.",
+      "result": "A full-stack workspace with private boards, focus history, personal notes, habit streaks, progress reviews, customizable themes and timers, and a temporary demo that can be explored without signing up.",
+      "features": [
+        "Kanban tasks with priorities, session estimates, notes, and subtasks",
+        "Pomodoro sessions and breaks with refresh recovery and optional completion alerts",
+        "Private scratchpad, automatic or manual goals, and weekday-based habit tracking",
+        "Weekly and monthly reviews of focus sessions, completed tasks, and habits",
+        "Personal themes and timer styles, account settings, and a 24-hour sample workspace"
+      ],
+      "engineering": [
+        "React, TypeScript, and Vite frontend paired with a FastAPI and Pydantic backend",
+        "PostgreSQL support for hosting and SQLite for local development",
+        "Salted scrypt password hashes, HttpOnly sessions, CSRF checks, and account-scoped queries",
+        "Deadline-based timing and transactional saves prevent drift and duplicate session records",
+        "Backend and frontend tests cover account isolation, timer recovery, calendar boundaries, and interface workflows"
+      ]
+    }
+  },
+  {
     "name": "workio",
     "title": "Workio",
     "summary": "A connected workspace that brings freelancers, clients, projects, messages, time, and billing together.",

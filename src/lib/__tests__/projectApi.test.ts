@@ -1,6 +1,6 @@
 import { getAllProjects } from '@/lib/projectApi';
 
-const currentSlugs = ['workio', 'kiki-world', 'kiki-arcade', 'booktrace'];
+const currentSlugs = ['tempo', 'workio', 'kiki-world', 'kiki-arcade', 'booktrace'];
 
 describe('project catalogue', () => {
   it.each(['en', 'ja'] as const)('normalizes the %s catalogue', async (locale) => {
@@ -13,7 +13,7 @@ describe('project catalogue', () => {
       expect(project.createdDate).toBeInstanceOf(Date);
       expect(project.modifiedDate).toBeInstanceOf(Date);
       expect(project.like).toBe(0);
-      expect(project.date).toBe('2026/09/04');
+      expect(project.date).toBe(project.slug === 'tempo' ? '2026/09/08' : '2026/09/04');
       expect(project.image).toBe(`/projects/${project.slug}.png`);
       expect(project.repoUrl).toBe(`https://github.com/kittykio/${project.slug}`);
       expect(project.websiteUrl).toBe(`https://kiki-${project.slug.replace(/^kiki-/, '')}.vercel.app/`);

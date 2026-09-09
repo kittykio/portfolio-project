@@ -111,8 +111,8 @@ const ProjectSection = ({ projects }: { projects: ProjectType[] }) => {
         title={locale === 'ja' ? '注目のプロジェクト' : 'Featured projects'}
         subtitle={
           locale === 'ja'
-            ? '使う人にも、その裏側の仕組みにも丁寧に向き合ってつくった4つのプロダクトです。'
-            : 'Four products built with care for both the people using them and the systems behind them.'
+            ? '使う人にも、その裏側の仕組みにも丁寧に向き合ってつくったプロダクトです。'
+            : 'Products built with care for both the people using them and the systems behind them.'
         }
       >
         <section className="relative flex flex-col gap-16 overflow-hidden py-4 md:gap-8 md:py-16">
