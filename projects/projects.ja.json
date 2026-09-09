@@ -1,5 +1,38 @@
 [
   {
+    "name": "bad-ui-olympics",
+    "title": "Bad UI Olympics",
+    "summary": "使いづらいUIが競技に。回転する暗証番号、不思議な音量ボタン、逃げる送信ボタンに挑戦するタイムアタックゲーム。",
+    "tags": [
+      "React",
+      "TypeScript",
+      "Next.js",
+      "SCSS"
+    ],
+    "image": "/projects/bad-ui-olympics.svg",
+    "repoUrl": "https://github.com/kittykio/bad-ui-olympics",
+    "websiteUrl": "",
+    "date": "2026/09/09",
+    "caseStudy": {
+      "eyebrow": "遊べるUI実験",
+      "problem": "日常的なフォーム操作を、思わず笑ってしまうゲームに変える。",
+      "role": "ゲーム設計、UIデザイン、フロントエンド実装。",
+      "constraints": "ログイン不要。マウス、タッチ、キーボードで遊べること。",
+      "process": "6つの競技を作り、競技間ではタイマーを停止。端末内の自己ベストとスコア共有を追加。",
+      "result": "6つの競技、メダル判定、リプレイ機能を備えたブラウザーゲーム。",
+      "statement": "使いにくさを、遊びに変える。",
+      "features": [
+        "Six timed events with paused intermissions",
+        "Medals, browser-local personal best, replay, and copyable scores"
+      ],
+      "engineering": [
+        "React state and interval cleanup for game transitions",
+        "Monotonic timing excludes intermissions",
+        "Keyboard and touch controls with scoped responsive styles"
+      ]
+    }
+  },
+  {
     "name": "tempo",
     "title": "Tempo",
     "tags": [

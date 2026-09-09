@@ -1,6 +1,13 @@
 import { getAllProjects } from '@/lib/projectApi';
 
-const currentSlugs = ['tempo', 'workio', 'kiki-world', 'kiki-arcade', 'booktrace'];
+const currentSlugs = [
+  'bad-ui-olympics',
+  'tempo',
+  'workio',
+  'kiki-world',
+  'kiki-arcade',
+  'booktrace',
+];
 
 describe('project catalogue', () => {
   it.each(['en', 'ja'] as const)('normalizes the %s catalogue', async (locale) => {
@@ -13,10 +20,19 @@ describe('project catalogue', () => {
       expect(project.createdDate).toBeInstanceOf(Date);
       expect(project.modifiedDate).toBeInstanceOf(Date);
       expect(project.like).toBe(0);
+      if (project.slug === 'bad-ui-olympics') {
+        expect(project.date).toBe('2026/09/09');
+        expect(project.image).toBe('/projects/bad-ui-olympics.svg');
+        expect(project.websiteUrl).toBe('');
+        expect(project.repoUrl).toBe('https://github.com/kittykio/bad-ui-olympics');
+        return;
+      }
       expect(project.date).toBe(project.slug === 'tempo' ? '2026/09/08' : '2026/09/04');
       expect(project.image).toBe(`/projects/${project.slug}.png`);
       expect(project.repoUrl).toBe(`https://github.com/kittykio/${project.slug}`);
-      expect(project.websiteUrl).toBe(`https://kiki-${project.slug.replace(/^kiki-/, '')}.vercel.app/`);
+      expect(project.websiteUrl).toBe(
+        `https://kiki-${project.slug.replace(/^kiki-/, '')}.vercel.app/`,
+      );
       expect(project.livePreview).toBe(true);
       expect(project.caseStudy).toEqual(
         expect.objectContaining({
@@ -47,7 +63,9 @@ describe('project catalogue', () => {
       expect(project.repoUrl).toBe(english[index].repoUrl);
       expect(project.websiteUrl).toBe(english[index].websiteUrl);
       expect(project.livePreview).toBe(english[index].livePreview);
-      expect(project.caseStudy?.features).toHaveLength(english[index].caseStudy?.features?.length ?? 0);
+      expect(project.caseStudy?.features).toHaveLength(
+        english[index].caseStudy?.features?.length ?? 0,
+      );
       expect(project.caseStudy?.engineering).toHaveLength(
         english[index].caseStudy?.engineering?.length ?? 0,
       );

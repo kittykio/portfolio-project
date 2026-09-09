@@ -1,5 +1,38 @@
 [
   {
+    "name": "bad-ui-olympics",
+    "title": "Bad UI Olympics",
+    "summary": "Six absurd timed challenges: spinning PIN digits, unhelpful volume buttons, a relocating submit button, backwards checkboxes, a scrambled elevator, and a password puzzle.",
+    "tags": [
+      "React",
+      "TypeScript",
+      "Next.js",
+      "SCSS"
+    ],
+    "image": "/projects/bad-ui-olympics.svg",
+    "repoUrl": "https://github.com/kittykio/bad-ui-olympics",
+    "websiteUrl": "",
+    "date": "2026/09/09",
+    "caseStudy": {
+      "eyebrow": "A playable interaction experiment",
+      "problem": "Turn familiar interface frustrations into a short, funny game visitors can immediately play.",
+      "role": "Game design, visual direction, and frontend implementation.",
+      "constraints": "Keep the game playable with mouse, touch, and keyboard, without accounts or external services.",
+      "process": "Built six distinct challenges with timed rounds, paused intermissions, a browser-local personal best, and copyable results.",
+      "result": "A six-event browser game with medal thresholds, individual event times, replay, and shareable scores.",
+      "statement": "Sometimes the best way to appreciate good design is to race through bad design.",
+      "features": [
+        "Six timed events with paused intermissions",
+        "Medals, browser-local personal best, replay, and copyable scores"
+      ],
+      "engineering": [
+        "React state and interval cleanup for game transitions",
+        "Monotonic timing excludes intermissions",
+        "Keyboard and touch controls with scoped responsive styles"
+      ]
+    }
+  },
+  {
     "name": "tempo",
     "title": "Tempo",
     "tags": [
