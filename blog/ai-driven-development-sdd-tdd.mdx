@@ -1,0 +1,202 @@
+---
+date: 2026-09-10
+title: "AI-Driven Development: A Practical Guide to SDD and TDD"
+description: "Learn a practical AI-driven development workflow that connects clear specifications, test-driven development, and human review to build reliable software."
+tags: ["Developer Workflow", "Developer Tools", "Testing"]
+image: "/blog/images/ai-driven-development-sdd-tdd.png"
+---
+
+An AI assistant can produce a convincing implementation before you have finished deciding what the feature should do. That makes starting easier, but it also makes misunderstandings cheaper to multiply.
+
+AI-driven development works best when you make intent explicit and feedback fast. This guide is for beginner-to-intermediate developers who want to use AI across planning, implementation, and review. You will build a small JavaScript feature using specification-driven development (SDD) and test-driven development (TDD), then learn how to apply the same loop to a real repository.
+
+## From code suggestions to development workflows
+
+Here, **AI-driven development** means using AI to help carry work through multiple stages of software development, while developers remain responsible for requirements and the delivered result. It is a working definition, not a formal standard or a particular product.
+
+Think of the evolution in three overlapping interaction patterns: inline completion suggests the next fragment; conversational assistance explains code and proposes edits; tool-using agents inspect files, change an implementation, and run checks. These patterns coexist, and the right level of autonomy depends on the task.
+
+For a concrete example, [GitHub's cloud agent documentation](https://docs.github.com/en/copilot/concepts/agents/cloud-agent/about-cloud-agent) describes repository research, implementation planning, code changes, and automated test execution. Tool access lets an assistant gather evidence from a project instead of relying only on the snippet in a conversation. It does not make every conclusion correct.
+
+The useful shift is from asking for a block of code to defining a bounded outcome. “Add search” leaves decisions hidden. “Filter titles case-insensitively, preserve their order, and show all items for an empty query” gives both the developer and the assistant something concrete to verify.
+
+## Practices that make AI assistance useful
+
+Start with context that affects the decision: relevant source files, existing tests, dependency versions, coding conventions, and the command that validates the change. Ask the assistant to inspect the current implementation before proposing replacements. A plausible API from another library version is still the wrong API for your project.
+
+Keep each change small enough to review in one sitting. Separate a behaviour change from an unrelated refactor, and ask for unresolved assumptions before implementation. For an unfamiliar module, request a brief explanation with file references, then check those references yourself.
+
+Potential benefits include faster first drafts, easier exploration of unfamiliar code, and help enumerating boundary cases. Treat these as opportunities to evaluate in your own work, not guaranteed productivity gains. Review time, rework, and escaped defects matter alongside typing time.
+
+A useful task request includes four things:
+
+- **Outcome:** the observable behaviour the reader or user needs.
+- **Context:** the relevant implementation, conventions, and constraints.
+- **Scope:** the files or responsibilities that may change.
+- **Evidence:** tests and other checks that demonstrate completion.
+
+<Highlight color="lemon">Define what success looks like before asking AI to implement it.</Highlight>
+
+## How SDD and TDD fit together
+
+In this article, **SDD** means keeping a written specification as an active input to implementation and verification. It records expected behaviour, constraints, and non-goals, and changes when the intended behaviour changes. [GitHub Spec Kit](https://github.com/github/spec-kit) provides one concrete approach organised around specifications, plans, and implementation tasks; the lightweight workflow below does not require installing it.
+
+**TDD** works at a tighter feedback loop: write a test, observe it fail, implement enough to pass, and refactor with the test still passing. [Martin Fowler's description of TDD](https://martinfowler.com/bliki/TestDrivenDevelopment.html) explains this incremental cycle. Writing tests after generating an entire feature can be useful, but it does not follow that test-first sequence.
+
+| Practice | Main question | Useful output |
+| --- | --- | --- |
+| SDD | What behaviour do we intend, and within which constraints? | A reviewable specification and acceptance criteria |
+| TDD | What is the next behaviour we can demonstrate? | A failing test followed by a passing implementation |
+| Human review | Does the change solve the right problem in this codebase? | A checked diff and explicit remaining limitations |
+
+A specification can omit an important requirement, and a test can encode the wrong expectation. Use SDD to clarify intent and TDD to make selected examples executable; neither removes the need for judgement.
+
+## Build one feature through the feedback loop
+
+Consider a portfolio post filter. Use a scratch directory with Node.js 24 for this example. The `.mjs` files use JavaScript modules, and the [built-in Node.js test runner](https://nodejs.org/api/test.html) runs the tests without installing a testing package.
+
+### 1. Write a small specification
+
+Save the following as `spec.md`:
+
+```markdown
+## Title filtering
+
+- Input: an array of posts with string titles and a string query.
+- Match a case-insensitive substring of each title.
+- Ignore leading and trailing whitespace in the query.
+- Return all posts when the trimmed query is empty.
+- Preserve the input order and do not mutate the input array.
+- Return an empty array when nothing matches.
+- Non-goals: ranking, fuzzy search, pagination, and runtime validation.
+```
+
+This deliberately limits the search contract. Lowercasing is not a complete multilingual search strategy; accent handling and language-specific matching would need separate requirements. You can ask AI to point out such omissions, but decide which belong in this feature before expanding the scope.
+
+### 2. Observe a meaningful failure
+
+Create `filter-posts.mjs` with a deliberately incomplete implementation:
+
+```js
+export function filterPosts(posts, query) {
+  return posts;
+}
+```
+
+Create `filter-posts.test.mjs` with the first behaviour test:
+
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { filterPosts } from './filter-posts.mjs';
+
+const posts = [
+  { title: 'Testing JavaScript' },
+  { title: 'CSS Layout' },
+  { title: 'JavaScript Modules' },
+];
+
+test('matches titles case-insensitively and preserves order', () => {
+  assert.deepEqual(filterPosts(posts, 'JAVASCRIPT'), [posts[0], posts[2]]);
+});
+```
+
+Run:
+
+```bash
+node --test filter-posts.test.mjs
+```
+
+The assertion should fail because the stub returns the CSS post too. A missing module or syntax error would not demonstrate the intended missing behaviour; fix setup problems before treating the result as the red step.
+
+### 3. Make the first test pass
+
+Replace the stub with:
+
+```js
+export function filterPosts(posts, query) {
+  const normalizedQuery = query.toLowerCase();
+  return posts.filter((post) =>
+    post.title.toLowerCase().includes(normalizedQuery)
+  );
+}
+```
+
+Run the same command again. Once it passes, add this test to the test file:
+
+```js
+test('ignores surrounding query whitespace', () => {
+  assert.deepEqual(filterPosts(posts, '  javascript  '), [posts[0], posts[2]]);
+});
+```
+
+Run it and observe the new failure. Then change the `normalizedQuery` line to:
+
+```js
+const normalizedQuery = query.trim().toLowerCase();
+```
+
+Run the tests again. This is a small, visible TDD loop: the new requirement has evidence of failure before its implementation.
+
+### 4. Check the remaining contract
+
+Append these regression checks and run the command once more:
+
+```js
+test('returns all posts for an empty or whitespace-only query', () => {
+  assert.deepEqual(filterPosts(posts, ''), posts);
+  assert.deepEqual(filterPosts(posts, '   '), posts);
+});
+
+test('returns no matches and handles an empty input', () => {
+  assert.deepEqual(filterPosts(posts, 'Python'), []);
+  assert.deepEqual(filterPosts([], 'JavaScript'), []);
+});
+
+test('does not mutate the input array or its posts', () => {
+  const frozenPosts = Object.freeze([
+    Object.freeze({ title: 'JavaScript Modules' }),
+    Object.freeze({ title: 'CSS Layout' }),
+  ]);
+  const before = structuredClone(frozenPosts);
+  filterPosts(frozenPosts, 'javascript');
+  assert.deepEqual(frozenPosts, before);
+});
+```
+
+These cases already pass with the current implementation. They add coverage; do not claim they each drove a code change. The returned array shares the original post objects, which is compatible with this specification: filtering does not mutate them, but it does not deep-clone them either.
+
+There is no useful refactor to force into this tiny function. In a larger change, improve names or remove duplication, rerun the tests, and keep observable behaviour stable.
+
+## Give AI a role at each checkpoint
+
+For the next feature, use a request like this:
+
+```plaintext
+Read the specification, relevant source files, and existing tests.
+List ambiguities and propose the smallest next behaviour to implement.
+Write its test first and run it. Report the actual failure.
+Implement the smallest change that passes, then run relevant checks.
+Do not weaken assertions to accommodate an incorrect implementation.
+Summarise changed files, actual check results, and remaining limitations.
+```
+
+Read the proposed assertions against the specification before relying on them. An assistant that writes both code and tests can repeat the same misunderstanding in both. Ask yourself which realistic incorrect implementation each test would reject.
+
+<Highlight color="flame">Passing generated tests is evidence about those assertions, not proof that the feature is correct or secure.</Highlight>
+
+[GitHub's responsible-use guidance for agents](https://docs.github.com/en/copilot/responsible-use/agents) also describes limitations and the need to review generated output. Keep credentials and sensitive data out of unnecessary context, and give tools only the access the task needs. Use a branch or isolated workspace for reviewable changes.
+
+## Bring the loop into your repository
+
+Start with one bounded maintenance task or small feature. Record the acceptance criteria, follow the existing test conventions, and ask AI to implement one behaviour at a time. Keep the specification, implementation, and relevant tests together in the reviewed change.
+
+Before merging, inspect the diff and run the project's actual validation commands. Unit tests may be sufficient for a pure filter; a search interface also needs checks for input handling, empty states, keyboard access, and integration with the displayed results. Select checks based on the behaviour you changed.
+
+Compare the whole experience with similar work: time to a reviewed change, time spent correcting suggestions, and defects found later. If AI produces patches faster than you can understand them, reduce the task size and autonomy.
+
+## Conclusion
+
+AI-driven development is most useful when explicit intent meets short feedback cycles. SDD keeps the expected behaviour visible; TDD demonstrates the next increment; human review connects both to the actual product.
+
+<RainbowHighlight>Specify the behaviour, verify the change, and keep the judgement yours.</RainbowHighlight>
