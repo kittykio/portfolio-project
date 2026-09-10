@@ -1,0 +1,179 @@
+---
+date: 2026-09-10
+title: "How to Review AI-Generated Code Before You Merge"
+description: "Review AI-generated code with a practical workflow for checking requirements, finding weak tests, verifying dependencies, and making confident merge decisions."
+tags: ["Developer Workflow", "Testing", "Git"]
+image: "/blog/images/how-to-review-ai-generated-code-before-you-merge.png"
+---
+
+An AI-generated pull request can look reassuring: tidy functions, descriptive comments, and a green test run. The difficult question is whether those pieces agree with the intended behaviour, rather than simply agreeing with each other.
+
+This guide gives beginner-to-intermediate developers a repeatable way to review AI-generated code before merging. We will inspect the scope, challenge a plausible implementation with a concrete counterexample, and decide what evidence is enough. It follows the specification-and-test loop in [AI-Driven Development: A Practical Guide to SDD and TDD](/blog/post/ai-driven-development-sdd-tdd).
+
+## Start with the requirement, then read the diff
+
+Before reading the assistant's summary, write down the observable outcome in your own words. For a bug fix, identify the input or user action that triggers the bug. For a feature, identify what should change and what existing behaviour must remain.
+
+Then compare that expectation with the patch. Comments such as “handle all edge cases” are claims to investigate. A detailed explanation can be useful context, but the changed code and its callers show what will actually execute.
+
+[GitHub's responsible-use guidance](https://docs.github.com/en/copilot/responsible-use/agents) explicitly describes missed problems, false positives, and inaccurate suggestions in AI-assisted review. Treat a second AI review as another source of hypotheses. A second confident answer is not independent proof.
+
+<Highlight color="lemon">Before approving a change, be able to explain its behaviour and the evidence that supports it.</Highlight>
+
+## Establish exactly what you are reviewing
+
+For a committed feature branch targeting `main`, refresh the remote reference and inspect the branch changes:
+
+```bash
+git fetch origin
+git status --short
+git diff --stat origin/main...HEAD
+git diff origin/main...HEAD
+```
+
+Replace `origin/main` if the pull request targets another branch. As the [Git diff documentation](https://git-scm.com/docs/git-diff) explains, the three-dot comparison uses the merge base and the second commit. It is useful for seeing what the feature branch introduces, and does not include uncommitted edits.
+
+If the assistant has left local changes, inspect those too:
+
+```bash
+git diff
+git diff --cached
+```
+
+These show unstaged and staged changes respectively. Untracked files appear in `git status --short`; open them separately. Otherwise, you can accidentally review one version while running tests against another.
+
+Scan the file list before individual lines. A small UI correction that also changes a lockfile, removes tests, and rewrites authentication deserves an explanation. Ask for unrelated changes to be separated so you can evaluate each decision without guessing which ones are necessary.
+
+## Trace one realistic example through the code
+
+Suppose the requirement is to return the newest posts without changing the caller's array. Inputs have valid ISO date strings; `limit` is a non-negative integer. Invalid input handling is outside this example's contract.
+
+Here is a plausible but incorrect implementation. Save it as `newest-posts.mjs` in a scratch directory if you want to follow along with Node.js 24:
+
+```js
+export function newestPosts(posts, limit) {
+  return posts
+    .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+    .slice(0, limit);
+}
+```
+
+The returned list looks right. The hidden problem is the caller's input: `sort()` changes the array it is called on, as documented in the [ECMAScript specification](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.sort). The later `slice()` creates a new array, but it cannot undo that earlier mutation.
+
+Imagine the same `posts` array also feeds a manually ordered homepage section. Rendering a “newest posts” widget now changes the order another component receives. The bug becomes visible when you trace a caller's expectations rather than reading the function in isolation.
+
+## Ask whether the tests could catch that mistake
+
+This assertion checks the returned result, but misses the side effect:
+
+```js
+assert.deepEqual(newestPosts(posts, 1), [posts[0]]);
+```
+
+It is especially weak here because the expected value reads from `posts` after the function has sorted it. The implementation helps construct its own expected answer. A passing assertion can conceal the precise behaviour the requirement forbids.
+
+Create `newest-posts.test.mjs` with expectations defined independently:
+
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { newestPosts } from './newest-posts.mjs';
+
+test('returns newest posts without reordering the input', () => {
+  const older = { title: 'Earlier', date: '2026-08-01' };
+  const newer = { title: 'Later', date: '2026-09-01' };
+  const posts = [older, newer];
+  const before = structuredClone(posts);
+
+  assert.deepEqual(newestPosts(posts, 1), [newer]);
+  assert.deepEqual(posts, before);
+});
+
+test('handles zero limit and an empty list', () => {
+  const posts = [{ title: 'Later', date: '2026-09-01' }];
+  assert.deepEqual(newestPosts(posts, 0), []);
+  assert.deepEqual(newestPosts([], 3), []);
+});
+```
+
+Run it with the [Node.js test runner](https://nodejs.org/api/test.html):
+
+```bash
+node --test newest-posts.test.mjs
+```
+
+The first test should fail on the input-preservation assertion. Fix the implementation by copying the array before sorting:
+
+```js
+export function newestPosts(posts, limit) {
+  return [...posts]
+    .sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+    .slice(0, limit);
+}
+```
+
+Run the command again; both tests should pass. This is a shallow copy, so post objects remain shared. That meets the stated requirement, but a caller that needs independent nested objects would need a different contract.
+
+For a bug fix, checking that a regression test fails against the buggy implementation is often more informative than adding another assertion that already passes. Keep such experiments in an isolated working copy, and retain the corrected implementation when finished.
+
+## Review tests as carefully as implementation
+
+The same misunderstanding can appear in generated code and generated tests. Look for a realistic wrong implementation that each important test would reject. You do not need a test for every line; you need evidence for the behaviours that matter.
+
+| Review signal | Question to ask |
+| --- | --- |
+| Only a truthy result is asserted | Could an empty object or wrong record still pass? |
+| Every dependency is mocked | Is the real integration ever exercised? |
+| Expected data is derived from the result | Is the test checking anything independent? |
+| Existing assertions disappear | Did the requirement change, or did the test become inconvenient? |
+| A snapshot changes substantially | Have the changed output and interaction been inspected? |
+
+Check failure paths as well as success paths. If an operation can fail, does the interface show the correct state, preserve useful input, and allow an appropriate retry? For asynchronous work, verify that tests actually await completion and that the chosen test runner reports failures from it.
+
+## Inspect boundaries and dependencies
+
+Spend extra attention where data crosses a boundary: browser to server, request to database, file contents to parser, or application to an external service. Trace the input through validation, authorisation, the operation, and error handling.
+
+For example, hiding a button does not enforce server-side permissions. [OWASP's authorisation guidance](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html) recommends validating permissions on every request. If a change touches access control, check the server path and include a case where the user must be denied.
+
+For a newly introduced dependency, verify the package name and the API against its official documentation and your installed version. Inspect why the lockfile changed. A helper library may be justified, but a short, existing utility might already solve the problem more consistently.
+
+Also look for unintended logging of sensitive data, swallowed errors, unbounded work, and new configuration assumptions. Select these checks according to the changed behaviour; a copy edit and an account-deletion endpoint do not need the same review depth.
+
+<Highlight color="flame">Do not remove a failing assertion just to make a generated patch pass. First decide whether the assertion or the implementation contradicts the requirement.</Highlight>
+
+## Ask AI for evidence you can verify
+
+A focused review request is more useful than “Is this good code?” Try:
+
+```plaintext
+Review this diff against the acceptance criteria and its callers.
+For each finding, give the file, triggering input or action,
+observable consequence, and a way to reproduce it.
+Distinguish verified failures from concerns that need investigation.
+Check whether changed tests would reject a realistic incorrect result.
+Do not edit files during this review.
+```
+
+Reproduce findings before applying fixes. A suggested issue may depend on an impossible input, a misunderstood invariant, or an API behaviour from another version. Conversely, the absence of findings does not establish that the change is correct.
+
+Record the commands actually run, their results, and anything skipped. “Tests passed” is incomplete if only one file ran and the affected integration was never exercised.
+
+## Make the merge decision explicit
+
+Before merging, check the final revision rather than an earlier patch. Run the repository's relevant tests, type checks, linting, and build steps as applicable, and ensure required CI checks correspond to the revision being merged. For a UI change, inspect the interaction as well as the screenshot.
+
+A concise final review can answer these questions:
+
+- Does the change meet the acceptance criteria and preserve required behaviour?
+- Can I explain the important paths and justify the dependencies?
+- Do the tests reject the failure modes we identified?
+- Are remaining limitations documented and acceptable for this change?
+
+If a patch is too broad to understand, request a smaller change. Reviewability is part of delivering a feature, and it is reasonable to reduce scope before accepting it.
+
+## Conclusion
+
+Review AI-generated code by connecting the requirement, implementation, and evidence. Trace realistic inputs, challenge weak assertions, inspect relevant boundaries, and verify the final change before merging.
+
+<RainbowHighlight>A convincing patch becomes a trustworthy change through evidence you can explain.</RainbowHighlight>

@@ -323,6 +323,28 @@ export const RainbowHighlight: FC<Omit<HighlightProps, 'color'>> = ({
 // --- MDX Component for File Tree ---
 
 const fileTreePresets = {
+  bilingualBlog: [
+    {
+      id: 'bilingual-blog',
+      name: 'blog',
+      type: 'folder',
+      children: [
+        { id: 'bilingual-en-post', name: 'hello-world.mdx', type: 'file' },
+        {
+          id: 'bilingual-ja',
+          name: 'ja',
+          type: 'folder',
+          children: [{ id: 'bilingual-ja-post', name: 'hello-world.mdx', type: 'file' }],
+        },
+      ],
+    },
+    {
+      id: 'bilingual-images',
+      name: 'public/blog/images',
+      type: 'folder',
+      children: [{ id: 'bilingual-cover', name: 'hello-world.png', type: 'file' }],
+    },
+  ] satisfies FileNode[],
   authoringGuide: [
     {
       id: 'guide-src',

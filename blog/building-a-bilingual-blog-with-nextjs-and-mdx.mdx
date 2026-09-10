@@ -1,0 +1,194 @@
+---
+date: 2026-09-10
+title: "Building a Bilingual Blog with Next.js and MDX"
+description: "Build a bilingual Next.js and MDX blog with shared article identities, localized metadata, reusable components, and a deliberate translation fallback policy."
+tags: ["Next.js", "MDX", "Web Development"]
+image: "/blog/images/building-a-bilingual-blog-with-nextjs-and-mdx.png"
+---
+
+A bilingual blog needs more than a language button. The same article must stay connected across languages, links must lead to the right edition, and a missing translation needs a predictable outcome.
+
+This portfolio keeps English and Japanese articles in Git as MDX files. Here is how its content model works, which parts are reusable, and what deserves extra care when building something similar. You should be comfortable with basic React and TypeScript; this is an architecture walkthrough with focused examples, rather than a complete starter application.
+
+## Separate article identity from language
+
+A title is editorial copy. A slug connects a published article to its URL and, in this project, its reaction record. Translating the title should not create a different article identity.
+
+The content layout follows this pattern. `hello-world` is an illustrative slug:
+
+<MDXFileTree preset="bilingualBlog" />
+
+Both MDX files represent one article. Their shared image is served at `/blog/images/hello-world.png`, without `public` in the URL. The public post routes are `/blog/post/hello-world` and `/ja/blog/post/hello-world`.
+
+This site discovers its article list from the top level of `blog/`, then chooses content by locale. Consequently, a Japanese-only file does not become a new listed post. That is a deliberate limitation of an English-first catalogue; a site with independently published editions would need discovery across all locales.
+
+<Highlight color="lemon">Keep the filename stable across languages. Localize the content that readers see.</Highlight>
+
+## Know which MDX pipeline you are using
+
+The inspected lockfile contains Next.js 14.2.33, React 18.3.1, and `next-mdx-remote` 6.0.0. These are the versions behind this case study, not a recommendation to start a new project on that framework release.
+
+The project configures `@next/mdx`, but the blog loader specifically reads source files and calls `compileMDX` from `next-mdx-remote/rsc`. Configuration for imported MDX pages does not automatically configure that separate loader. The [Next.js MDX guide](https://nextjs.org/docs/app/guides/mdx) describes MDX integration options; check the pipeline that actually renders your articles before changing plugins.
+
+The following helper captures the loader's core shape. It belongs in server-side code and expects a source string that has already been loaded:
+
+```tsx
+import { compileMDX } from 'next-mdx-remote/rsc';
+import remarkGfm from 'remark-gfm';
+import * as components from '@/components/MdxComponents';
+
+type Frontmatter = {
+  date: string;
+  title: string;
+  description: string;
+  tags: string[];
+  image: string;
+};
+
+export async function compilePost(source: string) {
+  return compileMDX<Frontmatter>({
+    source,
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: { remarkPlugins: [remarkGfm] },
+    },
+    components,
+  });
+}
+```
+
+`compileMDX` returns rendered content and parsed frontmatter. The real loader also configures syntax highlighting and heading extraction. The [package documentation](https://github.com/hashicorp/next-mdx-remote#react-server-components-rsc--nextjs-app-directory-support) covers this server-component API.
+
+The generic type helps TypeScript callers, but does not validate an author's YAML at runtime. Add content checks for required fields, tag arrays, dates, and image paths before publishing. Keep compilation on the server; a filesystem loader depends on Node.js APIs and is not an Edge-runtime implementation.
+
+## Localize metadata while preserving the contract
+
+Each language file uses exactly five fields: `date`, `title`, `description`, `tags`, and `image`. This example shows the English shape:
+
+```yaml
+---
+date: 2026-09-10
+title: "Hello World"
+description: "An introduction to this developer blog."
+tags: ["Next.js", "Web Development"]
+image: "/blog/images/hello-world.png"
+---
+```
+
+The Japanese file keeps the date and image, but gives the title and description natural Japanese wording. It uses `Next.js` and `Web開発` for the corresponding tags. The short description above illustrates the schema; a published article should have a more informative summary.
+
+Do not add manually maintained IDs or translation keys when the filename already supplies the relationship. This portfolio derives a numeric ID from the slug, so both editions address the same reaction record. That is application behaviour, not a Next.js feature.
+
+The ID comes from a bounded hash, so collisions remain possible; the loader checks for duplicate generated IDs. Renaming a slug also changes the derived ID. If you need freely editable URLs, use a persistent article identity separate from the slug, plus URL redirects and a migration plan for existing reactions.
+
+## Make fallback behaviour explicit
+
+When Japanese content is missing, this site's loader reads the English file. That keeps the article reachable, but the content has not become Japanese simply because the requested URL starts with `/ja`.
+
+Here is a slightly stricter resolver for a flat, kebab-case catalogue. Unlike the current loader, it also returns the resolved content language so the caller can explain a fallback:
+
+```ts
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+
+type Locale = 'en' | 'ja';
+
+export async function readPostSource(slug: string, locale: Locale) {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+    throw new Error('Invalid article slug');
+  }
+
+  const root = path.join(process.cwd(), 'blog');
+
+  if (locale === 'ja') {
+    try {
+      const source = await readFile(path.join(root, 'ja', `${slug}.mdx`), 'utf8');
+      return { source, contentLocale: 'ja' as const };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
+  }
+
+  const source = await readFile(path.join(root, `${slug}.mdx`), 'utf8');
+  return { source, contentLocale: 'en' as const };
+}
+```
+
+Only a missing file triggers fallback; other filesystem errors remain visible. The slug check excludes separators and traversal segments, and intentionally does not support nested article paths. Validate any external locale value separately. At the route boundary, map an unknown article to the appropriate not-found response.
+
+A useful follow-up for the current site is to carry `contentLocale` through to rendering. Then it can show a short fallback notice and mark the article's language accurately. Other valid policies include hiding unavailable editions or linking directly to English; choose based on the reader experience you want.
+
+## Keep navigation and content language aligned
+
+English uses unprefixed routes; Japanese uses `/ja`. The site centralizes path conversion in a helper, which avoids scattering prefix logic across article cards, related posts, and the language switcher:
+
+```ts
+type Locale = 'en' | 'ja';
+
+export function getLocalePath(pathname: string, locale: Locale): string {
+  const englishPath = pathname.replace(/^\/ja(?=\/|$)/, '') || '/';
+  return locale === 'ja' ? `/ja${englishPath}` : englishPath;
+}
+```
+
+The boundary check matters: `/jacket` must not lose its opening characters. This helper accepts a pathname; preserving query parameters, hash fragments, or translating tag-filter values is a separate responsibility. The current switcher uses the pathname, so it does not preserve every kind of navigation state.
+
+[Next.js's internationalization guide](https://nextjs.org/docs/app/guides/internationalization) presents a dynamic language-segment approach. This portfolio instead has explicit English and Japanese route files that reuse content components. Either structure still needs a consistent locale source for server rendering and client navigation.
+
+Check the initial document's `lang` value as well as changes after switching languages. A client-side update cannot establish that the original response was correct. Also note that modern App Router examples use asynchronous `params`, while this Next.js 14 codebase uses synchronous route props; consult the [page API reference](https://nextjs.org/docs/app/api-reference/file-conventions/page) when adapting route code to your version.
+
+## Share components and artwork, localize their meaning
+
+Both editions use the same MDX component map. A warning should mean the same thing in either language, while its phrasing should sound natural. Keep executable code, identifiers, and API names aligned; translate headings, explanatory copy, link labels, and image descriptions.
+
+`next-mdx-remote` 6 blocks JavaScript expressions by default. In this setup, an inline array passed to a component can be stripped even though the MDX compiles. This article's file tree therefore uses a named preset stored in application code, passed as a plain string. This preserves the current compiler setting and keeps the tree data out of authored expressions.
+
+<Highlight color="flame">Treat MDX as trusted source content. Restrict who can publish it; expression filtering is not a reason to accept arbitrary uploads.</Highlight>
+
+A text-free cover can serve both editions. If an image contains explanatory labels, either localize the asset or move those labels into accessible article text. The site's `Img` wrapper uses `next/image`; provide the actual dimensions and meaningful alt text when inserting supporting images.
+
+## Give each published edition its own metadata
+
+Language-specific titles and descriptions should reach the page metadata, not just the visible heading. For a translated pair, give each edition its own canonical URL and declare the language alternatives. The [Next.js metadata API](https://nextjs.org/docs/app/api-reference/functions/generate-metadata#alternates) supports both fields:
+
+```ts
+import type { Metadata } from 'next';
+
+type Locale = 'en' | 'ja';
+
+export function articleAlternates(slug: string, locale: Locale): Metadata {
+  const en = `https://kittykio.com/blog/post/${slug}`;
+  const ja = `https://kittykio.com/ja/blog/post/${slug}`;
+
+  return {
+    alternates: {
+      canonical: locale === 'ja' ? ja : en,
+      languages: { en, ja },
+    },
+  };
+}
+```
+
+This is a proposed extension, not a claim that the current routes already implement it. Call it only for a validated slug with both editions available, and use your own site's origin. Merge the result with that edition's title and description in its metadata handler.
+
+[Google's localized-page guidance](https://developers.google.com/search/docs/specialty/international/localized-versions) calls for reciprocal language links, including each page itself. Apply the same alternative set on both editions. Do not advertise an English fallback as an available Japanese translation; make indexing and canonical decisions follow the actual content.
+
+The current sitemap lists English post URLs. Including the available Japanese URLs is another publication detail to address deliberately, rather than assuming a language button makes discovery complete.
+
+## Validate the pair before publishing
+
+A practical publication check covers both content and rendering:
+
+1. Confirm identical filenames, dates, and shared image paths.
+2. Compile both MDX files and verify custom components actually receive their data.
+3. Check localized titles, descriptions, tags, links, and code-example parity.
+4. Open both routes directly, then switch languages on the same article.
+5. Verify fallback behaviour, initial HTML language, metadata, and available language links.
+
+Keep tags consistent: `Testing` and `テスト` describe the same discipline, but the current filter compares exact strings. If filters must survive a language switch, introduce stable tag keys with localized labels or an explicit mapping. Also avoid reusing a whitespace-based English reading-time estimate for Japanese without adjustment; the current estimator is a heuristic, not a language-aware measure.
+
+## Conclusion
+
+A maintainable bilingual blog separates shared identity from localized presentation. Keep the slug relationship explicit, reuse the rendering system, choose a clear fallback policy, and verify each language as a complete reading experience.
+
+<RainbowHighlight>One article identity, two thoughtfully written editions.</RainbowHighlight>

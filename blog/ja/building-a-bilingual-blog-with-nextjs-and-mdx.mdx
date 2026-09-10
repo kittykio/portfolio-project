@@ -1,0 +1,194 @@
+---
+date: 2026-09-10
+title: "Next.jsとMDXで日英バイリンガルブログを作る"
+description: "Next.jsとMDXで日英ブログを構築する設計を紹介。共通スラッグによる記事の識別、言語別メタデータ、コンポーネントと画像の共有、未翻訳時の表示方針を、実際のポートフォリオをもとに解説します。"
+tags: ["Next.js", "MDX", "Web開発"]
+image: "/blog/images/building-a-bilingual-blog-with-nextjs-and-mdx.png"
+---
+
+バイリンガルブログには、言語切り替えボタン以上の設計が必要です。同じ記事を言語間で結び付け、リンクを適切な言語版へ向け、未翻訳の記事を開いたときの動作も決めておく必要があります。
+
+このポートフォリオでは、英語と日本語の記事をMDXファイルとしてGitで管理しています。この記事では、そのコンテンツ設計と応用できる部分、同様のブログを作る際に気を付けたい点を紹介します。ReactとTypeScriptの基礎を知っている方向けに、要点を絞ったコード例で構成を説明します。アプリ全体を一から作るチュートリアルではありません。
+
+## 記事の識別と言語を分ける
+
+タイトルは読者に向けた文章です。スラッグは記事をURLに結び付け、このプロジェクトではリアクションの記録にも結び付けます。タイトルを日本語にしても、別の記事として扱う必要はありません。
+
+コンテンツは次の形で置きます。`hello-world`は説明用のスラッグです。
+
+<MDXFileTree preset="bilingualBlog" />
+
+二つのMDXファイルが一つの記事を表します。共通画像のURLは`/blog/images/hello-world.png`で、`public`はURLに含めません。記事の公開URLは`/blog/post/hello-world`と`/ja/blog/post/hello-world`です。
+
+このサイトは`blog/`直下から記事一覧を作り、ロケールに応じて本文を選びます。そのため、日本語フォルダーにだけ追加したファイルは、新しい記事として一覧に現れません。英語を基準にした記事カタログの制約です。各言語で独立して公開したい場合は、すべてのロケールを対象に記事を探す仕組みが必要です。
+
+<Highlight color="lemon">言語が変わってもファイル名は揃え、読者が目にする内容をローカライズします。</Highlight>
+
+## 実際に使っているMDXの処理経路を確認する
+
+確認したロックファイルでは、Next.js 14.2.33、React 18.3.1、`next-mdx-remote` 6.0.0を使っています。この事例の背景となるバージョンであり、新規プロジェクトでこのNext.jsのリリースを選ぶことを勧めるものではありません。
+
+プロジェクトには`@next/mdx`の設定がありますが、ブログのローダーはファイルを読み、`next-mdx-remote/rsc`の`compileMDX`を呼び出します。インポートするMDXページの設定が、この別のローダーに自動で適用されるわけではありません。[Next.jsのMDXガイド](https://nextjs.org/docs/app/guides/mdx)で選択肢を確認しつつ、プラグインを変える前に、記事を実際に描画する経路を把握しましょう。
+
+次のヘルパーは、ローダーの主要部分を抜き出したものです。サーバー側に置き、読み込み済みのソース文字列を受け取ります。
+
+```tsx
+import { compileMDX } from 'next-mdx-remote/rsc';
+import remarkGfm from 'remark-gfm';
+import * as components from '@/components/MdxComponents';
+
+type Frontmatter = {
+  date: string;
+  title: string;
+  description: string;
+  tags: string[];
+  image: string;
+};
+
+export async function compilePost(source: string) {
+  return compileMDX<Frontmatter>({
+    source,
+    options: {
+      parseFrontmatter: true,
+      mdxOptions: { remarkPlugins: [remarkGfm] },
+    },
+    components,
+  });
+}
+```
+
+`compileMDX`は描画用のコンテンツと、解析済みのフロントマターを返します。実際のローダーには、シンタックスハイライトや見出し抽出の設定もあります。サーバーコンポーネント向けAPIの詳細は、[パッケージのドキュメント](https://github.com/hashicorp/next-mdx-remote#react-server-components-rsc--nextjs-app-directory-support)で確認できます。
+
+ジェネリック型はTypeScriptでの呼び出しを助けますが、執筆したYAMLを実行時に検証するものではありません。必須項目、タグの配列、日付、画像パスは公開前に別途検証します。また、コンパイル処理はサーバーに置きます。ファイルシステムを使うローダーはNode.jsのAPIに依存し、Edgeランタイム用の実装ではありません。
+
+## 共通の形式を保ちながらメタデータを訳す
+
+各言語のファイルは、`date`、`title`、`description`、`tags`、`image`の五項目だけを持ちます。次は英語版の形式例です。
+
+```yaml
+---
+date: 2026-09-10
+title: "Hello World"
+description: "An introduction to this developer blog."
+tags: ["Next.js", "Web Development"]
+image: "/blog/images/hello-world.png"
+---
+```
+
+日本語版では日付と画像を維持し、タイトルと説明文を自然な日本語にします。対応するタグは`Next.js`と`Web開発`です。上の短い説明文は形式を示すための例なので、公開記事には内容が伝わる要約を用意します。
+
+ファイル名で記事の対応が決まるなら、手動のIDや翻訳キーを重ねて管理する必要はありません。このポートフォリオでは、スラッグから数値IDを作り、両言語で同じリアクション記録を参照します。これはアプリ側の設計で、Next.jsの標準機能ではありません。
+
+IDは有限の値域を持つハッシュから作るため、衝突の可能性があります。ローダーは生成IDの重複を検査しています。また、スラッグを変えるとIDも変わります。URLを自由に変更したいなら、永続的な記事IDをスラッグから分離し、リダイレクトと既存のリアクションデータの移行を計画しましょう。
+
+## 未翻訳時の表示を明確に決める
+
+このサイトのローダーは、日本語の記事がなければ英語のファイルを読みます。記事を開ける利点はありますが、URLが`/ja`で始まるだけで内容が日本語になるわけではありません。
+
+次は、フラットなkebab-caseの記事カタログ向けに、条件を少し厳密にした読み込み処理です。現在のローダーと異なり、実際に選んだ本文の言語も返すので、呼び出し側でフォールバックを説明できます。
+
+```ts
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
+
+type Locale = 'en' | 'ja';
+
+export async function readPostSource(slug: string, locale: Locale) {
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+    throw new Error('Invalid article slug');
+  }
+
+  const root = path.join(process.cwd(), 'blog');
+
+  if (locale === 'ja') {
+    try {
+      const source = await readFile(path.join(root, 'ja', `${slug}.mdx`), 'utf8');
+      return { source, contentLocale: 'ja' as const };
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
+  }
+
+  const source = await readFile(path.join(root, `${slug}.mdx`), 'utf8');
+  return { source, contentLocale: 'en' as const };
+}
+```
+
+ファイルが見つからない場合だけ英語へ切り替え、ほかのファイルシステムエラーは隠しません。スラッグの検証では区切り文字やディレクトリを移動する文字列を除外し、入れ子の記事パスは意図的に対象外にしています。外部から渡されるロケール値は別途検証してください。存在しない記事は、ルート側で適切なnot-foundレスポンスに対応付けます。
+
+現在のサイトを改善するなら、`contentLocale`を描画まで引き継ぐと役立ちます。短い案内を表示し、記事の言語も正しく指定できます。未翻訳の言語版を表示しない、英語版へ直接リンクする、といった方針もあります。届けたい読書体験に合わせて選びましょう。
+
+## ナビゲーションと本文の言語を揃える
+
+英語は接頭辞なし、日本語は`/ja`付きのURLを使います。記事カード、関連記事、言語切り替えに同じ処理を書き散らさないよう、パス変換をヘルパーにまとめています。
+
+```ts
+type Locale = 'en' | 'ja';
+
+export function getLocalePath(pathname: string, locale: Locale): string {
+  const englishPath = pathname.replace(/^\/ja(?=\/|$)/, '') || '/';
+  return locale === 'ja' ? `/ja${englishPath}` : englishPath;
+}
+```
+
+境界の確認が重要です。`/jacket`の先頭を削ってはいけません。このヘルパーはpathnameを受け取るもので、クエリーパラメーターやハッシュの維持、タグフィルターの値の変換は別の責務です。現在の言語切り替えはpathnameを使うため、すべてのナビゲーション状態を保持するわけではありません。
+
+[Next.jsの国際化ガイド](https://nextjs.org/docs/app/guides/internationalization)では、言語を動的セグメントにする方法が紹介されています。このポートフォリオは、英語と日本語のルートファイルを明示的に置き、表示用コンポーネントを共有しています。どちらの構成でも、サーバー描画とクライアント側の遷移で、一貫したロケールの決め方が必要です。
+
+言語切り替え後だけでなく、最初に返されるHTMLの`lang`も確認しましょう。クライアント側で更新できても、初期レスポンスが正しいとは限りません。また、最近のApp Routerの例では`params`が非同期ですが、このNext.js 14のコードは同期的なルートpropsを使っています。移植時は対象バージョンの[page APIリファレンス](https://nextjs.org/docs/app/api-reference/file-conventions/page)を確認してください。
+
+## コンポーネントと画像を共有し、意味をローカライズする
+
+両言語で同じMDXコンポーネントの対応表を使います。注意書きが伝える内容は揃えつつ、表現はそれぞれの言語で自然にします。実行するコード、識別子、API名を維持し、見出し、説明文、リンクのラベル、画像の説明をローカライズします。
+
+`next-mdx-remote` 6は、デフォルトでJavaScript式をブロックします。この設定では、コンポーネントに直接渡した配列が、MDXのコンパイルに成功しても取り除かれることがあります。そのため、この記事のファイルツリーは、アプリ側に置いた名前付きプリセットを文字列で指定しています。現在のコンパイラー設定を保ち、記事内の式にツリーのデータを持たせずに済みます。
+
+<Highlight color="flame">MDXは信頼できるソースとして管理し、公開できる人を限定しましょう。式のフィルタリングがあっても、任意のアップロードを受け入れてよいわけではありません。</Highlight>
+
+文字のないカバー画像なら、両言語で共有できます。説明用の文字が画像に入っている場合は、画像もローカライズするか、説明をアクセシブルな本文へ移します。このサイトの`Img`は`next/image`のラッパーです。補助画像には実際の寸法と、内容に合った代替テキストを指定します。
+
+## 公開する各言語版にメタデータを用意する
+
+言語別のタイトルと説明文は、画面の見出しだけでなくページのメタデータにも反映します。両言語が揃った記事には、それぞれ自身を指すcanonical URLと、言語間の対応を設定します。[Next.jsのMetadata API](https://nextjs.org/docs/app/api-reference/functions/generate-metadata#alternates)は両方に対応しています。
+
+```ts
+import type { Metadata } from 'next';
+
+type Locale = 'en' | 'ja';
+
+export function articleAlternates(slug: string, locale: Locale): Metadata {
+  const en = `https://kittykio.com/blog/post/${slug}`;
+  const ja = `https://kittykio.com/ja/blog/post/${slug}`;
+
+  return {
+    alternates: {
+      canonical: locale === 'ja' ? ja : en,
+      languages: { en, ja },
+    },
+  };
+}
+```
+
+これは拡張案であり、現在のルートに実装済みという意味ではありません。検証済みのスラッグで両言語版が存在するときだけ使い、オリジンは自分のサイトに置き換えます。各言語版のメタデータ処理で、そのタイトルや説明文と組み合わせてください。
+
+[Googleのローカライズされたページに関するガイド](https://developers.google.com/search/docs/specialty/international/localized-versions)では、自分自身も含む相互の言語リンクを設定するよう説明されています。両方の版に同じ対応を設定しましょう。英語へのフォールバックを、公開済みの日本語訳として宣言しないことも大切です。インデックスとcanonicalの方針は、実際の内容に合わせます。
+
+現在のサイトマップには英語の記事URLが載っています。利用できる日本語版のURLを含めることも、公開設計で明示的に扱いたい項目です。言語ボタンがあるだけで、発見される仕組みまで完成するわけではありません。
+
+## 公開前に二つの版を検証する
+
+実用的な公開チェックでは、原稿と描画の両方を確認します。
+
+1. ファイル名、日付、共有画像のパスが一致しているか確認する。
+2. 両方のMDXをコンパイルし、カスタムコンポーネントに実際にデータが渡るか調べる。
+3. タイトル、説明文、タグ、リンクのローカライズと、コード例の一致を確認する。
+4. 各言語のURLを直接開き、同じ記事で言語を切り替える。
+5. フォールバック、初期HTMLの言語、メタデータ、利用できる言語版へのリンクを確認する。
+
+タグの表記も統一します。`Testing`と`テスト`は同じ分野を指しますが、現在のフィルターは文字列を完全一致で比較します。言語切り替え後もフィルターを維持したいなら、共通のタグキーと表示名を分けるか、対応表を用意します。また、空白で単語を数える英語向けの読了時間推定を、日本語にそのまま使うのは避けましょう。現在の推定は簡易的なもので、言語ごとの特性を考慮した計算ではありません。
+
+## まとめ
+
+管理しやすいバイリンガルブログでは、共通の記事識別と、言語ごとの表示を分けます。スラッグによる対応を明確にし、描画の仕組みを共有し、未翻訳時の方針を決め、それぞれを一つの読書体験として検証しましょう。
+
+<RainbowHighlight>記事のつながりは一つに、読み心地はそれぞれの言語で。</RainbowHighlight>
