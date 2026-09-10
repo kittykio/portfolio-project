@@ -114,14 +114,24 @@ export default async function ProjectDetail({ params }: Props) {
           ))}
         </div>
       </header>
-      <Image
-        className="mt-12 aspect-[3/2] w-full rounded-3xl object-cover shadow-2xl"
-        src={project.image}
-        alt={project.title}
-        width={1200}
-        height={800}
-        priority
-      />
+      {project.livePreview && project.websiteUrl ? (
+        <iframe
+          title={`Live preview of ${project.title}`}
+          src={project.websiteUrl}
+          className="mt-12 aspect-[3/2] w-full rounded-3xl border-0 bg-surface-muted shadow-2xl"
+          loading="lazy"
+          sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
+        />
+      ) : project.image ? (
+        <Image
+          className="mt-12 aspect-[3/2] w-full rounded-3xl object-cover shadow-2xl"
+          src={project.image}
+          alt={project.title}
+          width={1200}
+          height={800}
+          priority
+        />
+      ) : null}
       {details?.statement && (
         <blockquote className="mx-auto my-14 max-w-4xl text-center font-heading text-3xl leading-snug text-content sm:text-5xl">
           “{details.statement}”

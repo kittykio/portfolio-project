@@ -22,8 +22,9 @@ describe('project catalogue', () => {
       expect(project.like).toBe(0);
       if (project.slug === 'bad-ui-olympics') {
         expect(project.date).toBe('2026/09/09');
-        expect(project.image).toBe('/projects/bad-ui-olympics.svg');
-        expect(project.websiteUrl).toBe('');
+        expect(project.image).toBe('');
+        expect(project.livePreview).toBe(true);
+        expect(project.websiteUrl).toBe('https://kiki-bad-ui-olympics.vercel.app/');
         expect(project.repoUrl).toBe('https://github.com/kittykio/bad-ui-olympics');
         return;
       }

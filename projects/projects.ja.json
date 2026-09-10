@@ -9,9 +9,10 @@
       "Next.js",
       "SCSS"
     ],
-    "image": "/projects/bad-ui-olympics.svg",
+    "image": "",
     "repoUrl": "https://github.com/kittykio/bad-ui-olympics",
-    "websiteUrl": "",
+    "websiteUrl": "https://kiki-bad-ui-olympics.vercel.app/",
+    "livePreview": true,
     "date": "2026/09/09",
     "caseStudy": {
       "eyebrow": "遊べるUI実験",

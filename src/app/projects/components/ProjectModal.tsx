@@ -113,19 +113,30 @@ const ProjectModal: FC<ProjectModalProps> = ({
                 {project.title}
               </DialogTitle>
 
-              {/* Image - fixed section */}
-              <div className="w-full flex justify-center px-4">
-                <div className="max-h-[50vh] overflow-hidden rounded-2xl">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    width={1000}
-                    height={1000}
-                    className="w-full h-auto object-contain [@media(max-height:500px)]:max-h-[25svh] [@media(max-height:500px)]:w-auto"
-                    priority
+              {project.livePreview && project.websiteUrl ? (
+                <div className="w-full px-4">
+                  <iframe
+                    title={`Live preview of ${project.title}`}
+                    src={project.websiteUrl}
+                    className="h-[40vh] w-full rounded-2xl border-0 bg-surface-muted"
+                    loading="lazy"
+                    sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
                   />
                 </div>
-              </div>
+              ) : project.image ? (
+                <div className="w-full flex justify-center px-4">
+                  <div className="max-h-[50vh] overflow-hidden rounded-2xl">
+                    <Image
+                      src={project.image}
+                      alt={project.title}
+                      width={1000}
+                      height={1000}
+                      className="w-full h-auto object-contain [@media(max-height:500px)]:max-h-[25svh] [@media(max-height:500px)]:w-auto"
+                      priority
+                    />
+                  </div>
+                </div>
+              ) : null}
 
               {/* Close button */}
               <button
