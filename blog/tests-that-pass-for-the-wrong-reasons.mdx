@@ -1,0 +1,191 @@
+---
+date: 2026-09-11
+title: "Tests That Pass for the Wrong Reasons"
+description: "Learn to spot misleading tests, replace weak assertions, choose useful mock boundaries, and verify that your JavaScript tests reject realistic broken code."
+tags: ["Testing", "JavaScript", "Developer Workflow"]
+image: "/blog/images/tests-that-pass-for-the-wrong-reasons.png"
+---
+
+A test can pass while the feature it names is completely broken. The runner has not necessarily made a mistake: the assertion may simply ask a much smaller question than you intended.
+
+This article is for developers who can write a basic test but want stronger evidence from their suite. We will make a deliberately broken function pass a weak test, improve the test so it catches the failure, and examine mocks, asynchronous checks, and coverage. The examples use JavaScript modules and Node.js 24, with no additional test package.
+
+## Translate the requirement into an observable result
+
+Start with a sentence that describes behaviour, not implementation. For an article list: return every published post, exclude drafts, preserve the input order, and leave the input unchanged. A post has a unique string `id` and a `status` of either `draft` or `published`.
+
+Now ask what evidence would distinguish that behaviour from a plausible mistake. An array existing is not enough. Nor is every returned item being published: the function could return no items at all.
+
+A useful test specifies both what must appear and what must not appear. The expected result should come from the requirement and fixture, rather than being calculated with the same filtering expression as the implementation.
+
+<Highlight color="lemon">For each important test, name a realistic mistake that should make it fail.</Highlight>
+
+## Watch a broken function pass
+
+In a scratch directory, save this deliberately incorrect implementation as `published-posts.mjs`:
+
+```js
+export function publishedPosts(posts) {
+  return [];
+}
+```
+
+Create `published-posts.test.mjs`:
+
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { publishedPosts } from './published-posts.mjs';
+
+test('returns published posts', () => {
+  const posts = [
+    { id: 'draft', status: 'draft' },
+    { id: 'first', status: 'published' },
+    { id: 'second', status: 'published' },
+  ];
+  const result = publishedPosts(posts);
+
+  assert.ok(result.every((post) => post.status === 'published'));
+});
+```
+
+Run the [Node.js test runner](https://nodejs.org/api/test.html):
+
+```bash
+node --test published-posts.test.mjs
+```
+
+It passes. On an empty array, `every()` returns `true`: there is no element that contradicts the predicate. This behaviour is defined in the [ECMAScript specification](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.every), and the assertion never required a published post to be returned.
+
+Adding a length assertion would catch this particular empty result. However, length alone still allows the wrong records. Prefer an expectation that expresses membership and order together.
+
+## Replace the test with an independent expectation
+
+Replace the test file with this version:
+
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { publishedPosts } from './published-posts.mjs';
+
+test('returns all published posts in input order without mutation', () => {
+  const posts = [
+    { id: 'draft', status: 'draft' },
+    { id: 'second', status: 'published' },
+    { id: 'first', status: 'published' },
+  ];
+  const before = structuredClone(posts);
+  const result = publishedPosts(posts);
+
+  assert.deepEqual(result, [before[1], before[2]]);
+  assert.deepEqual(posts, before);
+});
+
+test('returns an empty list when no published posts exist', () => {
+  assert.deepEqual(publishedPosts([]), []);
+  assert.deepEqual(publishedPosts([{ id: 'draft', status: 'draft' }]), []);
+});
+```
+
+The order of `second` and `first` is intentional. A mistaken alphabetical sort must not pass as “preserving input order.” The saved fixture also lets us check mutation independently of the returned result.
+
+Run the command again and observe the first test fail. Then replace the implementation:
+
+```js
+export function publishedPosts(posts) {
+  return posts.filter((post) => post.status === 'published');
+}
+```
+
+Both tests now pass. Returning all posts, dropping one published post, reversing the result, or changing the input status would each violate an assertion. Those are concrete reasons to trust these tests more than the original one.
+
+The returned array still shares post objects with the input. The contract promises that filtering does not mutate them; it does not promise deep copies. Tests should enforce the actual contract without adding accidental requirements such as a particular internal helper or allocation strategy.
+
+## Keep the expected answer independent
+
+A common temptation is to compute the expected value by repeating production logic. If both expressions use the wrong status, rounding rule, or date boundary, they can agree while the feature remains incorrect.
+
+Use a small fixture with an answer a reviewer can determine without running the code. Choose inputs that expose the distinction you care about: mixed states, unequal values, a boundary case, or a different order. Large generated fixtures can be valuable later, but they should not hide what the basic example proves.
+
+Readable failure output matters too. Comparing the relevant records gives more information than a generic truthiness assertion. When the test fails, someone should be able to identify the violated expectation without debugging the test itself.
+
+This complements [reviewing AI-generated code before merging](/blog/post/how-to-review-ai-generated-code-before-you-merge): generated assertions need review just as much as generated implementations do. A detailed test name cannot strengthen a weak assertion underneath it.
+
+## Mock a boundary, not the behaviour under test
+
+A mock can make a slow or unreliable dependency predictable. It can also remove the very behaviour you meant to verify. If the test replaces the function under test with a fake that returns the expected answer, it has demonstrated the fake.
+
+For example, a save operation might need to send a published version of a post to storage. Put this implementation in `publish-post.mjs`:
+
+```js
+export async function publishPost(post, save) {
+  return save({ ...post, status: 'published' });
+}
+```
+
+A focused unit test can supply a storage function and inspect what crossed that boundary. Save this as `publish-post.test.mjs`:
+
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { publishPost } from './publish-post.mjs';
+
+test('sends the published state to storage and returns its result', async () => {
+  const writes = [];
+  const saved = { id: 'one', status: 'published', revision: 2 };
+  const save = async (value) => {
+    writes.push(value);
+    return saved;
+  };
+
+  const result = await publishPost({ id: 'one', status: 'draft' }, save);
+
+  assert.deepEqual(writes, [{ id: 'one', status: 'published' }]);
+  assert.deepEqual(result, saved);
+});
+
+test('propagates a storage failure', async () => {
+  const save = async () => { throw new Error('Storage unavailable'); };
+
+  await assert.rejects(
+    () => publishPost({ id: 'one', status: 'draft' }, save),
+    /Storage unavailable/,
+  );
+});
+```
+
+Run `node --test publish-post.test.mjs`. These tests exercise the real `publishPost` function, including the data it sends and its error propagation. They do not establish that a database connection, schema, or transaction works. Cover that integration separately when it matters.
+
+## Make asynchronous assertions part of the test
+
+Notice the `async` test functions and the awaited calls. A promise-returning assertion needs to be awaited or returned so the test runner can track its completion. Starting work and immediately finishing the test leaves the intended verification disconnected from the test's lifetime.
+
+Do not assume a missing `await` always produces a clean pass: runners may report unhandled rejections or activity after completion. The problem is that the test no longer reliably expresses the intended check. Node's documentation discusses [asynchronous activity beyond a test's lifetime](https://nodejs.org/api/test.html#extraneous-asynchronous-activity).
+
+<Highlight color="flame">A promise was created is not the same as the promised behaviour was verified. Await the result or return the promise to the runner.</Highlight>
+
+## Use coverage to find gaps, then challenge the assertions
+
+Coverage reports show which code executed under the selected measurement. Executing a line does not prove its result was checked. The weak `every()` example can run all of its tiny implementation and still miss the requirement.
+
+Mutation testing takes another approach: deliberately alter code and see whether tests detect the alteration. [Stryker's documentation](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/) distinguishes detected mutations, surviving mutations, and mutations without coverage. A survivor deserves investigation, but may be equivalent for the allowed inputs; it is not automatically a missing requirement.
+
+You can begin manually in a scratch copy. Replace the filter with an empty result, reverse its output, or return drafts. Verify that the relevant test fails for the expected reason, then restore the implementation. Never keep these deliberate faults in the submitted change.
+
+## Improve one test at a time
+
+Use this short review loop on a test you already have:
+
+1. Write the behaviour it should protect in one sentence.
+2. Identify a plausible incorrect result or side effect.
+3. Check whether the assertion rejects that mistake.
+4. Improve the fixture or expectation only where needed.
+5. Run the test against the correct implementation and a controlled incorrect variant.
+
+For UI tests, apply the same thinking to visible outcomes and user actions. [Testing Library's guiding principles](https://testing-library.com/docs/guiding-principles/) favour tests that resemble how software is used. Checking a private state variable is often less useful than checking the message or control the user encounters.
+
+## Conclusion
+
+A useful test draws a clear line between acceptable behaviour and a realistic mistake. Independent expectations, purposeful fixtures, sensible mock boundaries, and awaited checks make that line easier to see.
+
+<RainbowHighlight>Trust a green test more when you know what makes it turn red.</RainbowHighlight>

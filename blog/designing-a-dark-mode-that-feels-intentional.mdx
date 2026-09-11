@@ -1,0 +1,175 @@
+---
+date: 2026-09-11
+title: "Designing a Dark Mode That Feels Intentional"
+description: "Design a coherent dark mode with semantic CSS tokens, measured contrast, clear surface hierarchy, thoughtful image treatment, and reliable theme preferences."
+tags: ["CSS", "Design Systems", "UI/UX"]
+image: "/blog/images/designing-a-dark-mode-that-feels-intentional.png"
+---
+
+Changing a page background to charcoal is easy. Making the navigation, cards, links, illustrations, and form states feel like they belong together takes more deliberate choices.
+
+A useful dark mode preserves the visual relationships that make a page understandable. This guide shows how to define those relationships with CSS tokens, check real foreground/background pairs, and review a complete interaction. It uses this portfolio's warm neutrals and flame-orange palette, but the example stylesheet is a standalone teaching example, not a replacement for the site's theme system.
+
+## Start with roles rather than inverted colours
+
+A palette names the available colours. A theme assigns them jobs. `--gray-300` describes a colour value; `--text-muted` describes why a component uses it. Separating those levels lets a card remain a card while its colours change.
+
+Start with a small set of roles: page canvas, card surface, primary text, secondary text, border, link, and focus indicator. Add more when a real interaction needs them. Giving every component its own shade makes a system difficult to tune consistently.
+
+This portfolio already follows that direction with variables such as `--surface` and `--content`, mapped into Tailwind utilities. The names below use a smaller vocabulary so the example remains easy to copy into a plain HTML page.
+
+<Highlight color="lemon">Define what a colour does before deciding which colour it should be.</Highlight>
+
+## Build a small theme contract in CSS
+
+Save the following as `theme.css`. Light is the default; setting `data-theme="dark"` on the document element selects the dark values.
+
+```css
+:root {
+  color-scheme: light;
+  --canvas: #ffffff;
+  --card: #e6e6e6;
+  --text: #292929;
+  --text-muted: #505050;
+  --border: #8b8b8b;
+  --link: #8c280d;
+  --focus: #8c280d;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --canvas: #2c2522;
+  --card: #2d2926;
+  --text: #e6e6e6;
+  --text-muted: #bababa;
+  --border: #8b8b8b;
+  --link: #eb7858;
+  --focus: #e8ff38;
+}
+
+body {
+  margin: 0;
+  padding: 2rem;
+  background: var(--canvas);
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+.card {
+  max-width: 36rem;
+  padding: 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+}
+
+.card p { color: var(--text-muted); }
+.card a { color: var(--link); text-underline-offset: 0.2em; }
+.card a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+```
+
+Use this complete `index.html` beside the stylesheet:
+
+```html
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Theme study</title>
+    <link rel="stylesheet" href="theme.css">
+  </head>
+  <body>
+    <main>
+      <article class="card">
+        <h1>A place for useful ideas</h1>
+        <p>Read practical notes on building and testing web interfaces.</p>
+        <a href="https://kittykio.com/blog">Explore the blog</a>
+      </article>
+    </main>
+  </body>
+</html>
+```
+
+Open it in a browser, then change the attribute to `data-theme="light"` and reload. The component rules stay the same; their inputs change. Press Tab to inspect the link's focus outline in both editions.
+
+The [`color-scheme` property](https://drafts.csswg.org/css-color-adjust-1/#color-scheme-prop) tells the browser which scheme an element supports, affecting browser-provided UI such as controls and scrollbars. It does not rewrite every authored colour. Your tokens still define the card, text, and link styling.
+
+## Create hierarchy without relying on shadows
+
+The dark canvas and card in this example are deliberately close in colour. A border and spacing make their relationship readable. If every dark surface is identical and its only separation is a black shadow, that separation may be hard to perceive.
+
+Do not force every raised surface to be brighter by the same amount. A navigation bar, a content card, and a modal have different jobs. Evaluate whether readers can see grouping and priority, then use a restrained combination of tone, edge contrast, spacing, and elevation.
+
+On a content-heavy page, the article body should stay prominent while dates and secondary navigation remain quieter. Muted text still needs sufficient contrast. Reducing opacity across an entire card also reduces the contrast of everything inside it, including controls and text that may already be near a threshold.
+
+A useful design review temporarily removes decorative shadows and glows. If the hierarchy disappears entirely, strengthen the structural cues before bringing the decoration back.
+
+## Measure pairs, not individual swatches
+
+A brand colour is not intrinsically accessible. Its contrast depends on the background and the role it plays. The table below uses opaque, flat sRGB colours from this portfolio's palette, calculated with the WCAG relative-luminance formula and rounded to two decimals for display.
+
+| Foreground | Background | Contrast | Normal text at AA |
+| --- | --- | --- | --- |
+| Flame 500 `#CB4625` | White `#FFFFFF` | 4.73:1 | Pass |
+| Flame 500 `#CB4625` | Cocoa 900 `#2C2522` | 3.18:1 | Fail |
+| Flame 300 `#EB7858` | Cocoa 900 `#2C2522` | 5.28:1 | Pass |
+| Gray 300 `#BABABA` | Cocoa 900 `#2C2522` | 7.76:1 | Pass |
+| Gray 500 `#8B8B8B` | White `#FFFFFF` | 3.41:1 | Fail |
+| Gray 100 `#E6E6E6` | Cocoa 700 `#2D2926` | 11.55:1 | Pass |
+
+[WCAG 2.2's text-contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html) sets a 4.5:1 minimum for normal text at level AA and 3:1 for large text, with specified exceptions. Large text means at least 18 points, or 14 points bold, approximately 24 CSS pixels or 18.7 CSS pixels bold. Use the unrounded ratio when determining a pass.
+
+The orange that works on white does not meet the normal-text threshold on the dark canvas. That is why a theme can keep its brand identity while assigning a lighter orange to dark-mode links. Also test the actual card background; a canvas measurement cannot validate every surface.
+
+<Highlight color="flame">A passing colour pair does not make a whole component accessible. Check its size, states, background, and interaction too.</Highlight>
+
+For translucent surfaces or gradients, inspect the final composited background behind the content. A token's hex value alone does not describe that result. Screenshots help find suspicious regions, while contrast tools help measure the specific pair.
+
+## Design focus, errors, and selection as part of the theme
+
+An interface has more states than its default screenshot shows. Review hover, focus, active, selected, error, loading, and disabled states wherever they exist. Make sure a focused link remains visible on both the canvas and a card.
+
+[WCAG's non-text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html) requires 3:1 contrast against adjacent colours for visual information needed to identify many controls and states, with exceptions. It does not require every decorative separator or card edge to meet that ratio. First identify what information the visual element communicates.
+
+Keep visible keyboard focus, as described in [the focus-visible guidance](https://www.w3.org/WAI/WCAG22/Understanding/focus-visible.html), and check that outlines are not clipped by surrounding overflow. The example uses an offset outline and retains the link's underline; colour is not its only cue.
+
+Likewise, pair an error colour with a useful message, and distinguish selection with a label, icon, or structural change where appropriate. [WCAG's use-of-colour guidance](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html) explains why colour alone should not carry essential information.
+
+## Treat artwork and code blocks deliberately
+
+A transparent dark logo may vanish on charcoal. A screenshot with a white background may become the brightest object on the page. Inspect these assets in context rather than applying a global image filter.
+
+Keep photographs faithful unless there is a clear editorial reason to alter them. For illustrations, consider a shared neutral backing or separately designed variants. A text-free cover with a strong silhouette, like this article's, can work across both themes without duplicating the artwork.
+
+Code blocks need their own foreground/background checks. Syntax colours that look distinct from one another may still be too dim against the code surface. Review comments and punctuation as well as keywords, and retain enough structure that syntax colour is not the sole way to understand the example.
+
+## Give user preference one clear owner
+
+The example intentionally selects a theme with an HTML attribute. It does not implement persistence or a switcher. In an application, let one theme controller decide which value to apply rather than letting multiple effects, classes, and media rules compete.
+
+A practical policy is to honour an explicit light or dark choice, and otherwise follow the system preference. The [`prefers-color-scheme` media feature](https://drafts.csswg.org/mediaqueries-5/#prefers-color-scheme) exposes that preference. If you offer a System setting, it should resume following changes rather than merely copying the current system value once.
+
+For a server-rendered site, check the first paint and hydration as well as the final state. The server cannot directly read browser local storage. Use the framework or theme library's documented initialization approach, and avoid treating a hydration-warning suppression as a fix for inconsistent rendering.
+
+## Review dark mode as a complete experience
+
+Start with one representative page that includes text, navigation, a card, an image, and a form if your site has one. Tune the theme there before spreading exceptions across components.
+
+1. Inspect both themes at narrow and wide widths.
+2. Measure text, link, and meaningful control-state contrast on their actual surfaces.
+3. Navigate by keyboard and inspect focus, errors, and selected states.
+4. Reload each explicit theme and test the System setting if implemented.
+5. Check images, code blocks, zoomed content, and the initial page paint.
+
+Automated checks can catch some contrast and markup issues. They do not decide whether the hierarchy feels coherent or whether a message explains how to recover. Combine them with deliberate visual and interaction review.
+
+## Conclusion
+
+An intentional dark mode gives colours clear responsibilities and verifies them in context. Semantic tokens make the system maintainable; measured contrast, purposeful states, and careful asset treatment make it useful to readers.
+
+<RainbowHighlight>Keep the identity familiar and the relationships readable.</RainbowHighlight>

@@ -1,0 +1,191 @@
+---
+date: 2026-09-11
+title: "間違った理由で通ってしまうテスト"
+description: "テストが成功していても、機能が正しいとは限りません。弱いアサーション、モックの境界、非同期処理の落とし穴をJavaScriptで確かめ、現実的な誤実装を検出できるテストへ改善します。"
+tags: ["テスト", "JavaScript", "開発ワークフロー"]
+image: "/blog/images/tests-that-pass-for-the-wrong-reasons.png"
+---
+
+テスト名に書かれた機能が壊れていても、テストが成功することがあります。テストランナーが間違っているとは限りません。アサーションが、意図したよりずっと狭い条件しか確認していないのかもしれません。
+
+この記事は、基本的なテストを書けるようになり、その検証力を高めたい開発者に向けたものです。意図的に壊した関数が弱いテストを通る例から始め、問題を検出できるテストへ直します。その後、モック、非同期処理、カバレッジも見直します。例ではNode.js 24とJavaScriptモジュールを使い、テスト用パッケージは追加しません。
+
+## 要件を観測できる結果に置き換える
+
+実装方法ではなく、振る舞いを表す一文から始めます。記事一覧なら、「公開済みの記事をすべて返し、下書きを除外し、入力順を保ち、入力を変更しない」と定義できます。記事には一意の文字列`id`と、`draft`または`published`の`status`があるとします。
+
+その動作と、ありそうな間違いを区別するには、何を確認すればよいでしょうか。配列が返るだけでは足りません。返された記事がすべて公開済みでも不十分です。一件も返さない関数でも、その条件を満たせるからです。
+
+有用なテストでは、何が含まれ、何が含まれないかを明示します。期待値は要件とテストデータから決め、実装と同じ絞り込み式で計算しないようにします。
+
+<Highlight color="lemon">重要なテストごとに、どんな現実的な間違いで失敗するべきかを挙げてみましょう。</Highlight>
+
+## 壊れた関数がテストを通る様子を確かめる
+
+作業用ディレクトリに、次の誤った実装を`published-posts.mjs`として保存します。
+
+```js
+export function publishedPosts(posts) {
+  return [];
+}
+```
+
+`published-posts.test.mjs`を作ります。
+
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { publishedPosts } from './published-posts.mjs';
+
+test('returns published posts', () => {
+  const posts = [
+    { id: 'draft', status: 'draft' },
+    { id: 'first', status: 'published' },
+    { id: 'second', status: 'published' },
+  ];
+  const result = publishedPosts(posts);
+
+  assert.ok(result.every((post) => post.status === 'published'));
+});
+```
+
+[Node.jsのテストランナー](https://nodejs.org/api/test.html)で実行します。
+
+```bash
+node --test published-posts.test.mjs
+```
+
+テストは成功します。空の配列に対する`every()`は`true`を返します。条件に反する要素が一つもないためです。この動作は[ECMAScriptの仕様](https://tc39.es/ecma262/multipage/indexed-collections.html#sec-array.prototype.every)で定められています。このアサーションは、公開済みの記事を実際に返すことまでは求めていません。
+
+件数を確認すれば、この空の結果は検出できます。しかし、件数だけでは別の記事を返す間違いが残ります。含まれる記事と順序を一緒に表す期待値を使いましょう。
+
+## 実装から独立した期待値に置き換える
+
+テストファイルを次の内容に置き換えます。
+
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { publishedPosts } from './published-posts.mjs';
+
+test('returns all published posts in input order without mutation', () => {
+  const posts = [
+    { id: 'draft', status: 'draft' },
+    { id: 'second', status: 'published' },
+    { id: 'first', status: 'published' },
+  ];
+  const before = structuredClone(posts);
+  const result = publishedPosts(posts);
+
+  assert.deepEqual(result, [before[1], before[2]]);
+  assert.deepEqual(posts, before);
+});
+
+test('returns an empty list when no published posts exist', () => {
+  assert.deepEqual(publishedPosts([]), []);
+  assert.deepEqual(publishedPosts([{ id: 'draft', status: 'draft' }]), []);
+});
+```
+
+`second`の後に`first`を置いたのは意図的です。誤ってアルファベット順に並べ替える実装を、「入力順を保つ」として通してはいけません。処理前のデータを保存することで、入力の変更も戻り値とは独立して確認できます。
+
+再実行し、最初のテストが失敗することを確かめます。その後、実装を置き換えます。
+
+```js
+export function publishedPosts(posts) {
+  return posts.filter((post) => post.status === 'published');
+}
+```
+
+今度は二つのテストが通ります。全記事を返す、公開済みの記事を一件落とす、結果を逆順にする、入力の状態を書き換える、といった間違いはアサーションに反します。元のテストより信頼できる、具体的な理由があります。
+
+戻り値の配列は、入力と記事オブジェクトを共有しています。仕様が約束しているのは、絞り込みが記事を変更しないことです。深いコピーではありません。特定の内部ヘルパーやメモリーの確保方法など、要件にない制約をテストで増やさないようにします。
+
+## 期待する答えを独立させる
+
+本番コードの処理を繰り返して期待値を作ると、両方が同じ間違いをすることがあります。状態の条件、丸め方、日付の境界を誤っていても、二つの式が一致すれば通ってしまいます。
+
+実行しなくても答えを判断できる、小さなテストデータを使います。状態を混在させる、異なる値を置く、境界を選ぶ、順序を変えるなど、確かめたい違いが見える入力を用意します。大量の生成データにも役割はありますが、基本の例が何を証明するかを隠さないようにしましょう。
+
+失敗時の出力も大切です。関連するレコードを比較すれば、単にtruthyかどうかを調べるより情報が得られます。テスト自体をデバッグしなくても、どの期待に反したかが分かる状態を目指します。
+
+これは、[AIが生成したコードをマージ前にレビューする方法](/ja/blog/post/how-to-review-ai-generated-code-before-you-merge)にもつながります。生成された実装だけでなく、アサーションにもレビューが必要です。詳しいテスト名を付けても、その下にある弱い検証は強くなりません。
+
+## 検証対象の動作ではなく、依存先との境界をモックにする
+
+モックは、遅い依存先や不安定な依存先を予測可能にできます。一方で、本来確かめたかった動作まで取り除くことがあります。テスト対象の関数を、期待する答えを返す偽物に置き換えたら、確認できたのはその偽物です。
+
+例えば、記事を公開済みにしてストレージへ渡す処理を考えます。`publish-post.mjs`に保存します。
+
+```js
+export async function publishPost(post, save) {
+  return save({ ...post, status: 'published' });
+}
+```
+
+単体テストではストレージ関数を渡し、その境界を何が通ったかを確認できます。次を`publish-post.test.mjs`として保存します。
+
+```js
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { publishPost } from './publish-post.mjs';
+
+test('sends the published state to storage and returns its result', async () => {
+  const writes = [];
+  const saved = { id: 'one', status: 'published', revision: 2 };
+  const save = async (value) => {
+    writes.push(value);
+    return saved;
+  };
+
+  const result = await publishPost({ id: 'one', status: 'draft' }, save);
+
+  assert.deepEqual(writes, [{ id: 'one', status: 'published' }]);
+  assert.deepEqual(result, saved);
+});
+
+test('propagates a storage failure', async () => {
+  const save = async () => { throw new Error('Storage unavailable'); };
+
+  await assert.rejects(
+    () => publishPost({ id: 'one', status: 'draft' }, save),
+    /Storage unavailable/,
+  );
+});
+```
+
+`node --test publish-post.test.mjs`で実行します。実際の`publishPost`を動かし、送信するデータとエラーの伝播を確認しています。ただし、データベース接続、スキーマ、トランザクションが正しく動くことまでは分かりません。必要な連携は別途検証します。
+
+## 非同期の検証をテストの完了に結び付ける
+
+テスト関数の`async`と、呼び出しの`await`に注目してください。Promiseを返すアサーションは、`await`するか、そのPromiseをテスト関数から返して、ランナーが完了を追えるようにします。処理を始めてすぐテストを終えると、検証の完了とテストの寿命が切り離されます。
+
+`await`がないと必ず成功する、という意味ではありません。ランナーによっては未処理の拒否や終了後の処理をエラーとして報告します。問題は、意図した検証を確実に表現できなくなることです。Node.jsのドキュメントには、[テストの終了後に続く非同期処理](https://nodejs.org/api/test.html#extraneous-asynchronous-activity)の説明があります。
+
+<Highlight color="flame">Promiseを作っただけでは、結果を検証したことにはなりません。完了をawaitするか、Promiseをランナーへ返しましょう。</Highlight>
+
+## カバレッジで空白を探し、アサーションの検出力も確かめる
+
+カバレッジは、選んだ測定方法でどのコードが実行されたかを示します。行を実行しても、その結果を検証したとは限りません。弱い`every()`の例は、小さな実装の全体を実行していても、要件を見逃します。
+
+ミューテーションテストは、コードを意図的に変更し、テストが検出するかを調べます。[Strykerのドキュメント](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/)では、検出された変更、生き残った変更、カバレッジのない変更を区別しています。生き残った変更は調査対象ですが、許される入力では元の実装と同じ動作になる場合もあり、必ずしも要件の検証漏れとは限りません。
+
+最初は作業用コピーで手動で試せます。絞り込みを空の結果に置き換える、順序を逆にする、下書きを返すなどして、関連テストが期待した理由で失敗するか確認し、実装を元に戻します。意図的に入れた不具合を提出する変更に残してはいけません。
+
+## 一つのテストから改善する
+
+既存のテストに、次の見直しを試してみましょう。
+
+1. 守りたい動作を一文で書く。
+2. ありそうな誤った結果や副作用を挙げる。
+3. 現在のアサーションがその間違いを検出できるか確認する。
+4. 必要な部分だけ、データや期待値を改善する。
+5. 正しい実装と、意図的に間違えた実装の両方で動かす。
+
+UIテストでも、利用者の操作と見える結果に同じ考え方を適用できます。[Testing Libraryの基本方針](https://testing-library.com/docs/guiding-principles/)は、実際の使い方に近いテストを重視しています。内部の状態変数より、利用者が見るメッセージやコントロールを確認する方が役立つことがあります。
+
+## まとめ
+
+有用なテストは、受け入れられる動作と現実的な間違いを明確に区別します。独立した期待値、意図のある入力、適切なモックの境界、完了を待つ検証によって、その違いを確かめやすくなります。
+
+<RainbowHighlight>何を間違えると赤になるかが分かれば、緑のテストをもっと信頼できます。</RainbowHighlight>
