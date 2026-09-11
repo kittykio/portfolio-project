@@ -1,6 +1,7 @@
 import { getAllProjects } from '@/lib/projectApi';
 
 const currentSlugs = [
+  'petty-court',
   'bad-ui-olympics',
   'tempo',
   'workio',
@@ -20,6 +21,14 @@ describe('project catalogue', () => {
       expect(project.createdDate).toBeInstanceOf(Date);
       expect(project.modifiedDate).toBeInstanceOf(Date);
       expect(project.like).toBe(0);
+      if (project.slug === 'petty-court') {
+        expect(project.date).toBe('2026/09/10');
+        expect(project.image).toBe('');
+        expect(project.livePreview).toBe(true);
+        expect(project.repoUrl).toBe('https://github.com/kittykio/petty-court');
+        expect(project.websiteUrl).toBe('https://kiki-petty-court.vercel.app/');
+        return;
+      }
       if (project.slug === 'bad-ui-olympics') {
         expect(project.date).toBe('2026/09/09');
         expect(project.image).toBe('');

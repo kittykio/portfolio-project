@@ -1,5 +1,42 @@
 [
   {
+    "name": "petty-court",
+    "title": "Petty Court",
+    "summary": "A playful court of public opinion for everyday disputes. File a case, present evidence, invite a jury, and share the verdict.",
+    "tags": [
+      "React",
+      "TypeScript",
+      "Next.js",
+      "PostgreSQL"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/petty-court",
+    "websiteUrl": "https://kiki-petty-court.vercel.app/",
+    "date": "2026/09/10",
+    "caseStudy": {
+      "eyebrow": "Small claims. Big feelings.",
+      "statement": "A tiny disagreement deserves an unnecessarily beautiful hearing.",
+      "problem": "Give friends a playful, structured way to settle low-stakes disagreements while making evidence and both sides of the story easy to understand.",
+      "role": "Product design, visual identity, responsive frontend, case and voting APIs, data persistence, and validation.",
+      "constraints": "Keep filing and voting account-free, preserve shared case state, prevent duplicate votes within a browser, and handle deadlines and owner-only case closure.",
+      "process": "Built a searchable docket, a three-step filing flow, evidence exhibits, jury voting, and verdict cards. Local development uses persistent files; the PostgreSQL adapter serializes hosted writes with row locks.",
+      "result": "A standalone app with public case links, image and text evidence, timed voting, case-owner controls, and exportable verdict cards. Deployment requires a PostgreSQL connection.",
+      "features": [
+        "Searchable and filterable case docket with clearly labeled fictional examples",
+        "Three-step filing with up to three image or text exhibits",
+        "Browser-based voting, jury deadlines, and owner-only early closure",
+        "Shareable case links and downloadable verdict cards"
+      ],
+      "engineering": [
+        "Next.js and React with TypeScript and a custom responsive visual system",
+        "Atomic local persistence and a PostgreSQL-backed deployment adapter",
+        "Server-side validation, request-size limits, origin checks, and protected ownership",
+        "Tests for verdicts, deadlines, concurrent transactions, and HTTP workflows"
+      ]
+    },
+    "livePreview": true
+  },
+  {
     "name": "bad-ui-olympics",
     "title": "Bad UI Olympics",
     "summary": "Six absurd timed challenges: spinning PIN digits, unhelpful volume buttons, a relocating submit button, backwards checkboxes, a scrambled elevator, and a password puzzle.",
