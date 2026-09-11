@@ -1,6 +1,7 @@
 import { getAllProjects } from '@/lib/projectApi';
 
 const currentSlugs = [
+  'side-quest',
   'petty-court',
   'bad-ui-olympics',
   'tempo',
@@ -21,6 +22,14 @@ describe('project catalogue', () => {
       expect(project.createdDate).toBeInstanceOf(Date);
       expect(project.modifiedDate).toBeInstanceOf(Date);
       expect(project.like).toBe(0);
+      if (project.slug === 'side-quest') {
+        expect(project.date).toBe('2026/09/11');
+        expect(project.image).toBe('');
+        expect(project.livePreview).toBe(true);
+        expect(project.repoUrl).toBe('https://github.com/kittykio/side-quest');
+        expect(project.websiteUrl).toBe('https://kiki-side-quest.vercel.app/');
+        return;
+      }
       if (project.slug === 'petty-court') {
         expect(project.date).toBe('2026/09/10');
         expect(project.image).toBe('');

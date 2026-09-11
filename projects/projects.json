@@ -1,5 +1,42 @@
 [
   {
+    "name": "side-quest",
+    "title": "Side Quest",
+    "summary": "Small adventures for everyday life. Match a quest to your mood, follow its prompts, and collect memories in a personal passport.",
+    "tags": [
+      "JavaScript",
+      "Vite",
+      "SVG",
+      "LocalStorage"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/side-quest",
+    "websiteUrl": "https://kiki-side-quest.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/11",
+    "caseStudy": {
+      "eyebrow": "A little less ordinary.",
+      "statement": "Turn a spare fifteen minutes into a story worth keeping.",
+      "problem": "Help people break out of everyday routines with approachable activities that fit their time, budget, and mood.",
+      "role": "Product design, original SVG illustration, responsive frontend, quest matching, and browser persistence.",
+      "constraints": "Work without accounts, paid APIs, or location permissions while keeping personal notes on the device.",
+      "process": "Created sixteen guided adventures, constraint-based discovery, completion checklists, and a collectible passport.",
+      "result": "A standalone app with preference matching, persistent stamps and notes, shareable quest links, and downloadable memories.",
+      "features": [
+        "Sixteen adventures across Explore, Create, Recharge, and Connect",
+        "Matching by time, budget, mood, and setting",
+        "Guided checklists and a collectible stamp passport",
+        "Private notes, quest links, and text export"
+      ],
+      "engineering": [
+        "Vite and JavaScript with original SVG artwork",
+        "Browser-local persistence without a backend",
+        "Native dialogs, keyboard controls, and responsive layouts",
+        "Tests for catalogue integrity and matching edge cases"
+      ]
+    }
+  },
+  {
     "name": "petty-court",
     "title": "Petty Court",
     "summary": "A playful court of public opinion for everyday disputes. File a case, present evidence, invite a jury, and share the verdict.",
