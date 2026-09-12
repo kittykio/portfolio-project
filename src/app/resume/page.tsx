@@ -37,8 +37,8 @@ export default function ResumePage() {
           <h3 className="font-heading text-2xl text-flame-500">Experience</h3>
           <div className="mt-4 space-y-5">
             <div>
-              <p className="font-bodyBold">{ja ? 'フルスタックエンジニア · AIms Bridge' : 'Full-stack Developer · AIms Bridge'}</p>
-              <p>{ja ? '2026年9月–現在 · AI駆動開発・仕様駆動開発。React・TypeScript、Python・FastAPI、LLM、SQL・ORM、Dockerを使用し、Codex・Claude Code・Spec Kitを活用。' : 'September 2026–Present · AI-driven and specification-driven development with React/TypeScript, Python/FastAPI, LLMs, SQL/ORM, and Docker, supported by Codex, Claude Code, and Spec Kit.'}</p>
+              <p className="font-bodyBold">{ja ? 'フルスタックエンジニア' : 'Full-stack Developer'}</p>
+              <p>{ja ? '2026年9月–現在 · 業務データと生成AIをつなぐ企業向けプラットフォームの画面・API・データアクセスを開発。AI駆動開発・仕様駆動開発を活用。React・TypeScript、Python・FastAPI、LLM、SQL・ORM、Dockerを使用し、Codex・Claude Code・Spec Kitを活用。' : 'September 2026–Present · Building interfaces, APIs, and data access for an enterprise AI and data platform. AI-driven and specification-driven development with React/TypeScript, Python/FastAPI, LLMs, SQL/ORM, and Docker, supported by Codex, Claude Code, and Spec Kit.'}</p>
             </div>
             <div>
               <p className="font-bodyBold">Frontend Developer · Mobile & Internet Services</p>

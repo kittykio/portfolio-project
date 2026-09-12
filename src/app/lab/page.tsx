@@ -9,7 +9,7 @@ import { useThemeContext } from '@/components/ThemeContext';
 import { useMotionPreference } from '@/components/MotionPreference';
 
 const experiments = [
-  ['Building AIms Bridge', 'Since September 2026, working across React/TypeScript, Python/FastAPI, LLMs, SQL/ORM, and Docker on AIms Bridge.'],
+  ['Building an enterprise AI platform', 'Since September 2026, building interfaces, APIs, and data access for an enterprise service that connects business data with generative AI.'],
   ['Building Paperform', 'Combining dimensional paper cards with animated typography, a motion timeline, and browser video exports.'],
   ['Working with AI and specifications', 'Using Codex, Claude Code, and Spec Kit to connect requirements, implementation, review, and testing.'],
   ['Growing Pocket Planet', 'Exploring living ecosystems, ocean habitats, simulation experiments, and creative tools in a browser-based planet sandbox.'],
@@ -26,14 +26,14 @@ export default function LabPage() {
         heading: 'このページは完成報告ではなく、いまの方向性を残すための更新ノートです。', exploring: 'これから育てたいこと',
         closing: '表現は豊かに、でもウェブ全体を待たせない。', closingBody: 'ここには、インタラクションの研究、ビジュアルプロトタイプ、そして良いUIを記憶に残るものへ変える小さな実装を集めていきます。',
         eyebrow: 'いま、私は', hero: 'kiki', heroDescription: 'AIを活用したプロダクトと、表現豊かなウェブの創作ツールをつくるフルスタックデベロッパーです。', statusLabel: '現在のスナップショット', updated: '最終更新：2026年9月',
-        experiments: [['AIms Bridgeを開発する', '2026年9月から、React・TypeScript、Python・FastAPI、LLM、SQL・ORM、Dockerを使ったAIms Bridgeのフルスタック開発に取り組んでいます。'], ['Paperformをつくる', '立体的なペーパーカードと動くタイポグラフィを組み合わせ、タイムライン編集と動画書き出しをブラウザで実装しています。'], ['AIと仕様を軸に開発する', 'Codex・Claude Code・Spec Kitを活用し、要件から実装、レビュー、テストまでをつなげています。'], ['Pocket Planetを育てる', 'ブラウザ上の小さな惑星で、生態系、海の環境、シミュレーション実験、創作ツールを育てています。']],
+        experiments: [['企業向けAIプラットフォームを開発する', '2026年9月から、業務データと生成AIをつなぐ企業向けサービスの画面・API・データアクセスを含むフルスタック開発に取り組んでいます。'], ['Paperformをつくる', '立体的なペーパーカードと動くタイポグラフィを組み合わせ、タイムライン編集と動画書き出しをブラウザで実装しています。'], ['AIと仕様を軸に開発する', 'Codex・Claude Code・Spec Kitを活用し、要件から実装、レビュー、テストまでをつなげています。'], ['Pocket Planetを育てる', 'ブラウザ上の小さな惑星で、生態系、海の環境、シミュレーション実験、創作ツールを育てています。']],
         notes: [['目的のあるモーション', '小さな遷移も、変化を説明し、注意を導き、UIをより直接的に感じさせるものに。'], ['ビジュアルシステム', '色、書体、奥行き、操作をまとめて試し、アイデアに一貫した視点を与えます。'], ['パフォーマンスの境界', '遊び心あるシーンにも予算を設定。遅延読み込み、動きを減らす設定、自然なフォールバックを最優先します。']],
-        status: [['つくっていること', '仕事ではAIms Bridge、個人制作ではPaperformとPocket Planetに取り組んでいます。'], ['学んでいること', 'Codex・Claude Code・Spec Kitを使ったAI駆動開発と仕様駆動開発。'], ['書いていること', '実装の決断、パフォーマンス、創造的なフロントエンドについての二言語MDX記事。'], ['オープンなこと', '思慮深いUI、フロントエンドシステム、クリエイティブウェブのコラボレーション。']],
+        status: [['つくっていること', '仕事では企業向けAI・データプラットフォーム、個人制作ではPaperformとPocket Planetに取り組んでいます。'], ['学んでいること', 'Codex・Claude Code・Spec Kitを使ったAI駆動開発と仕様駆動開発。'], ['書いていること', '実装の決断、パフォーマンス、創造的なフロントエンドについての二言語MDX記事。'], ['オープンなこと', '思慮深いUI、フロントエンドシステム、クリエイティブウェブのコラボレーション。']],
       }
     : null;
   const activeExperiments = copy?.experiments ?? experiments;
   const notes = copy?.notes ?? [['Motion with purpose', 'Small transitions should explain a change, guide attention, or make an interface feel more direct.'], ['Visual systems', 'I test color, type, depth, and interaction together so an idea has a consistent point of view.'], ['Performance boundaries', 'Every playful scene gets a budget: lazy loading, reduced motion, and graceful fallbacks come first.']];
-  const nowStatus = copy?.status ?? [['Building', 'AIms Bridge at work; Paperform and Pocket Planet in my personal projects.'], ['Learning', 'AI-driven and specification-driven development with Codex, Claude Code, and Spec Kit.'], ['Writing', 'Bilingual MDX notes about implementation decisions, performance, and creative frontend work.'], ['Open to', 'Thoughtful UI, frontend systems, and creative-web collaborations.']];
+  const nowStatus = copy?.status ?? [['Building', 'An enterprise AI and data platform at work; Paperform and Pocket Planet in my personal projects.'], ['Learning', 'AI-driven and specification-driven development with Codex, Claude Code, and Spec Kit.'], ['Writing', 'Bilingual MDX notes about implementation decisions, performance, and creative frontend work.'], ['Open to', 'Thoughtful UI, frontend systems, and creative-web collaborations.']];
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [direction, setDirection] = useState(1);
@@ -70,10 +70,6 @@ export default function LabPage() {
     <SectionWrapper className="w-full mt-16" title={copy?.title ?? 'Now'} subtitle={copy?.subtitle ?? 'A living snapshot of what Kiki is building, learning, and slowly growing.'}>
       <LabHero paused={paused || shouldReduceMotion} performanceMode={performanceMode} eyebrow={copy?.eyebrow ?? "Right now, I’m"} description={copy?.heroDescription ?? 'A full-stack developer building AI-powered products and expressive creative tools for the web.'} />
 
-      <div className="mx-auto flex max-w-5xl flex-wrap gap-5 px-4 pt-8 text-sm underline underline-offset-4">
-        <a href="https://www.hit-inc.jp/aimsbridge/aimsbridge.html" target="_blank" rel="noreferrer">AIms Bridge ↗</a>
-        <a href="https://www.hit-inc.jp/ai/driven.html" target="_blank" rel="noreferrer">{locale === 'ja' ? 'AI駆動開発について ↗' : 'About AI-driven development ↗'}</a>
-      </div>
       <section className="mx-auto grid max-w-5xl gap-4 px-4 py-14 sm:grid-cols-2 sm:gap-6 sm:py-20">
         <div className="sm:col-span-2 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
           <p className="font-heading uppercase tracking-[0.2em] text-flame-500 dark:text-lemon">{copy?.statusLabel ?? 'Current snapshot'}</p>

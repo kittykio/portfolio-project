@@ -13,11 +13,11 @@ describe('LabPage', () => {
   beforeEach(() => { locale = 'en'; theme = 'light'; reduceMotion = false; articleProps = {}; Object.defineProperty(navigator, 'hardwareConcurrency', { configurable: true, value: 8 }); Object.defineProperty(navigator, 'deviceMemory', { configurable: true, value: 8 }); Object.defineProperty(navigator, 'connection', { configurable: true, value: { saveData: false } }); });
 
   it('renders English status, performance summary, carousel, and notes', () => {
-    render(<LabPage />); expect(screen.getByRole('heading', { level: 1, name: 'Now' })).toBeInTheDocument(); expect(screen.getByText('Building')).toBeInTheDocument(); expect(screen.getByText('Standard scene (up to 1.5× DPR)')).toBeInTheDocument(); expect(screen.getByText('Building AIms Bridge')).toBeInTheDocument(); expect(screen.getByText('Motion with purpose')).toBeInTheDocument(); expect(screen.getByTestId('lab-hero')).toHaveAttribute('data-paused', 'false');
+    render(<LabPage />); expect(screen.getByRole('heading', { level: 1, name: 'Now' })).toBeInTheDocument(); expect(screen.getByText('Building')).toBeInTheDocument(); expect(screen.getByText('Standard scene (up to 1.5× DPR)')).toBeInTheDocument(); expect(screen.getByText('Building an enterprise AI platform')).toBeInTheDocument(); expect(screen.getByText('Motion with purpose')).toBeInTheDocument(); expect(screen.getByTestId('lab-hero')).toHaveAttribute('data-paused', 'false');
   });
 
   it('moves in both directions, selects a slide, pauses, resumes, and handles drag thresholds', () => {
-    jest.useFakeTimers(); render(<LabPage />); fireEvent.click(screen.getByRole('button', { name: 'Next experiment' })); expect(screen.getByText('Building Paperform')).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: 'Previous experiment' })); expect(screen.getByText('Building AIms Bridge')).toBeInTheDocument();
+    jest.useFakeTimers(); render(<LabPage />); fireEvent.click(screen.getByRole('button', { name: 'Next experiment' })); expect(screen.getByText('Building Paperform')).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: 'Previous experiment' })); expect(screen.getByText('Building an enterprise AI platform')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Working with AI and specifications' })); expect(screen.getByText('Working with AI and specifications')).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: 'Pause motion' })); expect(screen.getByRole('button', { name: 'Resume motion' })).toBeInTheDocument(); fireEvent.click(screen.getByRole('button', { name: 'Resume motion' }));
     act(() => articleProps.onDragStart()); act(() => articleProps.onDragEnd({}, { offset: { x: -100 }, velocity: { x: 0 } })); expect(screen.getByText('Growing Pocket Planet')).toBeInTheDocument(); act(() => articleProps.onDragEnd({}, { offset: { x: 100 }, velocity: { x: 0 } })); expect(screen.getByText('Working with AI and specifications')).toBeInTheDocument(); jest.useRealTimers();
   });
@@ -27,7 +27,7 @@ describe('LabPage', () => {
   });
 
   it('selects lightweight mode for constrained devices and localizes Japanese content', () => {
-    locale = 'ja'; theme = 'dark'; reduceMotion = true; Object.defineProperty(navigator, 'hardwareConcurrency', { configurable: true, value: 2 }); const { rerender } = render(<LabPage />); expect(screen.getByRole('heading', { name: 'いま' })).toBeInTheDocument(); expect(screen.getByText('軽量シーン（DPR 1×）')).toBeInTheDocument(); expect(screen.getByText('ダーク')).toBeInTheDocument(); expect(screen.getByText('AIms Bridgeを開発する')).toBeInTheDocument();
+    locale = 'ja'; theme = 'dark'; reduceMotion = true; Object.defineProperty(navigator, 'hardwareConcurrency', { configurable: true, value: 2 }); const { rerender } = render(<LabPage />); expect(screen.getByRole('heading', { name: 'いま' })).toBeInTheDocument(); expect(screen.getByText('軽量シーン（DPR 1×）')).toBeInTheDocument(); expect(screen.getByText('ダーク')).toBeInTheDocument(); expect(screen.getByText('企業向けAIプラットフォームを開発する')).toBeInTheDocument();
     Object.defineProperty(navigator, 'hardwareConcurrency', { configurable: true, value: 8 }); Object.defineProperty(navigator, 'connection', { configurable: true, value: { saveData: true } }); rerender(<LabPage />); expect(screen.getByTestId('lab-hero')).toHaveAttribute('data-performance', 'light');
   });
 });

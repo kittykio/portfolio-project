@@ -20,13 +20,12 @@ export type ExperienceType = {
 
 export const experiences: ExperienceType[] = [
   {
-    title: 'Full-stack Developer · AI-Driven Development',
-    company_name: 'AIms Bridge',
-    url: 'https://www.hit-inc.jp/aimsbridge/aimsbridge.html',
-    description: 'Developing AIms Bridge across the full stack using AI-driven and specification-driven development. Working with React and TypeScript interfaces, Python/FastAPI services, LLMs, SQL and ORM-based data access, and Docker, supported by Codex, Claude Code, and Spec Kit.',
+    title: 'Full-stack Developer',
+    company_name: 'Enterprise AI & Data Platform',
+    description: 'Building an enterprise platform that connects business data with generative AI to support information access and decision-making. My role spans the full stack, from React and TypeScript interfaces, Python/FastAPI services, LLMs, SQL and ORM-based data access, and Docker. I use AI-driven and specification-driven workflows with Codex, Claude Code, and Spec Kit.',
     date: 'September 2026 - Present',
     technologies: ['React', 'TypeScript', 'Python', 'FastAPI', 'LLMs', 'SQL', 'ORM', 'Docker', 'Codex', 'Claude Code', 'Spec Kit'],
-    japanese: { title: 'フルスタックエンジニア · AI駆動開発', date: '2026年9月 - 現在', description: 'AI駆動開発・仕様駆動開発を活用し、AIms Bridgeのフルスタック開発を担当。React・TypeScriptによる画面、Python・FastAPIによるサービス、LLM、SQL・ORMによるデータアクセス、Dockerを扱い、Codex・Claude Code・Spec Kitを開発に活用しています。' },
+    japanese: { title: 'フルスタックエンジニア', date: '2026年9月 - 現在', description: '業務データと生成AIをつなぎ、情報活用や意思決定を支援する企業向けプラットフォームのフルスタック開発を担当。React・TypeScriptによる画面、Python・FastAPIによるサービス、LLM、SQL・ORMによるデータアクセス、Dockerを扱い、Codex・Claude Code・Spec Kitを開発に活用しています。' },
     icon: <FaCode />,
   },
   {
