@@ -1,6 +1,6 @@
 'use client';
 
-import { FaBriefcase, FaCode, FaPalette } from 'react-icons/fa';
+import { FaBriefcase, FaCode } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import SectionWrapper from '@/components/SectionWrapper';
 import { useLocale } from '@/components/LocaleContext';
@@ -14,15 +14,27 @@ export type ExperienceType = {
   date: string;
   technologies: string[];
   icon?: React.ReactNode;
+  url?: string;
+  japanese?: { title: string; description: string; date: string };
 };
 
 export const experiences: ExperienceType[] = [
   {
+    title: 'Full-stack Developer · AI-Driven Development',
+    company_name: 'AIms Bridge',
+    url: 'https://www.hit-inc.jp/aimsbridge/aimsbridge.html',
+    description: 'Developing AIms Bridge across the full stack using AI-driven and specification-driven development. Working with React and TypeScript interfaces, Python/FastAPI services, LLMs, SQL and ORM-based data access, and Docker, supported by Codex, Claude Code, and Spec Kit.',
+    date: 'September 2026 - Present',
+    technologies: ['React', 'TypeScript', 'Python', 'FastAPI', 'LLMs', 'SQL', 'ORM', 'Docker', 'Codex', 'Claude Code', 'Spec Kit'],
+    japanese: { title: 'フルスタックエンジニア · AI駆動開発', date: '2026年9月 - 現在', description: 'AI駆動開発・仕様駆動開発を活用し、AIms Bridgeのフルスタック開発を担当。React・TypeScriptによる画面、Python・FastAPIによるサービス、LLM、SQL・ORMによるデータアクセス、Dockerを扱い、Codex・Claude Code・Spec Kitを開発に活用しています。' },
+    icon: <FaCode />,
+  },
+  {
     title: 'Frontend Developer',
     company_name: 'Mobile & Internet Services System Development',
     description:
-      'Design and ship responsive web interfaces for mobile and internet services, turning product requirements into accessible, maintainable React and Next.js experiences. Partner with design and engineering to refine user flows, interactions, and shared UI foundations.',
-    date: '2024 - Present',
+      'Designed and shipped responsive web interfaces for mobile and internet services, turning product requirements into accessible, maintainable React and Next.js experiences. Partnered with design and engineering to refine user flows, interactions, and shared UI foundations.',
+    date: '2024 - August 2026',
     technologies: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Figma'],
     icon: <FaCode />,
   },
@@ -55,7 +67,7 @@ const ExperienceSection = () => {
   return (
     <SectionWrapper
       title={locale === 'ja' ? '経験' : 'Experience'}
-      subtitle={locale === 'ja' ? '信頼できるデータツールから、人が心地よく使えるレスポンシブUIまで。プロダクトを軸にした実践的なエンジニアリングの姿勢を育てた2つの役割です。' : 'Two roles that shaped a practical, product-minded approach to engineering—from building reliable data tools to crafting responsive interfaces people enjoy using.'}
+      subtitle={locale === 'ja' ? '信頼できるデータツールから、人が心地よく使えるレスポンシブUIまで。現在はAI駆動開発によるフルスタック開発に取り組んでいます。' : 'From reliable data tools and responsive interfaces to full-stack, AI-driven product development.'}
       className="scroll-mt-24 flex flex-col mt-32 px-4 w-full gap-8"
     >
       <div className="w-full py-24 relative max-w-7xl mx-auto pb-[700px] overflow-x-hidden">
@@ -67,6 +79,7 @@ const ExperienceSection = () => {
         <div className="flex flex-col space-y-20 relative">
           {experiences.map((exp, index) => {
             const isLeft = index % 2 === 0;
+            const localized = locale === 'ja' ? exp.japanese : undefined;
             return (
               <div key={index} className="relative flex items-center w-full">
                 {/* Node */}
@@ -90,11 +103,11 @@ const ExperienceSection = () => {
                           isLeft ? 'justify-start md:justify-end' : 'justify-start'
                         }`}
                       >
-                        {exp.date}
+                        {localized?.date ?? exp.date}
                       </div>
-                      <div className="font-bodyBold text-xl">{exp.title}</div>
-                      <div className="text-sm italic mb-2">{exp.company_name}</div>
-                      <p className="text-base">{exp.description}</p>
+                      <div className="font-bodyBold text-xl">{localized?.title ?? exp.title}</div>
+                      <div className="text-sm italic mb-2">{exp.url ? <a href={exp.url} target="_blank" rel="noreferrer" className="underline underline-offset-4">{exp.company_name} ↗</a> : exp.company_name}</div>
+                      <p className="text-base">{localized?.description ?? exp.description}</p>
                       <div
                         className={`flex flex-wrap gap-2 mt-2 text-sm ${
                           isLeft ? 'justify-start md:justify-end' : 'justify-start'

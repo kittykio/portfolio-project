@@ -37,9 +37,13 @@ export default function ResumePage() {
           <h3 className="font-heading text-2xl text-flame-500">Experience</h3>
           <div className="mt-4 space-y-5">
             <div>
+              <p className="font-bodyBold">{ja ? 'フルスタックエンジニア · AIms Bridge' : 'Full-stack Developer · AIms Bridge'}</p>
+              <p>{ja ? '2026年9月–現在 · AI駆動開発・仕様駆動開発。React・TypeScript、Python・FastAPI、LLM、SQL・ORM、Dockerを使用し、Codex・Claude Code・Spec Kitを活用。' : 'September 2026–Present · AI-driven and specification-driven development with React/TypeScript, Python/FastAPI, LLMs, SQL/ORM, and Docker, supported by Codex, Claude Code, and Spec Kit.'}</p>
+            </div>
+            <div>
               <p className="font-bodyBold">Frontend Developer · Mobile & Internet Services</p>
               <p>
-                2024–Present · Responsive React and Next.js interfaces, interaction systems, and
+                2024–August 2026 · Responsive React and Next.js interfaces, interaction systems, and
                 shared UI foundations.
               </p>
             </div>
@@ -58,7 +62,7 @@ export default function ResumePage() {
           <h3 className="font-heading text-2xl text-flame-500">Skills</h3>
           <p className="mt-3">
             React · Next.js · TypeScript · Node.js · Python · Django · MongoDB · Tailwind CSS ·
-            Three.js · Figma
+            Three.js · Figma · FastAPI · Docker · SQL · ORM · LLMs · Codex · Claude Code · Spec Kit
           </p>
         </section>
       </article>

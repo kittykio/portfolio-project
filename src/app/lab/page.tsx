@@ -9,10 +9,10 @@ import { useThemeContext } from '@/components/ThemeContext';
 import { useMotionPreference } from '@/components/MotionPreference';
 
 const experiments = [
-  ['Building a calmer portfolio', 'Refining the case studies, content system, and responsive details that make this site easy to explore.'],
-  ['Making motion feel useful', 'Keeping expressive interactions while making each transition clear, light, and considerate of reduced-motion preferences.'],
-  ['Writing across languages', 'Growing a bilingual collection of practical notes on frontend work, creative code, and the decisions behind them.'],
-  ['Protecting the performance budget', 'Letting 3D and playful details earn their place without making the rest of the site wait.'],
+  ['Building AIms Bridge', 'Since September 2026, working across React/TypeScript, Python/FastAPI, LLMs, SQL/ORM, and Docker on AIms Bridge.'],
+  ['Building Paperform', 'Combining dimensional paper cards with animated typography, a motion timeline, and browser video exports.'],
+  ['Working with AI and specifications', 'Using Codex, Claude Code, and Spec Kit to connect requirements, implementation, review, and testing.'],
+  ['Growing Pocket Planet', 'Exploring living ecosystems, ocean habitats, simulation experiments, and creative tools in a browser-based planet sandbox.'],
 ];
 
 export default function LabPage() {
@@ -25,15 +25,15 @@ export default function LabPage() {
         resume: 'モーションを再開', pause: 'モーションを停止', drag: '左右にドラッグして見てみる', notesLabel: '進行中のメモ',
         heading: 'このページは完成報告ではなく、いまの方向性を残すための更新ノートです。', exploring: 'これから育てたいこと',
         closing: '表現は豊かに、でもウェブ全体を待たせない。', closingBody: 'ここには、インタラクションの研究、ビジュアルプロトタイプ、そして良いUIを記憶に残るものへ変える小さな実装を集めていきます。',
-        eyebrow: 'いま、私は', hero: 'kiki', heroDescription: 'インターフェース、インタラクション、そしてウェブ上の小さな視覚世界を育てているクリエイティブデベロッパーです。', statusLabel: '現在のスナップショット', updated: '最終更新：2026年8月',
-        experiments: [['より落ち着いたポートフォリオをつくる', 'ケーススタディ、コンテンツ設計、レスポンシブな細部を磨き、サイトを心地よく探索できるようにしています。'], ['役に立つモーションにする', '表現豊かな操作感を保ちながら、一つひとつの遷移をわかりやすく、軽く、動きを減らす設定にも配慮したものにします。'], ['言語をまたいで書く', 'フロントエンド、クリエイティブコード、その背景にある決断について、実用的な二言語の記録を育てています。'], ['パフォーマンス予算を守る', '3Dや遊び心あるディテールが、サイト全体を待たせることなく価値を持てるようにします。']],
+        eyebrow: 'いま、私は', hero: 'kiki', heroDescription: 'AIを活用したプロダクトと、表現豊かなウェブの創作ツールをつくるフルスタックデベロッパーです。', statusLabel: '現在のスナップショット', updated: '最終更新：2026年9月',
+        experiments: [['AIms Bridgeを開発する', '2026年9月から、React・TypeScript、Python・FastAPI、LLM、SQL・ORM、Dockerを使ったAIms Bridgeのフルスタック開発に取り組んでいます。'], ['Paperformをつくる', '立体的なペーパーカードと動くタイポグラフィを組み合わせ、タイムライン編集と動画書き出しをブラウザで実装しています。'], ['AIと仕様を軸に開発する', 'Codex・Claude Code・Spec Kitを活用し、要件から実装、レビュー、テストまでをつなげています。'], ['Pocket Planetを育てる', 'ブラウザ上の小さな惑星で、生態系、海の環境、シミュレーション実験、創作ツールを育てています。']],
         notes: [['目的のあるモーション', '小さな遷移も、変化を説明し、注意を導き、UIをより直接的に感じさせるものに。'], ['ビジュアルシステム', '色、書体、奥行き、操作をまとめて試し、アイデアに一貫した視点を与えます。'], ['パフォーマンスの境界', '遊び心あるシーンにも予算を設定。遅延読み込み、動きを減らす設定、自然なフォールバックを最優先します。']],
-        status: [['つくっていること', 'このポートフォリオのケーススタディ、リクエスト機能、細かなレスポンシブ改善。'], ['学んでいること', '3Dシーンの構成、意図のあるモーション、長く使えるコンテンツシステム。'], ['書いていること', '実装の決断、パフォーマンス、創造的なフロントエンドについての二言語MDX記事。'], ['オープンなこと', '思慮深いUI、フロントエンドシステム、クリエイティブウェブのコラボレーション。']],
+        status: [['つくっていること', '仕事ではAIms Bridge、個人制作ではPaperformとPocket Planetに取り組んでいます。'], ['学んでいること', 'Codex・Claude Code・Spec Kitを使ったAI駆動開発と仕様駆動開発。'], ['書いていること', '実装の決断、パフォーマンス、創造的なフロントエンドについての二言語MDX記事。'], ['オープンなこと', '思慮深いUI、フロントエンドシステム、クリエイティブウェブのコラボレーション。']],
       }
     : null;
   const activeExperiments = copy?.experiments ?? experiments;
   const notes = copy?.notes ?? [['Motion with purpose', 'Small transitions should explain a change, guide attention, or make an interface feel more direct.'], ['Visual systems', 'I test color, type, depth, and interaction together so an idea has a consistent point of view.'], ['Performance boundaries', 'Every playful scene gets a budget: lazy loading, reduced motion, and graceful fallbacks come first.']];
-  const nowStatus = copy?.status ?? [['Building', 'Case studies, request tools, and the responsive details that make this portfolio more useful to explore.'], ['Learning', '3D scene composition, intentional motion, and content systems that can keep growing.'], ['Writing', 'Bilingual MDX notes about implementation decisions, performance, and creative frontend work.'], ['Open to', 'Thoughtful UI, frontend systems, and creative-web collaborations.']];
+  const nowStatus = copy?.status ?? [['Building', 'AIms Bridge at work; Paperform and Pocket Planet in my personal projects.'], ['Learning', 'AI-driven and specification-driven development with Codex, Claude Code, and Spec Kit.'], ['Writing', 'Bilingual MDX notes about implementation decisions, performance, and creative frontend work.'], ['Open to', 'Thoughtful UI, frontend systems, and creative-web collaborations.']];
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [direction, setDirection] = useState(1);
@@ -68,12 +68,16 @@ export default function LabPage() {
 
   return (
     <SectionWrapper className="w-full mt-16" title={copy?.title ?? 'Now'} subtitle={copy?.subtitle ?? 'A living snapshot of what Kiki is building, learning, and slowly growing.'}>
-      <LabHero paused={paused || shouldReduceMotion} performanceMode={performanceMode} eyebrow={copy?.eyebrow ?? "Right now, I’m"} description={copy?.heroDescription ?? 'A creative developer refining expressive interfaces, useful interactions, and small visual worlds for the web.'} />
+      <LabHero paused={paused || shouldReduceMotion} performanceMode={performanceMode} eyebrow={copy?.eyebrow ?? "Right now, I’m"} description={copy?.heroDescription ?? 'A full-stack developer building AI-powered products and expressive creative tools for the web.'} />
 
+      <div className="mx-auto flex max-w-5xl flex-wrap gap-5 px-4 pt-8 text-sm underline underline-offset-4">
+        <a href="https://www.hit-inc.jp/aimsbridge/aimsbridge.html" target="_blank" rel="noreferrer">AIms Bridge ↗</a>
+        <a href="https://www.hit-inc.jp/ai/driven.html" target="_blank" rel="noreferrer">{locale === 'ja' ? 'AI駆動開発について ↗' : 'About AI-driven development ↗'}</a>
+      </div>
       <section className="mx-auto grid max-w-5xl gap-4 px-4 py-14 sm:grid-cols-2 sm:gap-6 sm:py-20">
         <div className="sm:col-span-2 flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between">
           <p className="font-heading uppercase tracking-[0.2em] text-flame-500 dark:text-lemon">{copy?.statusLabel ?? 'Current snapshot'}</p>
-          <p className="text-sm text-content-muted">{copy?.updated ?? 'Updated August 2026'}</p>
+          <p className="text-sm text-content-muted">{copy?.updated ?? 'Updated September 2026'}</p>
         </div>
         {nowStatus.map(([title, description], index) => (
           <motion.article key={title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ delay: index * 0.08 }} className="rounded-3xl bg-surface-glass p-6 shadow-[0_12px_30px_var(--shadow-soft)]">

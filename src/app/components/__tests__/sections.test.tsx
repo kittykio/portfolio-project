@@ -45,6 +45,10 @@ describe('home page sections', () => {
   it('renders the full experience timeline in both locales', () => {
     const { rerender } = render(<ExperienceSection />);
     expect(screen.getByRole('heading', { name: 'Experience' })).toBeInTheDocument();
+    expect(screen.getByText('Full-stack Developer · AI-Driven Development')).toBeInTheDocument();
+    expect(screen.getByText('September 2026 - Present')).toBeInTheDocument();
+    expect(screen.getByText('2024 - August 2026')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'AIms Bridge ↗' })).toHaveAttribute('href', 'https://www.hit-inc.jp/aimsbridge/aimsbridge.html');
     expect(screen.getByText('Frontend Developer')).toBeInTheDocument();
     expect(screen.getByText('Backend Developer')).toBeInTheDocument();
     locale = 'ja'; rerender(<ExperienceSection />);
