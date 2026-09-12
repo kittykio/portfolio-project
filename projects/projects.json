@@ -1,5 +1,42 @@
 [
   {
+    "name": "pocket-planet",
+    "title": "Pocket Planet",
+    "summary": "A living 3D ecosystem in miniature. Shape terrain, introduce wildlife, change the weather, and discover how small changes ripple through your planet.",
+    "tags": [
+      "JavaScript",
+      "Three.js",
+      "Vite",
+      "Simulation"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/pocket-planet",
+    "websiteUrl": "https://kiki-pocket-planet.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/11",
+    "caseStudy": {
+      "eyebrow": "A small world, alive.",
+      "statement": "Make a little change. Watch a whole world respond.",
+      "problem": "Make ecosystem relationships tangible through a playful, interactive world that invites experimentation.",
+      "role": "Game design, 3D rendering, ecosystem simulation, responsive interface, and save-file validation.",
+      "constraints": "Run entirely in the browser with no accounts, API keys, or backend, while keeping simulation state bounded and portable.",
+      "process": "Built eight terrain materials, elevation sculpting, twelve interacting species, seasons, optional disasters, habitat missions, and a discovery journal around a rotatable 3D planet.",
+      "result": "A standalone ecosystem sandbox with ocean exploration, family histories, living terrain, controlled experiments, timeline branching, shareable seeds, and compatible backups.",
+      "features": [
+        "Eight terrain materials with mountain, valley, and lake-depth sculpting",
+        "Twelve species, underwater gardens, animal tracking, and family histories",
+        "Eight missions, evolving landscapes, and controlled ecosystem experiments",
+        "Planet templates, shareable seeds, timeline replay, branching, and creative building"
+      ],
+      "engineering": [
+        "Three.js rendering with reusable geometry and materials",
+        "Deterministic ecosystem simulation and bounded populations",
+        "Validated JSON imports and browser-local autosave",
+        "Tests for habitat rules, climate effects, long runs, and save roundtrips"
+      ]
+    }
+  },
+  {
     "name": "side-quest",
     "title": "Side Quest",
     "summary": "Small adventures for everyday life. Match a quest to your mood, follow its prompts, and collect memories in a personal passport.",
