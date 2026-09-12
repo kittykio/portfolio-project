@@ -1,5 +1,42 @@
 [
   {
+    "name": "paperform",
+    "title": "Paperform",
+    "tags": [
+      "JavaScript",
+      "Vite",
+      "Canvas",
+      "Creative tools"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/paperform",
+    "websiteUrl": "https://kiki-paperform.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/12",
+    "summary": "A paper and motion typography studio. Design dimensional cards, animate words, and create shareable posters with fonts, stickers, textures, and custom colors.",
+    "caseStudy": {
+      "eyebrow": "Words off the page.",
+      "statement": "Think flat. Make loud.",
+      "problem": "Make expressive paper cards and animated typography approachable in one browser-based creative tool.",
+      "role": "Product design, visual identity, interactive editing, animation rendering, and export workflows.",
+      "constraints": "Run entirely in the browser without accounts, paid APIs, or a backend.",
+      "process": "Built connected Fold and Motion workspaces with editable templates, a creative-material library, timeline controls, and shared rendering for card previews and image exports.",
+      "result": "A standalone studio for interactive cards and animated posters, with local autosave, editable backups, share links, PNG and print exports, and browser-recorded video.",
+      "features": [
+        "Ten distinct card templates, bundled fonts, stickers, textures, frames, and custom colors",
+        "Wave, spring, liquid, and particle text effects with draggable layers and timeline controls",
+        "Fold-linked animations, square and portrait posters, and landscape compositions",
+        "Shareable designs, editable backups, PNG postcards, printable cards, and video exports"
+      ],
+      "engineering": [
+        "CSS 3D fold previews and Canvas typography rendering",
+        "Validated design imports and Unicode-safe share links",
+        "Bundled fonts and shared card rendering for previews and exports",
+        "Browser-native video recording with preview and cancellation"
+      ]
+    }
+  },
+  {
     "name": "pocket-planet",
     "title": "Pocket Planet",
     "summary": "A living 3D ecosystem in miniature. Shape terrain, introduce wildlife, change the weather, and discover how small changes ripple through your planet.",
@@ -188,7 +225,12 @@
     "name": "workio",
     "title": "Workio",
     "summary": "A connected workspace that brings freelancers, clients, projects, messages, time, and billing together.",
-    "tags": ["Django", "Python", "PostgreSQL", "Full-stack"],
+    "tags": [
+      "Django",
+      "Python",
+      "PostgreSQL",
+      "Full-stack"
+    ],
     "image": "/projects/workio.png",
     "repoUrl": "https://github.com/kittykio/workio",
     "websiteUrl": "https://kiki-workio.vercel.app/",
@@ -222,7 +264,13 @@
     "name": "kiki-world",
     "title": "Kiki World",
     "summary": "A story-driven 3D studio where an animated avatar explores a playful, interactive world.",
-    "tags": ["React", "Three.js", "R3F", "3D", "Animation"],
+    "tags": [
+      "React",
+      "Three.js",
+      "R3F",
+      "3D",
+      "Animation"
+    ],
     "image": "/projects/kiki-world.png",
     "repoUrl": "https://github.com/kittykio/kiki-world",
     "websiteUrl": "https://kiki-world.vercel.app/",
@@ -256,7 +304,12 @@
     "name": "kiki-arcade",
     "title": "Kiki Arcade",
     "summary": "A colorful collection of creative toys, arcade classics, and miniature browser adventures.",
-    "tags": ["JavaScript", "Vite", "Canvas", "Creative coding"],
+    "tags": [
+      "JavaScript",
+      "Vite",
+      "Canvas",
+      "Creative coding"
+    ],
     "image": "/projects/kiki-arcade.png",
     "repoUrl": "https://github.com/kittykio/kiki-arcade",
     "websiteUrl": "https://kiki-arcade.vercel.app/",
@@ -290,7 +343,13 @@
     "name": "booktrace",
     "title": "Booktrace",
     "summary": "A personal reading history for reviews, ratings, notes, and reading goals.",
-    "tags": ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Auth.js"],
+    "tags": [
+      "Next.js",
+      "TypeScript",
+      "PostgreSQL",
+      "Prisma",
+      "Auth.js"
+    ],
     "image": "/projects/booktrace.png",
     "repoUrl": "https://github.com/kittykio/booktrace",
     "websiteUrl": "https://kiki-booktrace.vercel.app/",

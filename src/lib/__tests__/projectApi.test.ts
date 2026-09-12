@@ -1,6 +1,7 @@
 import { getAllProjects } from '@/lib/projectApi';
 
 const currentSlugs = [
+  'paperform',
   'pocket-planet',
   'side-quest',
   'petty-court',
@@ -23,6 +24,14 @@ describe('project catalogue', () => {
       expect(project.createdDate).toBeInstanceOf(Date);
       expect(project.modifiedDate).toBeInstanceOf(Date);
       expect(project.like).toBe(0);
+      if (project.slug === 'paperform') {
+        expect(project.date).toBe('2026/09/12');
+        expect(project.image).toBe('');
+        expect(project.livePreview).toBe(true);
+        expect(project.repoUrl).toBe('https://github.com/kittykio/paperform');
+        expect(project.websiteUrl).toBe('https://kiki-paperform.vercel.app/');
+        return;
+      }
       if (project.slug === 'pocket-planet') {
         expect(project.date).toBe('2026/09/11');
         expect(project.image).toBe('');

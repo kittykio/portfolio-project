@@ -1,5 +1,42 @@
 [
   {
+    "name": "paperform",
+    "title": "Paperform",
+    "tags": [
+      "JavaScript",
+      "Vite",
+      "Canvas",
+      "Creative tools"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/paperform",
+    "websiteUrl": "https://kiki-paperform.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/12",
+    "summary": "立体的なカードと動くタイポグラフィをつくる創作スタジオ。フォント、ステッカー、紙の質感、自由な配色で、共有できるカードやポスターをデザイン。",
+    "caseStudy": {
+      "eyebrow": "言葉を、紙の外へ。",
+      "statement": "平面から、表現を広げる。",
+      "problem": "ペーパーカードと動く文字の制作を、ブラウザで気軽に楽しめる一つのツールにする。",
+      "role": "プロダクト設計、ビジュアルデザイン、編集操作、アニメーション描画、書き出し機能。",
+      "constraints": "アカウント、有料API、バックエンドなしでブラウザ内で完結。",
+      "process": "FoldとMotionの編集画面、テンプレート、素材ライブラリ、タイムラインを実装。カードプレビューと画像書き出しで描画処理を共通化。",
+      "result": "立体カードと動くポスターを制作できる独立アプリ。自動保存、編集データのバックアップ、共有リンク、画像・印刷・動画の書き出しに対応。",
+      "features": [
+        "10種類のカードデザイン、フォント、ステッカー、質感、フレーム、自由な配色",
+        "波・ばね・液体・粒子の文字エフェクトとレイヤー・タイムライン編集",
+        "カードの開閉に連動する文字アニメーションと縦・横・正方形のポスター",
+        "共有リンク、編集データ、PNG、印刷用カード、動画の書き出し"
+      ],
+      "engineering": [
+        "CSS 3Dによる折りたたみ表現とCanvasによる文字描画",
+        "保存データの入力検証とUnicode対応の共有リンク",
+        "フォントの同梱とプレビュー・書き出しの描画共通化",
+        "ブラウザ標準の動画録画とプレビュー・キャンセル対応"
+      ]
+    }
+  },
+  {
     "name": "pocket-planet",
     "title": "Pocket Planet",
     "summary": "手のひらサイズの3D生態系。地形を作り、生き物を迎え、天気を変えて、小さな変化が惑星全体に広がる様子を観察するアプリ。",
@@ -188,7 +225,12 @@
     "name": "workio",
     "title": "Workio",
     "summary": "フリーランサー、クライアント、プロジェクト、メッセージ、時間管理、請求を一つにつなぐワークスペース。",
-    "tags": ["Django", "Python", "PostgreSQL", "フルスタック"],
+    "tags": [
+      "Django",
+      "Python",
+      "PostgreSQL",
+      "フルスタック"
+    ],
     "image": "/projects/workio.png",
     "repoUrl": "https://github.com/kittykio/workio",
     "websiteUrl": "https://kiki-workio.vercel.app/",
@@ -222,7 +264,13 @@
     "name": "kiki-world",
     "title": "Kiki World",
     "summary": "アニメーションするアバターと一緒に遊び心のある世界を巡る、物語仕立ての3Dスタジオ。",
-    "tags": ["React", "Three.js", "R3F", "3D", "アニメーション"],
+    "tags": [
+      "React",
+      "Three.js",
+      "R3F",
+      "3D",
+      "アニメーション"
+    ],
     "image": "/projects/kiki-world.png",
     "repoUrl": "https://github.com/kittykio/kiki-world",
     "websiteUrl": "https://kiki-world.vercel.app/",
@@ -256,7 +304,12 @@
     "name": "kiki-arcade",
     "title": "Kiki Arcade",
     "summary": "クリエイティブなおもちゃ、アーケードの名作、小さなブラウザーアドベンチャーを集めたカラフルな遊び場。",
-    "tags": ["JavaScript", "Vite", "Canvas", "クリエイティブコーディング"],
+    "tags": [
+      "JavaScript",
+      "Vite",
+      "Canvas",
+      "クリエイティブコーディング"
+    ],
     "image": "/projects/kiki-arcade.png",
     "repoUrl": "https://github.com/kittykio/kiki-arcade",
     "websiteUrl": "https://kiki-arcade.vercel.app/",
@@ -290,7 +343,13 @@
     "name": "booktrace",
     "title": "Booktrace",
     "summary": "レビュー、評価、メモ、読書目標とともに、自分だけの読書履歴を残せるアプリ。",
-    "tags": ["Next.js", "TypeScript", "PostgreSQL", "Prisma", "Auth.js"],
+    "tags": [
+      "Next.js",
+      "TypeScript",
+      "PostgreSQL",
+      "Prisma",
+      "Auth.js"
+    ],
     "image": "/projects/booktrace.png",
     "repoUrl": "https://github.com/kittykio/booktrace",
     "websiteUrl": "https://kiki-booktrace.vercel.app/",
