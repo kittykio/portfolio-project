@@ -22,10 +22,10 @@ export const experiences: ExperienceType[] = [
   {
     title: 'Full-stack Developer',
     company_name: 'Enterprise AI & Data Platform',
-    description: 'Building an enterprise platform that connects business data with generative AI to support information access and decision-making. My role spans the full stack, from React and TypeScript interfaces, Python/FastAPI services, LLMs, SQL and ORM-based data access, and Docker. I use AI-driven and specification-driven workflows with Codex, Claude Code, and Spec Kit.',
+    description: 'Building an enterprise platform that helps teams find, understand, and use business information through generative AI. The service connects organizational data with everyday workflows to support informed decisions. I translate business requirements into usable features, developing the interfaces, application logic, and data connections that bring the experience together.',
     date: 'September 2026 - Present',
     technologies: ['React', 'TypeScript', 'Python', 'FastAPI', 'LLMs', 'SQL', 'ORM', 'Docker', 'Codex', 'Claude Code', 'Spec Kit'],
-    japanese: { title: 'フルスタックエンジニア', date: '2026年9月 - 現在', description: '業務データと生成AIをつなぎ、情報活用や意思決定を支援する企業向けプラットフォームのフルスタック開発を担当。React・TypeScriptによる画面、Python・FastAPIによるサービス、LLM、SQL・ORMによるデータアクセス、Dockerを扱い、Codex・Claude Code・Spec Kitを開発に活用しています。' },
+    japanese: { title: 'フルスタックエンジニア', date: '2026年9月 - 現在', description: '生成AIを通じて、社内の情報を見つけ、理解し、業務に活用できる企業向けプラットフォームを開発。組織内のデータと日々の業務をつなぎ、情報に基づく意思決定を支援します。業務要件を使いやすい機能へ落とし込み、画面からアプリケーションの処理、データ連携まで一貫して開発しています。' },
     icon: <FaCode />,
   },
   {
