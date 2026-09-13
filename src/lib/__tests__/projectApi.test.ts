@@ -1,6 +1,7 @@
 import { getAllProjects } from '@/lib/projectApi';
 
 const currentSlugs = [
+  'night-market',
   'paperform',
   'pocket-planet',
   'side-quest',
@@ -24,6 +25,13 @@ describe('project catalogue', () => {
       expect(project.createdDate).toBeInstanceOf(Date);
       expect(project.modifiedDate).toBeInstanceOf(Date);
       expect(project.like).toBe(0);
+      if (project.slug === 'night-market') {
+        expect(project.websiteUrl).toBe('https://kiki-night-market.vercel.app/');
+        expect(project.repoUrl).toBe('https://github.com/kittykio/night-market');
+        expect(project.livePreview).toBe(true);
+        expect(project.image).toBe('');
+        return;
+      }
       if (project.slug === 'paperform') {
         expect(project.date).toBe('2026/09/12');
         expect(project.image).toBe('');

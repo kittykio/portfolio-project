@@ -1,5 +1,41 @@
 [
   {
+    "name": "night-market",
+    "title": "Afterglow — Night Market",
+    "tags": [
+      "JavaScript",
+      "Vite",
+      "Canvas",
+      "Simulation"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/night-market",
+    "websiteUrl": "https://kiki-night-market.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/13",
+    "summary": "Build a lively night market with food trucks, shops, arcade games, and animated rides. Expand your district, welcome visitors, and keep the evening running smoothly.",
+    "caseStudy": {
+      "eyebrow": "A little street. A big night.",
+      "statement": "Build a night worth staying for.",
+      "problem": "Make a growing night market feel alive while keeping its management approachable.",
+      "role": "Product design, visual identity, simulation, Canvas artwork, and browser audio.",
+      "constraints": "Run entirely in the browser without accounts, a backend, or paid APIs.",
+      "process": "Connected visitor pathfinding and stall economics with animated attractions, expandable districts, and tools for managing a larger market.",
+      "result": "A playable market builder with local saves, nightly challenges, original music, and shareable PNG snapshots.",
+      "features": [
+        "Food stalls, market shops, arcade booths, and animated fairground rides",
+        "Expandable land, guest inspection, and queue and maintenance overlays",
+        "Milestones, nightly challenges, financial reports, and automatic restocking",
+        "Building relocation, custom colors, original music, and PNG exports"
+      ],
+      "engineering": [
+        "Canvas isometric rendering and pathfinding on connected streets",
+        "Deterministic simulation with validated saves and portable JSON backups",
+        "Web Audio music with volume and visibility controls"
+      ]
+    }
+  },
+  {
     "name": "paperform",
     "title": "Paperform",
     "tags": [

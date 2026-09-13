@@ -1,5 +1,41 @@
 [
   {
+    "name": "night-market",
+    "title": "Afterglow — Night Market",
+    "tags": [
+      "JavaScript",
+      "Vite",
+      "Canvas",
+      "Simulation"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/night-market",
+    "websiteUrl": "https://kiki-night-market.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/13",
+    "summary": "フードトラック、ショップ、ゲーム、動くアトラクションでにぎやかな夜市をつくる経営ゲーム。土地を広げ、来場者を迎え、夜の街を育てよう。",
+    "caseStudy": {
+      "eyebrow": "小さな通りに、大きな夜。",
+      "statement": "いつまでもいたくなる夜をつくる。",
+      "problem": "活気ある夜市づくりと、分かりやすい店舗運営を両立する。",
+      "role": "企画、ビジュアルデザイン、シミュレーション、Canvas描画、ブラウザ音声の実装。",
+      "constraints": "アカウントやバックエンド、有料APIを必要とせずブラウザで動作。",
+      "process": "来場者の経路探索と店舗の収支を、動くアトラクション、土地拡張、運営ツールにつなげた。",
+      "result": "ローカル保存、夜ごとのチャレンジ、オリジナル音楽、PNG画像の書き出しに対応した夜市経営ゲーム。",
+      "features": [
+        "屋台、ショップ、ゲームブース、動く遊園地のアトラクション",
+        "土地拡張、来場者の確認、行列とメンテナンスの可視化",
+        "マイルストーン、夜のチャレンジ、収支レポート、自動補充",
+        "建物の移動、配色変更、音楽、PNG書き出し"
+      ],
+      "engineering": [
+        "Canvasによるアイソメトリック描画と街路の経路探索",
+        "決定的シミュレーション、保存データ検証、JSONバックアップ",
+        "Web Audioによる音楽と音量・タブ表示状態の制御"
+      ]
+    }
+  },
+  {
     "name": "paperform",
     "title": "Paperform",
     "tags": [
