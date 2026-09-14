@@ -1,5 +1,42 @@
 [
   {
+    "name": "queue-quest",
+    "title": "Queue Quest",
+    "tags": [
+      "Python",
+      "FastAPI",
+      "React",
+      "TypeScript",
+      "PostgreSQL"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/queue-quest",
+    "websiteUrl": "https://kiki-queue-quest.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/15",
+    "summary": "Give visitors their time back with QR check-in and private live tickets. Teams manage multiple queues, call visitors to counters, share venue updates, and learn from service insights.",
+    "caseStudy": {
+      "eyebrow": "Less waiting. More living.",
+      "statement": "Turn a crowded line into a calmer visit.",
+      "problem": "Help small venues coordinate arrivals and service without making visitors download an app or stand in line.",
+      "role": "Product design, visual identity, full-stack implementation, database design, and testing.",
+      "constraints": "Anonymous visitor check-in alongside protected staff tools, with reliable ordering across simultaneous requests.",
+      "process": "Connected private tickets and counter workflows with opening schedules, venue-wide displays, feedback, and operational reporting.",
+      "result": "A full-stack virtual queue workspace with visitor self-check-in, team controls, and service insights.",
+      "features": [
+        "QR check-in, private live tickets, and optional in-page alerts",
+        "Multiple queues, counter breaks, opening hours, and missed-call recovery",
+        "Venue overview, expiring announcements, and public calling boards",
+        "Visitor feedback, staff activity history, and aggregate CSV reports"
+      ],
+      "engineering": [
+        "FastAPI and SQLAlchemy with PostgreSQL, versioned migrations, and serialized queue writes",
+        "Cookie-based staff sessions, hashed ticket secrets, and role-based venue permissions",
+        "React and TypeScript with polling, responsive layouts, and SQLite/PostgreSQL integration tests"
+      ]
+    }
+  },
+  {
     "name": "midnight-shift",
     "title": "Midnight Shift",
     "tags": [

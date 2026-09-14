@@ -1,5 +1,42 @@
 [
   {
+    "name": "queue-quest",
+    "title": "Queue Quest",
+    "tags": [
+      "Python",
+      "FastAPI",
+      "React",
+      "TypeScript",
+      "PostgreSQL"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/queue-quest",
+    "websiteUrl": "https://kiki-queue-quest.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/15",
+    "summary": "QRチェックインと非公開の受付票で、来訪者を行列から解放する順番待ちアプリ。複数の受付や窓口、呼び出し、お知らせを一元管理し、利用者の声とサービス状況を確認できます。",
+    "caseStudy": {
+      "eyebrow": "待つ時間を、自分の時間に。",
+      "statement": "混み合う行列を、落ち着いた来訪体験へ。",
+      "problem": "来訪者にアプリのインストールや列に並ぶことを求めず、小規模な施設の受付と案内を円滑にする。",
+      "role": "プロダクト設計、ビジュアルデザイン、フルスタック実装、データベース設計、テスト。",
+      "constraints": "来訪者はアカウント不要。スタッフ機能は認証で保護し、同時操作でも受付順を維持する。",
+      "process": "非公開の受付票と窓口操作に、営業時間、施設全体の案内表示、フィードバック、集計機能を組み合わせた。",
+      "result": "セルフチェックイン、チーム運営、サービス状況の分析を備えた順番待ち管理アプリ。",
+      "features": [
+        "QRチェックイン、リアルタイム受付票、任意のページ内通知",
+        "複数の受付、窓口の休止、営業時間、呼び出し後の再受付",
+        "施設全体の状況確認、期限付きのお知らせ、公開呼び出しボード",
+        "利用者の評価、スタッフ操作履歴、集計CSVの出力"
+      ],
+      "engineering": [
+        "FastAPI・SQLAlchemy・PostgreSQL、バージョン管理されたマイグレーション、受付操作の直列化",
+        "Cookieセッション、受付票の秘密情報のハッシュ化、施設ごとのアクセス権限",
+        "React・TypeScript、ポーリング更新、レスポンシブUI、SQLiteとPostgreSQLの結合テスト"
+      ]
+    }
+  },
+  {
     "name": "midnight-shift",
     "title": "Midnight Shift",
     "tags": [

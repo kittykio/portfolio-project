@@ -1,6 +1,7 @@
 import { getAllProjects } from '@/lib/projectApi';
 
 const currentSlugs = [
+  'queue-quest',
   'midnight-shift',
   'night-market',
   'paperform',
@@ -26,6 +27,13 @@ describe('project catalogue', () => {
       expect(project.createdDate).toBeInstanceOf(Date);
       expect(project.modifiedDate).toBeInstanceOf(Date);
       expect(project.like).toBe(0);
+      if (project.slug === 'queue-quest') {
+        expect(project.websiteUrl).toBe('https://kiki-queue-quest.vercel.app/');
+        expect(project.repoUrl).toBe('https://github.com/kittykio/queue-quest');
+        expect(project.livePreview).toBe(true);
+        expect(project.image).toBe('');
+        return;
+      }
       if (project.slug === 'midnight-shift') {
         expect(project.websiteUrl).toBe('https://kiki-midnight-shift.vercel.app/');
         expect(project.repoUrl).toBe('https://github.com/kittykio/midnight-shift');
