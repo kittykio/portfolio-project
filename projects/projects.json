@@ -1,5 +1,41 @@
 [
   {
+    "name": "midnight-shift",
+    "title": "Midnight Shift",
+    "tags": [
+      "JavaScript",
+      "Vite",
+      "SVG",
+      "Strategy Game"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/midnight-shift",
+    "websiteUrl": "https://kiki-midnight-shift.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/14",
+    "summary": "Command an unlikely rescue crew in a neon supernatural city. Build teams from 48 illustrated heroes, respond to emergencies across ten neighborhoods, and make tactical decisions as each shift unfolds.",
+    "caseStudy": {
+      "eyebrow": "Odd heroes. Real emergencies.",
+      "statement": "Keep Moonwick safe until sunrise.",
+      "problem": "Make a large cast of characters useful in an approachable rescue strategy game with meaningful decisions.",
+      "role": "Game design, neon visual identity, illustrated character integration, simulation, and interface development.",
+      "constraints": "Runs in the browser without accounts, a backend, or API keys.",
+      "process": "Connected skill-based dispatch with active abilities, field decisions, local trust, and persistent career rewards.",
+      "result": "A playable rescue strategy game with 48 heroes, ten districts, saved squads, shift contracts, and portable saves.",
+      "features": [
+        "Tactical team selection, active hero abilities, and mid-rescue decisions",
+        "Ten neighborhoods with local specialties and trust progression",
+        "Shift contracts, objectives, achievements, and upgradeable headquarters",
+        "Saved squads, contextual guides, optional sound, and focused dispatch mode"
+      ],
+      "engineering": [
+        "Deterministic simulation with validated saves and JSON backups",
+        "One consolidated character sprite sheet with CSS portrait positioning",
+        "SVG neighborhood map and synthesized Web Audio feedback"
+      ]
+    }
+  },
+  {
     "name": "night-market",
     "title": "Afterglow — Night Market",
     "tags": [

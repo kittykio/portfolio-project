@@ -1,5 +1,41 @@
 [
   {
+    "name": "midnight-shift",
+    "title": "Midnight Shift",
+    "tags": [
+      "JavaScript",
+      "Vite",
+      "SVG",
+      "Strategy Game"
+    ],
+    "image": "",
+    "repoUrl": "https://github.com/kittykio/midnight-shift",
+    "websiteUrl": "https://kiki-midnight-shift.vercel.app/",
+    "livePreview": true,
+    "date": "2026/09/14",
+    "summary": "ネオンに輝く不思議な街で、個性豊かな救助隊を指揮する戦略ゲーム。48人のキャラクターからチームを組み、10の地区で発生する緊急事態に対応しながら、現場での判断を下していく。",
+    "caseStudy": {
+      "eyebrow": "個性豊かなヒーロー。本気の救助活動。",
+      "statement": "夜明けまで、ムーンウィックを守ろう。",
+      "problem": "多彩なキャラクターを活かしながら、分かりやすく判断しがいのある救助戦略ゲームをつくる。",
+      "role": "ゲーム設計、ネオンのビジュアルデザイン、キャラクターイラストの組み込み、シミュレーションとUIの開発。",
+      "constraints": "アカウント、バックエンド、APIキーなしでブラウザ上で動作。",
+      "process": "スキルに基づく出動判断に、固有アビリティ、現場での選択、地区の信頼度、継続的な報酬を組み合わせた。",
+      "result": "48人のキャラクター、10地区、チーム保存、シフト契約、バックアップ可能なセーブに対応した救助戦略ゲーム。",
+      "features": [
+        "戦術的なチーム編成、アビリティ、救助中の選択",
+        "地区ごとの得意分野と信頼度の成長",
+        "シフト契約、目標、実績、本部のアップグレード",
+        "チーム保存、操作ガイド、効果音、集中出動モード"
+      ],
+      "engineering": [
+        "決定的シミュレーション、セーブ検証、JSONバックアップ",
+        "全キャラクターを1枚のスプライトシートに統合",
+        "SVGの街マップとWeb Audioによる効果音"
+      ]
+    }
+  },
+  {
     "name": "night-market",
     "title": "Afterglow — Night Market",
     "tags": [
