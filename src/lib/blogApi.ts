@@ -105,14 +105,16 @@ export const getSlugs = async (locale: Locale = defaultLocale): Promise<string[]
     const files: string[] = [];
 
     for (const target of targets) {
+      // Finder metadata, hidden drafts, backups, and other assets are not posts.
+      if (target.startsWith('.') || !target.endsWith('.mdx')) continue;
       const targetPath = path.join(directoryPath, target);
       const stats = await fs.promises.lstat(targetPath);
-      if (!stats.isDirectory()) {
+      if (stats.isFile()) {
         files.push(target);
       }
     }
 
-    return files.map((file) => file.replace('.mdx', '').split(path.sep));
+    return files.map((file) => file.slice(0, -4).split(path.sep));
   } catch (err) {
     console.error('Error reading directory:', err);
     return [];

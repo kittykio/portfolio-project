@@ -24,7 +24,7 @@ const frontmatter = (date: string, title = date, tags: string[] | string = ['web
 describe('blog content API', () => {
   beforeEach(() => {
     mockedFs.promises.readdir.mockResolvedValue(['older.mdx', 'folder', 'newer.mdx'] as never);
-    mockedFs.promises.lstat.mockImplementation(async (file) => ({ isDirectory: () => String(file).endsWith('folder') }) as never);
+    mockedFs.promises.lstat.mockImplementation(async (file) => ({ isFile: () => !String(file).endsWith('folder') }) as never);
     mockedFs.promises.readFile.mockResolvedValue('---\ntitle: Test\n---\nSome readable words.' as never);
     jest.mocked(getCreatedDate).mockReturnValue(new Date('2024-01-01T00:00:00Z'));
     jest.mocked(getModifiedDate).mockReturnValue(new Date('2024-02-01T00:00:00Z'));
@@ -33,6 +33,22 @@ describe('blog content API', () => {
 
   it('lists MDX files and ignores directories', async () => {
     await expect(getSlugs()).resolves.toEqual([['older'], ['newer']]);
+  });
+
+  it('ignores Finder files, hidden MDX, backups, directories, and symbolic links when loading posts', async () => {
+    mockedFs.promises.readdir.mockResolvedValue([
+      '.DS_Store', '._article.mdx', '.draft.mdx', 'notes.txt', 'article.mdx.bak',
+      'folder.mdx', 'link.mdx', 'article.mdx',
+    ] as never);
+    mockedFs.promises.lstat.mockImplementation(async (file) => ({
+      isFile: () => String(file).endsWith('/article.mdx'),
+    }) as never);
+
+    const posts = await getAllPosts();
+    expect(posts.map(post => post.slug)).toEqual([['article']]);
+    expect(mockedFs.promises.readFile).toHaveBeenCalledTimes(1);
+    expect(String(mockedFs.promises.readFile.mock.calls[0][0])).toMatch(/\/blog\/article\.mdx$/);
+    expect(mockedFs.promises.lstat).toHaveBeenCalledTimes(3);
   });
 
   it('returns an empty list when directory reading fails', async () => {
