@@ -33,6 +33,6 @@ it('renders home and project details while handling missing projects', async () 
   render(<>{await JapaneseHomePage()}{await ProjectDetail({ params: { slug: 'project' } })}{await JapaneseProjectDetail({ params: { slug: 'project' } })}</>);
   expect(screen.getByText('Posts 1')).toBeInTheDocument(); expect(screen.getAllByText('Project')).not.toHaveLength(0);
   expect((await projectMetadata({ params: { slug: 'project' } })).title).toBe('Project | Kitty Kio');
-  expect(await projectMetadata({ params: { slug: 'missing' } })).toEqual({});
+  await expect(projectMetadata({ params: { slug: 'missing' } })).rejects.toThrow('not found');
   getAllProjects.mockResolvedValueOnce([]); await expect(ProjectDetail({ params: { slug: 'missing' } })).rejects.toThrow('not found'); expect(notFound).toHaveBeenCalled();
 });

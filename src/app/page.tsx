@@ -1,3 +1,5 @@
+import { staticMetadata } from '@/lib/seo';
+export const metadata = staticMetadata('/', 'en');
 import InterestsSection from '@/app/components/interest-section/InterestSection';
 import HeroSection from '@/app/components/HeroSection';
 import ProjectSection from '@/app/components/ProjectSection';

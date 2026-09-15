@@ -17,7 +17,7 @@ jest.mock('@vercel/speed-insights/next', () => ({ SpeedInsights: () => <div>Insi
 jest.mock('@next/third-parties/google', () => ({ GoogleAnalytics: ({ gaId }: { gaId: string }) => <div>{gaId}</div> }));
 
 it('defines metadata and composes the localized application shell', async () => {
-  expect(viewport).toContain('device-width'); expect(metadata.title).toContain('Kitty Kio');
+  expect(viewport).toEqual({ width: 'device-width', initialScale: 1 }); expect(metadata.title).toContain('Kitty Kio');
   requestLocale = 'ja'; const shell = await RootLayout({ children: <p>Content</p> }); expect(shell.props.lang).toBe('ja'); render(shell);
   expect(screen.getByText('Content')).toBeInTheDocument();
   expect(screen.getByText('Header')).toBeInTheDocument(); expect(screen.getByText('Footer')).toBeInTheDocument();

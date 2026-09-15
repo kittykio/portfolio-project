@@ -9,7 +9,12 @@ export const getSiteUrl = () => {
     : fallbackSiteUrl;
 
   try {
-    return new URL(candidate);
+    const url = new URL(candidate);
+    if (!['https:', 'http:'].includes(url.protocol) || url.username || url.password) {
+      return new URL(fallbackSiteUrl);
+    }
+    // Canonicals are rooted at the public origin, never a configured query/path.
+    return new URL(url.origin);
   } catch {
     return new URL(fallbackSiteUrl);
   }

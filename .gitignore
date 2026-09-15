@@ -12,6 +12,7 @@
 # next.js
 /.next/
 /.next-build/
+/.next-seo-check/
 /out/
 
 # production
@@ -38,4 +39,5 @@ yarn-error.log*
 next-env.d.ts
 
 /BLOG_ARTICLE_PROMPT.md
+/BLOG_ARTICLE_PROMPT_PORTABLE.md
 /DEPLOYMENT_CHECKLIST.md

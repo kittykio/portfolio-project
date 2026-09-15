@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.scss';
 import '@/styles/_variables.scss';
 import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
@@ -29,6 +29,8 @@ import { getRequestLocale } from '@/i18n/server';
 import AskKiki from '@/components/AskKiki';
 import { MotionPreferenceProvider } from '@/components/MotionPreference';
 import { getOgCardUrl, getSiteUrl } from '@/lib/site';
+import StructuredData from '@/components/StructuredData';
+import { absoluteUrl, person } from '@/lib/seo';
 
 const GA_TAG_ID = process.env.NEXT_PUBLIC_GA_ID || '';
 
@@ -50,6 +52,9 @@ export const metadata: Metadata = {
   authors: [{ name: 'Kitty Kio' }],
   creator: 'Kitty Kio',
   publisher: 'Kitty Kio',
+  robots: process.env.VERCEL_ENV === 'preview'
+    ? { index: false, follow: false }
+    : { index: true, follow: true, googleBot: { 'max-image-preview': 'large', 'max-snippet': -1, 'max-video-preview': -1 } },
   icons: {
     icon: [
       { url: '/favicon_io/favicon.ico', sizes: '48x48', type: 'image/x-icon' },
@@ -93,7 +98,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport = 'width=device-width, initial-scale=1';
+export const viewport: Viewport = { width: 'device-width', initialScale: 1 };
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   const locale = getRequestLocale();
@@ -102,6 +107,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
       <body
         className={`${heading.variable} ${body.variable} ${bodyBold.variable} ${flashy.variable} ${drool.variable} ${awkward.variable} ${spacey.variable} ${playful.variable} ${saucy.variable} ${loud.variable}`}
       >
+        <StructuredData data={{ '@context': 'https://schema.org', '@graph': [person(), { '@type': 'WebSite', '@id': absoluteUrl('/#website'), url: absoluteUrl('/'), name: 'Kitty Kio', inLanguage: ['en', 'ja'], author: { '@id': absoluteUrl('/#person') } }] }} />
         <ThemeProvider attribute="class" defaultTheme="system">
           <ThemeContextProvider>
             <LocaleProvider>

@@ -4,41 +4,17 @@ import Link from 'next/link';
 import type { Metadata } from 'next';
 import { getAllProjects } from '@/lib/projectApi';
 import { getRequestLocale } from '@/i18n/server';
-import { getOgCardUrl } from '@/lib/site';
+import { absoluteUrl, breadcrumbs, localizedPath, pageMetadata } from '@/lib/seo';
+import StructuredData from '@/components/StructuredData';
 
 type Props = { params: { slug: string } };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const locale = getRequestLocale();
   const project = (await getAllProjects(locale)).find((item) => item.slug === params.slug);
-  const pathname = `${locale === 'ja' ? '/ja' : ''}/projects/${params.slug}`;
-  if (!project) return {};
-
-  const image = getOgCardUrl({
-    title: project.title,
-    description: project.description,
-    type: 'project',
-    locale,
-  });
-
-  return {
-    title: `${project.title} | Kitty Kio`,
-    description: project.description,
-    alternates: { canonical: pathname },
-    openGraph: {
-      title: project.title,
-      description: project.description,
-      images: [
-        { url: image, width: 1200, height: 630, alt: `${project.title} — Kitty Kio project` },
-      ],
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: project.title,
-      description: project.description,
-      images: [image],
-    },
-  };
+  if (!project) notFound();
+  return pageMetadata({ title: project.title, description: project.description || `Explore ${project.title}, a project by Kitty Kio.`, path: `/projects/${params.slug}`, locale, type: 'project' });
 }
+
 export default async function ProjectDetail({ params }: Props) {
   const locale = getRequestLocale();
   const project = (await getAllProjects(locale)).find((item) => item.slug === params.slug);
@@ -87,6 +63,10 @@ export default async function ProjectDetail({ params }: Props) {
 
   return (
     <main className="mx-auto mt-32 w-full max-w-6xl px-4 pb-[42rem]">
+      <StructuredData data={[
+        { '@context': 'https://schema.org', '@type': 'CreativeWork', name: project.title, description: project.description, url: absoluteUrl(localizedPath(`/projects/${project.slug}`, locale)), inLanguage: locale, author: { '@id': absoluteUrl('/#person') }, keywords: project.tags.join(', ') },
+        breadcrumbs([{ name: 'Kitty Kio', path: localizedPath('/', locale) }, { name: locale === 'ja' ? 'プロジェクト' : 'Projects', path: localizedPath('/projects', locale) }, { name: project.title, path: localizedPath(`/projects/${project.slug}`, locale) }]),
+      ]} />
       <Link
         href={`${locale === 'ja' ? '/ja' : ''}/projects`}
         className="font-bodyBold text-flame-500"

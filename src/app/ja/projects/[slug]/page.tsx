@@ -1,2 +1,1 @@
-import ProjectDetail from '@/app/projects/[slug]/page';
-export default ProjectDetail;
+export { default, generateMetadata } from '@/app/projects/[slug]/page';

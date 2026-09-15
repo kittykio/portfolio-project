@@ -4,6 +4,10 @@ import type { PostDetailType, PostType } from '@/types/PostType';
 import type { Metadata } from 'next';
 import { getRequestLocale } from '@/i18n/server';
 import { getOgCardUrl } from '@/lib/site';
+import { absoluteUrl, breadcrumbs, contentDate, localizedPath, pageMetadata } from '@/lib/seo';
+import { hasJapanesePost } from '@/lib/contentSeo';
+import StructuredData from '@/components/StructuredData';
+import { notFound } from 'next/navigation';
 
 export const runtime = 'nodejs';
 
@@ -20,25 +24,29 @@ export const generateStaticParams = async () => {
 };
 
 export const generateMetadata = async ({ params }: Props): Promise<Metadata> => {
+  if (!(await getSlugs()).some(item => item.join('/') === params.slug.join('/'))) notFound();
   const locale = getRequestLocale();
   const post = await getPostDetail(params.slug, locale);
-  const pathname = `${locale === 'ja' ? '/ja' : ''}/blog/post/${params.slug.join('/')}`;
-  const image = getOgCardUrl({
-    title: post.title,
-    description: post.description,
-    type: 'post',
-    locale,
-  });
-  return { title: `${post.title} | Kitty Kio`, description: post.description, alternates: { canonical: pathname }, openGraph: { title: post.title, description: post.description, type: 'article', publishedTime: post.date, images: [{ url: image, width: 1200, height: 630, alt: `${post.title} — Kitty Kio post` }] }, twitter: { card: 'summary_large_image', title: post.title, description: post.description, images: [image] } };
+  const translated = hasJapanesePost(params.slug);
+  return pageMetadata({ title: post.title, description: post.description, path: `/blog/post/${params.slug.join('/')}`, locale: locale === 'ja' && !translated ? 'en' : locale, translated, type: 'post', publishedTime: contentDate(post.date) });
 };
 
 const PostPage = async ({ params }: Props) => {
   const slug = params.slug;
+  if (!(await getSlugs()).some(item => item.join('/') === slug.join('/'))) notFound();
   const locale = getRequestLocale();
   const post: PostDetailType = await getPostDetail(slug, locale);
   const posts: PostType[] = await getAllPosts(locale);
 
-  return <PostDetail post={post} posts={posts} />;
+  const contentLocale = locale === 'ja' && hasJapanesePost(slug) ? 'ja' : 'en';
+  const pathname = localizedPath(`/blog/post/${slug.join('/')}`, contentLocale);
+  return <>
+    <StructuredData data={[
+      { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description: post.description, url: absoluteUrl(pathname), mainEntityOfPage: absoluteUrl(pathname), inLanguage: contentLocale, datePublished: contentDate(post.date), author: { '@type': 'Person', name: 'Kitty Kio', url: absoluteUrl('/') }, image: getOgCardUrl({ title: post.title, description: post.description, type: 'post', locale: contentLocale }) },
+      breadcrumbs([{ name: 'Kitty Kio', path: localizedPath('/', locale) }, { name: locale === 'ja' ? 'ブログ' : 'Blog', path: localizedPath('/blog', locale) }, { name: post.title, path: pathname }]),
+    ]} />
+    <PostDetail post={post} posts={posts} />
+  </>;
 };
 
 export default PostPage;

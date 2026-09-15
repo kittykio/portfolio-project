@@ -1,3 +1,5 @@
+import { staticMetadata } from '@/lib/seo';
+export const metadata = staticMetadata('/projects', 'ja');
 import ProjectPageClient from '@/app/projects/components/ProjectPageClient';
 import { getAllProjects } from '@/lib/projectApi';
 

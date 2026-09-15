@@ -1,3 +1,7 @@
 import type { MetadataRoute } from 'next';
-const base = process.env.NEXT_PUBLIC_SITE_URL || 'https://kittykio.com';
-export default function robots(): MetadataRoute.Robots { return { rules: { userAgent: '*', allow: '/' }, sitemap: `${base}/sitemap.xml` }; }
+import { absoluteUrl } from '@/lib/seo';
+
+export default function robots(): MetadataRoute.Robots {
+  // Saved/filtered pages stay crawlable so their noindex metadata can be read.
+  return { rules: { userAgent: '*', allow: '/' }, sitemap: absoluteUrl('/sitemap.xml') };
+}

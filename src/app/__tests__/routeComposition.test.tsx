@@ -70,7 +70,7 @@ describe('route composition', () => {
 
   it('builds robots and sitemap metadata', async () => {
     expect(robots().sitemap).toContain('/sitemap.xml');
-    const entries = await sitemap(); expect(entries).toHaveLength(9);
+    const entries = await sitemap(); expect(entries).toHaveLength(19);
     expect(entries.some(entry => entry.url.endsWith('/blog/post/hello'))).toBe(true);
     expect(entries.some(entry => entry.url.endsWith('/projects/work'))).toBe(true);
   });

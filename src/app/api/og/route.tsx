@@ -17,7 +17,7 @@ export async function GET(request: Request) {
   const locale = searchParams.get('locale') === 'ja' ? 'ja' : 'en';
   const typeParam = searchParams.get('type');
   const type = typeParam === 'project' || typeParam === 'post' ? typeParam : 'site';
-  const title = truncate(searchParams.get('title') || 'Kitty Kio — creative developer & artist', 82);
+  const title = truncate(searchParams.get('title') || 'Kitty Kio — creative developer', 82);
   const description = truncate(
     searchParams.get('description') || 'Useful, human, and memorable web experiences.',
     138,

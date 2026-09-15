@@ -1,3 +1,4 @@
+import { pageMetadata, staticPages } from '@/lib/seo';
 import BlogPageClient from '@/app/blog/components/BlogPageClient';
 import { getAllPosts } from '@/lib/blogApi';
 
@@ -8,3 +9,8 @@ const JapaneseBlogPage = async ({ params }: { params: { slug?: string[] } }) => 
 );
 
 export default JapaneseBlogPage;
+
+export function generateMetadata({ params }: { params: { slug?: string[] } }) {
+  const [title, description] = staticPages['/blog']['ja'];
+  return pageMetadata({ title, description, path: '/blog', locale: 'ja', noIndex: Boolean(params.slug?.length) });
+}
