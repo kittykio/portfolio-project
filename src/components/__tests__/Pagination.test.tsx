@@ -8,8 +8,8 @@ describe('Pagination', () => {
     expect(screen.getByRole('button', { name: '2' })).toBeDisabled();
     fireEvent.click(screen.getByRole('button', { name: '3' }));
     expect(onPageChange).toHaveBeenCalledWith(3);
-    expect(screen.getByRole('button', { name: '«' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '»' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'First page' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Last page' })).toBeInTheDocument();
   });
 
   it('renders navigable URLs and marks the active link', () => {

@@ -37,7 +37,7 @@ const SortTabs: FC<SortTabsProps> = ({ sortBy, onChange }) => {
   };
 
   return (
-    <div className="flex justify-center pb-10 sm:pb-16">
+    <div className="flex justify-center pb-10 sm:pb-16" aria-label={locale === 'ja' ? '並び替え' : 'Sort content'}>
       <div className="inline-flex max-w-full overflow-hidden rounded-lg border border-border-subtle">
         {options.map(({ key, label }) => {
           const isActive = sortBy === key;
@@ -45,6 +45,7 @@ const SortTabs: FC<SortTabsProps> = ({ sortBy, onChange }) => {
           return (
             <button
               key={key}
+              type="button"
               // Cast key to the non-null type before passing to handleClick
               onClick={() => handleClick(key)}
               className={`px-3 py-2 text-xs transition-colors sm:px-6 sm:text-sm
@@ -57,6 +58,7 @@ const SortTabs: FC<SortTabsProps> = ({ sortBy, onChange }) => {
               }
               ${key != 'oldest' ? 'border-r border-r-border-subtle' : ''}
             `}
+              aria-pressed={isActive}
             >
               {label}
             </button>

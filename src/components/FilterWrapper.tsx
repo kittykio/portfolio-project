@@ -32,9 +32,10 @@ const FilterWrapper: FC<FilterWrapperProps> = ({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onClearAll}
+            type="button"
             className="hover:text-flame-500 transition flex items-center self-end gap-1"
           >
-            <RiCloseCircleFill size={24} />
+            <RiCloseCircleFill aria-hidden size={24} />
             <span>Clear All</span>
           </motion.button>
         )}

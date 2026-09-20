@@ -41,7 +41,7 @@ export const p: FC<ComponentPropsWithoutRef<'p'>> = (props) => <p {...props} cla
  * Custom anchor/link component with specific styling and hover transition.
  */
 export const a: FC<ComponentPropsWithoutRef<'a'>> = ({ children, href, ...props }) => (
-  <a href={href} {...props} className="text-flame-500 underline hover:text-flame-700 transition">
+  <a href={href} {...props} className="text-flame-500 underline underline-offset-2 hover:text-flame-700 transition-colors">
     {children}
   </a>
 );
@@ -170,7 +170,7 @@ interface FileLinkProps {
  * Custom component to render a downloadable file link.
  */
 export const FileLink: FC<FileLinkProps> = ({ name, label }) => (
-  <a href={name} download className="text-flame-500 underline hover:text-flame-700 transition">
+  <a href={name} download className="text-flame-500 underline underline-offset-2 hover:text-flame-700 transition-colors">
     {label || name.split('/').pop()}
   </a>
 );

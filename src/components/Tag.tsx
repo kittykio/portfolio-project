@@ -37,6 +37,9 @@ export const FilterTag: FC<FilterTagProps> = ({ i, tag, handleOnChange, active, 
       variants={zoomIn(i * 0.05, 0.5)}
       key={tag}
       onClick={() => handleOnChange(tag)}
+      type="button"
+      aria-pressed={active}
+      aria-label={`${active ? 'Remove' : 'Filter by'} ${tag}`}
       className={`${baseClasses} ${active ? activeClasses : inactiveClasses}`}
       onMouseEnter={() => setRef(true)}
       onMouseLeave={() => setRef(false)}

@@ -99,7 +99,7 @@ const LikeButton = <T extends BaseLikeType>({
       onMouseDown={countSeconds}
       onMouseUp={() => void countLikes()}
       onClick={onClick}
-      aria-label={hasReachedLimit ? `Maximum of ${MAX_LIKES_PER_USER} likes reached` : 'Like button'}
+      aria-label={hasReachedLimit ? `Maximum of ${MAX_LIKES_PER_USER} likes reached` : `Like ${likeItem.title}. Current total: ${remoteLike}`}
       aria-disabled={hasReachedLimit}
       disabled={hasReachedLimit}
       title={hasReachedLimit ? `You have reached the ${MAX_LIKES_PER_USER}-like limit` : undefined}
@@ -122,7 +122,7 @@ const LikeButton = <T extends BaseLikeType>({
       `}
     >
       {likesPerUser > 0 ? (
-        <Image src={heartImages[likesPerUser - 1]} alt="heart-icon" width={size} height={size} />
+        <Image src={heartImages[likesPerUser - 1]} alt="" width={size} height={size} />
       ) : (
         <FaRegHeart aria-hidden size={size} />
       )}

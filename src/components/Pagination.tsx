@@ -38,7 +38,7 @@ const Pagination = ({
     const isActive = activePage === num;
 
     const baseClasses =
-      'px-3 py-1 rounded-md transition-colors duration-200 border border-border-subtle focus:outline-none';
+      'px-3 py-1 rounded-md transition-colors duration-200 border border-border-subtle';
 
     const activeClasses = 'bg-flame-500 text-gray-100 border-none';
     // Use a slightly different hover for the active state when using a Link to prevent the Link's hover from overriding the active color.
@@ -58,6 +58,7 @@ const Pagination = ({
           className={finalClasses}
           // Improves accessibility by marking the current page.
           aria-current={isActive ? 'page' : undefined}
+          aria-label={label ? `${label === '«' ? 'First' : label === '‹' ? 'Previous' : label === '›' ? 'Next' : 'Last'} page` : undefined}
         >
           {content}
         </Link>
@@ -73,6 +74,7 @@ const Pagination = ({
         // Disables the active button in client mode for better UX and to prevent unnecessary state updates.
         disabled={isActive}
         aria-current={isActive ? 'page' : undefined}
+        aria-label={label ? `${label === '«' ? 'First' : label === '‹' ? 'Previous' : label === '›' ? 'Next' : 'Last'} page` : undefined}
       >
         {content}
       </button>

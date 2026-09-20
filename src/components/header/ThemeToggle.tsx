@@ -11,25 +11,17 @@ const ThemeToggle = ({ size = 48 }: ThemeToggleProps) => {
   const { resolvedTheme, setTheme } = useThemeContext();
 
   const toggleTheme = () => (resolvedTheme === 'dark' ? setTheme('light') : setTheme('dark'));
+  const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark';
 
   return (
-    <div onClick={toggleTheme} className="cursor-pointer text-flame-500">
-      {resolvedTheme === 'dark' ? (
-        <PushableButton
-          shape="sun"
-          size={size}
-          frontColor="var(--flame-500)"
-          backColor="var(--gray-100)"
-        />
-      ) : (
-        <PushableButton
-          shape="moon"
-          size={size}
-          frontColor="var(--flame-500)"
-          backColor="var(--gray-900)"
-        />
-      )}
-    </div>
+    <PushableButton
+      shape={resolvedTheme === 'dark' ? 'sun' : 'moon'}
+      size={size}
+      frontColor="var(--flame-500)"
+      backColor={resolvedTheme === 'dark' ? 'var(--gray-100)' : 'var(--gray-900)'}
+      onClick={toggleTheme}
+      ariaLabel={`Switch to ${nextTheme} theme`}
+    />
   );
 };
 

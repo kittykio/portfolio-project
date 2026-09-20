@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Dispatch, SetStateAction, useState, useMemo } from 'react';
+import React, { Dispatch, SetStateAction, useState, useEffect } from 'react';
 import type { Heading } from '@/types/HeadingType';
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 import { TbListTree } from 'react-icons/tb';
@@ -56,7 +56,7 @@ export const TableOfContents = ({ headings, postItem, setPostItem }: TOCProps) =
   // -------------------------
   // Scrollspy (detect active heading)
   // -------------------------
-  useMemo(() => {
+  useEffect(() => {
     const handleScroll = () => {
       let currentId = '';
       for (const heading of headings) {
@@ -95,6 +95,9 @@ export const TableOfContents = ({ headings, postItem, setPostItem }: TOCProps) =
               {hasChildren && (
                 <button
                   onClick={() => toggleExpand(node.id)}
+                  type="button"
+                  aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${node.title}`}
+                  aria-expanded={isExpanded}
                   className="text-content-muted hover:text-flame-500 transition"
                 >
                   {isExpanded ? <FaChevronDown size={14} /> : <FaChevronRight size={14} />}
@@ -130,6 +133,9 @@ export const TableOfContents = ({ headings, postItem, setPostItem }: TOCProps) =
           </p>
           <button
             onClick={() => setOpen(!open)}
+            type="button"
+            aria-label={open ? 'Collapse table of contents' : 'Expand table of contents'}
+            aria-expanded={open}
             className="text-content-muted hover:text-flame-500 transition"
           >
             {open ? <FaChevronDown size={18} /> : <FaChevronRight size={18} />}

@@ -72,7 +72,7 @@ describe('remaining shared primitives', () => {
     const { rerender } = render(<SectionWrapper title="My Section" subtitle={<em>Sub</em>}><p>Body</p></SectionWrapper>);
     expect(screen.getByText('Body').parentElement).toHaveAttribute('id', 'my-section');
     rerender(<><SectionWrapper className="custom"><p>Only body</p></SectionWrapper><FilterTag i={1} tag="React" active handleOnChange={change} setRef={hover} /><DisplayTag tag="TypeScript" /></>);
-    const tag = screen.getByRole('button', { name: '#React' });
+    const tag = screen.getByRole('button', { name: 'Remove React' });
     fireEvent.mouseEnter(tag); fireEvent.click(tag); fireEvent.mouseLeave(tag);
     expect(change).toHaveBeenCalledWith('React'); expect(hover.mock.calls).toEqual([[true], [false]]);
     expect(screen.getByText('#TypeScript')).toBeInTheDocument();

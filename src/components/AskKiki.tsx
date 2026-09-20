@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useId, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { RiCloseLine, RiLightbulbFlashLine, RiSendPlane2Line } from 'react-icons/ri';
 import { useLocale } from '@/components/LocaleContext';
@@ -26,6 +26,9 @@ const AskKiki = () => {
   const [contact, setContact] = useState('');
   const [answer, setAnswer] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const titleId = useId();
+  const detailsId = useId();
+  const contactId = useId();
 
   const copy = locale === 'ja'
     ? {
@@ -60,18 +63,18 @@ const AskKiki = () => {
     <div className="fixed bottom-3 right-3 z-50 sm:bottom-5 sm:right-5">
       <AnimatePresence>
         {open && (
-          <motion.section initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 24, scale: 0.96 }} className="mb-4 w-[min(92vw,28rem)] rounded-3xl border border-border bg-canvas p-5 shadow-2xl">
+          <motion.section role="dialog" aria-modal="false" aria-labelledby="ask-kiki-title" initial={{ opacity: 0, y: 24, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 24, scale: 0.96 }} className="mb-4 w-[min(92vw,28rem)] rounded-3xl border border-border bg-canvas p-5 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
-              <div><p className="font-flashy text-3xl text-flame-500 dark:text-lemon">{copy.name}</p><p className="mt-1 text-sm text-content-muted">{copy.intro}</p></div>
+              <div><h2 id="ask-kiki-title" className="font-flashy text-3xl text-flame-500 dark:text-lemon">{copy.name}</h2><p className="mt-1 text-sm text-content-muted">{copy.intro}</p></div>
               <button type="button" onClick={() => setOpen(false)} aria-label={copy.close} className="text-2xl hover:text-flame-500"><RiCloseLine /></button>
             </div>
-            <div className="mt-5 grid grid-cols-3 gap-1 rounded-2xl bg-surface-muted p-1 text-[10px] font-bodyBold leading-tight dark:bg-surface-inverse sm:gap-2 sm:text-xs">
-              {(['ask', 'project', 'article'] as Mode[]).map((item) => <button key={item} type="button" onClick={() => switchMode(item)} className={`min-w-0 rounded-xl px-1 py-2 text-gray-900 transition dark:text-gray-900 sm:px-2 ${mode === item ? 'bg-flame-500 text-white dark:bg-lemon dark:text-black' : 'hover:text-flame-500 dark:hover:text-flame-500'}`}>{item === 'ask' ? copy.ask : item === 'project' ? copy.project : copy.article}</button>)}
+            <div role="group" aria-label="Ask Kiki mode" className="mt-5 grid grid-cols-3 gap-1 rounded-2xl bg-surface-muted p-1 text-[10px] font-bodyBold leading-tight dark:bg-surface-inverse sm:gap-2 sm:text-xs">
+              {(['ask', 'project', 'article'] as Mode[]).map((item) => <button key={item} type="button" onClick={() => switchMode(item)} aria-pressed={mode === item} className={`min-w-0 rounded-xl px-1 py-2 text-gray-900 transition dark:text-gray-900 sm:px-2 ${mode === item ? 'bg-flame-500 text-white dark:bg-lemon dark:text-black' : 'hover:text-flame-500 dark:hover:text-flame-500'}`}>{item === 'ask' ? copy.ask : item === 'project' ? copy.project : copy.article}</button>)}
             </div>
-            {mode === 'ask' && !askEnabled ? <div className="mt-4 rounded-2xl bg-surface-muted p-5 text-sm leading-relaxed dark:bg-surface-inverse"><p className="font-bodyBold text-content">{copy.comingSoonTitle}</p><p className="mt-2 text-content-muted">{copy.comingSoon}</p></div> : <form onSubmit={submit} className="mt-4 space-y-3">{mode !== 'ask' && <><input value={title} onChange={(event) => setTitle(event.target.value)} required minLength={3} maxLength={140} placeholder={copy.title} className="w-full rounded-xl border border-border bg-canvas px-3 py-2 outline-none focus:border-flame-500" /><input value={contact} onChange={(event) => setContact(event.target.value)} type="email" maxLength={320} placeholder={copy.contact} className="w-full rounded-xl border border-border bg-canvas px-3 py-2 outline-none focus:border-flame-500" /></>}<textarea value={message} onChange={(event) => setMessage(event.target.value)} required minLength={mode === 'ask' ? 1 : 10} maxLength={mode === 'ask' ? 1200 : 3000} rows={mode === 'ask' ? 3 : 5} placeholder={mode === 'ask' ? (locale === 'ja' ? '例：Three.jsを使った作品はどれ？' : 'For example: Which project uses Three.js?') : copy.details} className="w-full resize-none rounded-xl border border-border bg-canvas px-3 py-2 outline-none focus:border-flame-500" /><button disabled={status === 'loading'} className="flex w-full items-center justify-center gap-2 rounded-xl bg-flame-500 px-4 py-3 font-bodyBold text-white transition hover:bg-flame-700 disabled:opacity-60 dark:bg-lemon dark:text-black"><RiSendPlane2Line />{status === 'loading' ? copy.sending : mode === 'ask' ? copy.ask : copy.send}</button></form>}
-            {answer && <p className="mt-4 whitespace-pre-wrap rounded-xl bg-surface-muted p-3 text-sm leading-relaxed dark:bg-surface-inverse"><AnswerText value={answer} /></p>}
-            {status === 'success' && <p className="mt-4 rounded-xl bg-lemon/30 p-3 text-sm font-bodyBold">{copy.requestSent}</p>}
-            {status === 'error' && <p className="mt-4 text-sm text-flame-500">{copy.error}</p>}
+            {mode === 'ask' && !askEnabled ? <div className="mt-4 rounded-2xl bg-surface-muted p-5 text-sm leading-relaxed dark:bg-surface-inverse"><p className="font-bodyBold text-content">{copy.comingSoonTitle}</p><p className="mt-2 text-content-muted">{copy.comingSoon}</p></div> : <form onSubmit={submit} className="mt-4 space-y-3">{mode !== 'ask' && <><label className="sr-only" htmlFor={titleId}>{copy.title}</label><input id={titleId} value={title} onChange={(event) => setTitle(event.target.value)} required minLength={3} maxLength={140} placeholder={copy.title} className="w-full rounded-xl border border-border bg-canvas px-3 py-2" /><label className="sr-only" htmlFor={contactId}>{copy.contact}</label><input id={contactId} value={contact} onChange={(event) => setContact(event.target.value)} type="email" maxLength={320} placeholder={copy.contact} className="w-full rounded-xl border border-border bg-canvas px-3 py-2" /></>}<label className="sr-only" htmlFor={detailsId}>{copy.details}</label><textarea id={detailsId} value={message} onChange={(event) => setMessage(event.target.value)} required minLength={mode === 'ask' ? 1 : 10} maxLength={mode === 'ask' ? 1200 : 3000} rows={mode === 'ask' ? 3 : 5} placeholder={mode === 'ask' ? (locale === 'ja' ? '例：Three.jsを使った作品はどれ？' : 'For example: Which project uses Three.js?') : copy.details} className="w-full resize-none rounded-xl border border-border bg-canvas px-3 py-2" /><button type="submit" disabled={status === 'loading'} className="flex w-full items-center justify-center gap-2 rounded-xl bg-flame-500 px-4 py-3 font-bodyBold text-white transition hover:bg-flame-700 disabled:opacity-60 dark:bg-lemon dark:text-black"><RiSendPlane2Line aria-hidden />{status === 'loading' ? copy.sending : mode === 'ask' ? copy.ask : copy.send}</button></form>}
+            {answer && <p className="mt-4 whitespace-pre-wrap rounded-xl bg-surface-muted p-3 text-sm leading-relaxed dark:bg-surface-inverse" role="status"><AnswerText value={answer} /></p>}
+            {status === 'success' && <p className="mt-4 rounded-xl bg-lemon/30 p-3 text-sm font-bodyBold" role="status">{copy.requestSent}</p>}
+            {status === 'error' && <p className="mt-4 text-sm text-flame-500" role="alert">{copy.error}</p>}
           </motion.section>
         )}
       </AnimatePresence>

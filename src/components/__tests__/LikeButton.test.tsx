@@ -19,7 +19,7 @@ describe('LikeButton', () => {
     render(<LikeButton likeItem={project()} likeItemList={[project()]} setLikeItem={setLikeItem} setLikeItemList={setLikeItemList} updateLike={updateLike} size={24} activate />);
     await waitFor(() => expect(screen.getByText('9')).toBeInTheDocument());
     const now = jest.spyOn(Date, 'now').mockReturnValueOnce(1000).mockReturnValueOnce(1001);
-    const button = screen.getByRole('button', { name: 'Like button' }); fireEvent.mouseDown(button); fireEvent.mouseUp(button);
+    const button = screen.getByRole('button', { name: 'Like Seven. Current total: 9' }); fireEvent.mouseDown(button); fireEvent.mouseUp(button);
     await waitFor(() => expect(updateLike).toHaveBeenCalledWith({ _id: 7, seconds: 1 }));
     expect(setLikeItem).toHaveBeenCalledWith(expect.objectContaining({ like: 10, likesPerUser: 1 }));
     const updater = setLikeItemList.mock.calls[0][0]; expect(updater([project()])[0]).toMatchObject({ like: 10, likesPerUser: 1 });
@@ -31,7 +31,7 @@ describe('LikeButton', () => {
     render(<LikeButton likeItem={post({ likesPerUser: 4 })} updateLike={updateLike} size={20} activate />);
     await waitFor(() => expect(screen.getByText('3')).toBeInTheDocument());
     const now = jest.spyOn(Date, 'now').mockReturnValueOnce(1000).mockReturnValueOnce(10000);
-    const button = screen.getByRole('button', { name: 'Like button' }); fireEvent.mouseDown(button); fireEvent.mouseUp(button);
+    const button = screen.getByRole('button', { name: 'Like Eight. Current total: 3' }); fireEvent.mouseDown(button); fireEvent.mouseUp(button);
     await waitFor(() => expect(updateLike).toHaveBeenCalledWith({ _id: 8, seconds: 3 }));
     await waitFor(() => expect(screen.getByText('5')).toBeInTheDocument()); expect(localStorage.getItem(getLikeStorageKey('blog', 8))).toBe('7'); now.mockRestore();
   });

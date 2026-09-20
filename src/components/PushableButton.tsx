@@ -12,6 +12,7 @@ interface PushableButtonProps {
   frontColor?: string;
   className?: string;
   onClick?: () => void;
+  ariaLabel?: string;
 }
 
 interface ShapeRendererProps {
@@ -96,6 +97,7 @@ const PushableButton: React.FC<PushableButtonProps> = ({
   frontColor = 'var(--flame-500)',
   className = '',
   onClick,
+  ariaLabel,
 }) => {
   const reactId = useId();
   const uid = `pb-${reactId}`;
@@ -108,7 +110,8 @@ const PushableButton: React.FC<PushableButtonProps> = ({
     <button
       type="button"
       onClick={onClick}
-      className={`relative p-0 cursor-pointer outline-none focus:outline-none group${className}`}
+      aria-label={ariaLabel}
+      className={`relative p-0 cursor-pointer outline-none group ${className}`}
       style={{ width: size, height: size }}
     >
       {/* 1. Back Layer (The 'Shadow' or 'Pushed' part) */}
