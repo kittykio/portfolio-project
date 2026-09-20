@@ -1,117 +1,53 @@
 ---
-date: 2025-09-15
-title: "How to Use a Local Testing Server"
-description: "This guide covers how to quickly start a local HTTP server for static files and how to use JSON Server to simulate a full REST API."
+date: "2025-09-15"
+title: "Local Preview Servers: Static Files, Mock APIs, and Framework Apps"
+description: "Choose the right local server, bind it to localhost, test a mock endpoint, and stop it cleanly."
 tags: ["Local Development", "Developer Tools"]
 image: "/blog/images/how-to-use-a-local-testing-server.png"
 ---
 
-> When working on web development projects, you often need to serve files locally or simulate an API before deploying your application. Setting up a local testing server allows you to preview your work in a real browser environment and test client-server interactions without needing a production server.
+A static server sends files. A mock API returns test data. A framework development server also compiles and runs application code. Choosing the right one avoids debugging a tool that cannot execute your project.
 
-## Starting a Local HTTP Server
+## Serve a static page
 
-A local HTTP server is useful for serving HTML, CSS, JavaScript, and other static files. Without a server, some features (such as AJAX requests or ES module imports) may not work properly when opening files directly in a browser.
+Create a directory containing only public demo files, then start Python 3 from that directory:
 
-### Using Node.js
-
-If you have Node.js installed, you can use the `http-server` package:
-
-```
-npx http-server <directory> -o -p <port>
+```bash
+python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
-- `<directory>`: The folder you want to serve (e.g., `.` for the current directory).
-- `-o`: Automatically opens the default browser.
-- `-p <port>`: Specifies the port number.
+On Windows, `py -3` may be your Python launcher. Open `http://127.0.0.1:8080`. A directory containing `index.html` will display it; otherwise a listing may appear. This is a development convenience, not a production server, as the [Python documentation](https://docs.python.org/3/library/http.server.html) explains.
 
-**Example:**
+<Highlight color="flame">Serve a dedicated demo directory, not your home folder or a repository containing secrets. A static server does not know which files are private.</Highlight>
 
-```
-npx http-server . -o -p 9999
-```
+Binding to `127.0.0.1` restricts access to this machine. It does not make unsafe files appropriate to serve. A phone cannot reach your computer through the phone's own localhost.
 
-This command serves the current folder on `http://localhost:9999`.
+## Give a frontend a predictable API
 
-### Using Python
+For an isolated tutorial fixture, this example deliberately uses JSON Server 0.17.4. Its CLI differs from newer releases; see the [versioned README](https://github.com/typicode/json-server/tree/v0.17.4).
 
-Python also has a built-in HTTP server that can serve files quickly. If you have Python installed, run:
+Create `db.json`:
 
-```
-python -m http.server
+```json
+{ "users": [{ "id": 1, "name": "Aki" }] }
 ```
 
-By default, it runs on port **8000**, but you can specify a different port:
+Then run:
 
-```
-python -m http.server 8080
-```
-
-This starts a server at `http://localhost:8080`.
-
-## Starting a Local JSON Server
-
-Sometimes you need a backend API to test data fetching. Instead of building a real backend, you can use **JSON Server** to mock a REST API.
-
-### Installation
-
-Install JSON Server globally using npm:
-
-```
-npm install -g json-server
+```bash
+npx json-server@0.17.4 --watch db.json --host 127.0.0.1 --port 8081
 ```
 
-### Running JSON Server
+Open `http://127.0.0.1:8081/users`. Expect an array with Aki's record. A mock can support CRUD experiments, but cannot establish that production authorization, transactions, or validation work. Use disposable data; writes can change the fixture.
 
-Create a `db.json` file in your project directory with some initial data. For example:
+## Run framework applications with their own command
 
-```
-{
-  "users": [
-    { "id": 1, "name": "Alice" },
-    { "id": 2, "name": "Bob" }
-  ]
-}
-```
+For a Next.js, Vite, or other framework project, inspect `package.json` and run its documented development script. Python's server cannot compile TSX or execute a Next.js route handler. A frontend on port 8080 calling an API on 8081 also crosses an origin boundary; inspect CORS errors rather than disabling browser security.
 
-Start the server with:
+<Highlight color="lemon">Confirm the URL, expected response, and server type before changing application code.</Highlight>
 
-```
-json-server --watch db.json --port 8000
-```
+## Finish the session
 
-This will make the JSON data available at `http://localhost:8000`.
+Stop the foreground server with Ctrl–C. If a port is busy, identify its owning process or choose a free port; do not terminate unrelated processes indiscriminately. If changes appear stale, inspect the Network panel and reload before assuming the build failed.
 
-### Available Endpoints
-
-If your JSON file contains a `"users"` array, JSON Server automatically generates the following RESTful endpoints:
-
-- **GET **`/users` – Retrieves all users.
-- **GET **`/users/:id` – Retrieves a specific user by ID.
-- **POST **`/users` – Creates a new user.
-- **PUT **`/users/:id` – Updates a user by ID (replaces the object).
-- **PATCH **`/users/:id` – Partially updates a user.
-- **DELETE **`/users/:id` – Deletes a user by ID.
-
-## Comparison: Node.js HTTP Server vs Python vs JSON Server
-
-ToolProsCons**Node.js **`http-server`- Works on any platform with Node.js installed  
-- Can be run with a single command (`npx`)  
-- Supports options like port and browser auto-open- Only serves static files (HTML, CSS, JS)  
-- Not suitable for API testing**Python **`http.server`- Built into Python (no installation required)  
-- Quick and easy for serving static content  
-- Useful for simple prototyping- Limited functionality  
-- Default port conflicts may occur  
-- No API simulation**JSON Server**- Generates a full REST API from a JSON file  
-- Supports all CRUD operations (GET, POST, PUT, DELETE)  
-- Perfect for frontend API testing- Requires npm installation  
-- Only simulates a backend (no real database)  
-- May not cover advanced backend logic
-
-## When to Use Each
-
-- **Static File Server (Node.js or Python)**: Best when you need to preview static websites, test layouts, or load modules in a browser environment.
-- **JSON Server**: Best when developing frontend apps that depend on API calls. It allows you to test how your app interacts with a backend without writing one from scratch.
-
-## Conclusion
-
-Using a local testing server is a simple but powerful practice in web development. Whether you are serving static files with Node.js or Python, or simulating a REST API with JSON Server, these tools help create a realistic development environment and improve your workflow before deployment.
+<RainbowHighlight block>Match the server to the job, expose only demo data, and stop it when the session ends.</RainbowHighlight>

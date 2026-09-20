@@ -1,67 +1,46 @@
 ---
-date: 2025-09-16
-title: "Understanding the Differences Between UI and UX"
-description: "User Interface (UI) is about how things look, while User Experience (UX) is about how things feel."
-tags: ["UI/UX", "Design"]
+date: "2025-09-16"
+title: "UI and UX: Designing the Interface and the Whole Journey"
+description: "Use a booking flow to distinguish interface decisions from experience design, then test success, errors, and recovery."
+tags: ["UI/UX", "Design Systems"]
 image: "/blog/images/understanding-the-differences-between-ui-and-ux.png"
 ---
 
-UI and UX are often confused, but they play very different roles in building websites. Both are essential to creating websites that are not only visually appealing but also easy and enjoyable to use. Let’s break down their strengths, differences, and how they work together.
+A booking page can be visually polished and still leave someone wondering whether their reservation succeeded. That problem sits across the interface, the service, and the messages connecting them.
 
-## Introduction
+<Highlight color="lemon">UI is the interface people perceive and operate. UX includes their experience of reaching a goal through the whole service.</Highlight>
 
-When people talk about website design, the terms **UI (User Interface)** and **UX (User Experience)** are often used interchangeably. While they are closely related, they address different aspects of web development. Understanding these differences is crucial for anyone working in design, development, or product management.
+UI therefore includes interaction and feedback, not just decoration. UX includes what happens before and after a screen, not just how that screen feels. The responsibilities overlap; they are not separate stages completed by separate people.
 
-## What is UI (User Interface)?
+## Follow one booking from start to finish
 
-UI focuses on the look of a website. It includes the layout, colors, typography, buttons, and other interactive elements that a user directly interacts with. A strong UI creates consistency, communicates brand identity, and makes navigation intuitive.
+Suppose someone wants a table for four at 7 p.m. Interface decisions include how dates are selected, how unavailable slots are identified, and where keyboard focus appears. Experience decisions include whether availability is current, whether an account is necessary, and how a booking can be cancelled.
 
-### Example of UI
+| Moment | Interface question | Wider experience question |
+| --- | --- | --- |
+| Choose a time | Can users distinguish selected and unavailable slots? | Is availability accurate? |
+| Enter details | Are fields labelled and errors linked to them? | Are all requested details necessary? |
+| Submit | Does the button show progress? | Can retries create duplicate reservations? |
+| Finish | Is the confirmation clear? | Can users retrieve or cancel their booking later? |
 
-Imagine a **login page**:
+The table describes discussion prompts, not a rigid division of job titles. A developer implementing retries and a designer writing confirmation copy are both shaping the experience.
 
-- UI decides where the input fields are placed.
-- It defines the button color (e.g., green for "Login," gray for "Cancel").
-- It determines the typography, spacing, and overall visual style.
+## Design beyond the happy path
 
-A well-designed UI makes the page look clean and easy to understand at first glance.
+Make a prototype with a fully booked time, a slow response, and a failed submission. Keep the entered details when recovery is possible. Explain what the user can do next without claiming success before the server confirms it.
 
-## What is UX (User Experience)?
+<Underline>A visible state needs a meaningful explanation.</Underline> A red border without text leaves people guessing. A spinner without any recovery path can trap them. A disabled button may prevent duplicate clicks but cannot, by itself, make a server operation idempotent.
 
-UX is about the entire journey a user takes when interacting with a website or product. It focuses on usability, accessibility, efficiency, and emotional satisfaction. UX designers conduct research, map out user flows, and test prototypes to ensure the product meets user needs.
+## Observe a task instead of asking for approval
 
-### Example of UX
+Give a participant a specific scenario and ask them to complete it without coaching. Record where they hesitate, what they expect, and whether they can explain the final result. Small sessions reveal problems to investigate; they do not establish population-wide success rates.
 
-On the same **login page**:
+Pair observations with operational evidence. A completed form is not necessarily a completed reservation. Track confirmed bookings and support requests about missing confirmations, while minimizing the personal data collected.
 
-- UX asks: How quickly can a user log in?
-- If they enter the wrong password, does the error message clearly explain what went wrong?
-- If they forget their password, is there an easy “Forgot Password?” flow?
+The [W3C forms tutorial](https://www.w3.org/WAI/tutorials/forms/) is a useful implementation reference for labels, instructions, and feedback. Accessibility belongs in the interaction from the start, including keyboard use and understandable recovery.
 
-Good UX ensures users don’t just see a nice page, but also **complete their goals smoothly**.
+## Choose the next improvement
 
-## Key Differences Between UI and UX
+Fix the point that prevents completion before polishing a decorative animation. Then re-run the same task. This makes a design decision reviewable: someone who previously could not recover from an error now can.
 
-AspectUI (User Interface)UX (User Experience)**Focus**Visual design, interaction, and aestheticsUsability, accessibility, and overall journey**Tools**Photoshop, Figma, SketchAxure RP, InVision, user testing frameworks**Core Question**"Does it look good?""Does it work well for the user?"**Outcome**Attractive screens aligned with brand identitySmooth, frustration-free user interactions
-
-## How UI and UX Work Together
-
-UI and UX are not isolated — they complement each other:
-
-- **Great UI, poor UX** → A beautiful site that’s hard to use.
-- **Great UX, poor UI** → A functional site that feels outdated or untrustworthy.
-- **Strong UI + UX** → A website that looks appealing and delivers a smooth user experience.
-
-### Example
-
-Consider an **e-commerce checkout page**:
-
-- **UI **ensures the buttons are clearly visible, colors match the brand, and spacing feels balanced.
-- **UX **ensures the checkout process requires minimal clicks, payment options are clear, and users feel confident completing the purchase.
-
-## Summary
-
-In short, **UI is what you see, and UX is how you feel while using it**.  
-UI ensures your website looks polished and professional, while UX ensures it works seamlessly and meets user needs. Together, they create experiences that users enjoy and return to.
-
-Whether you’re a designer, developer, or product manager, understanding both is essential for building successful digital products.
+<RainbowHighlight block>A strong interface makes the next action clear, and a strong experience makes the whole task work.</RainbowHighlight>

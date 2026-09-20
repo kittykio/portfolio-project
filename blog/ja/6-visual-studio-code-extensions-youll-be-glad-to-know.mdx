@@ -1,19 +1,51 @@
 ---
-date: 2025-10-06
-title: "入れてよかったVS Code拡張機能6選"
-description: "生産性、共同作業、コード品質を高めるVS Code拡張機能の紹介。"
-tags: ["開発ツール", "VS Code"]
+date: "2025-10-06"
+title: "VS Code拡張機能6選：解消したい不便から選ぶ"
+description: "六つの拡張機能を用途別に比較し、標準機能との重複とワークスペース設定を確認して導入します。"
+tags: ["VS Code", "開発ツール"]
 image: "/blog/images/6-visual-studio-code-extensions-youll-be-glad-to-know.png"
 ---
 
-拡張機能は、少数を目的に合わせて選ぶのがいちばん効果的です。
+拡張機能は、実際に困っていることを減らせるときに役立ちます。一つずつ追加し、情報が増えたのか、既存機能と重複したのか、表示がうるさくなったのかを確認します。
 
-### おすすめの役割
-- **Prettier**: 保存時の整形を統一する
-- **ESLint**: 問題を早く見つける
-- **GitLens**: 変更履歴を文脈付きで読む
-- **Error Lens**: エラーを行内で確認する
-- **Thunder Client**: APIを手早く試す
-- **Live Share**: 同じ画面を共有して作業する
+## 用途に合わせて選ぶ
 
-チームでは設定をリポジトリに置き、個人ごとの見た目の好みとプロジェクトのルールを分けると安心です。
+リンク先は各提供者の拡張機能ページです。対応版や設定はそこで確認できます。
+
+| 拡張機能 | 主な用途 | 導入前の確認 |
+| --- | --- | --- |
+| [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) | 診断をコードの横へ表示 | 言語サーバーやリンター自体の代わりではありません。 |
+| [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | 履歴やblameの調査 | 標準Git機能で足りるか、利用条件も確認します。 |
+| [Path Intellisense](https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense) | 対応箇所でのパス補完 | 標準の言語補完と重複しないか試します。 |
+| [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | 整形の統一 | プロジェクトの版と設定を使います。 |
+| [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | 設定されたJS/TSルールの診断 | プロジェクト側のESLint設定が必要です。 |
+| [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) | 静的HTMLのプレビュー更新 | フレームワークには専用開発サーバーを使います。 |
+
+<Highlight color="lemon">導入数ではなく、どんなフィードバックを得られるかで選びましょう。</Highlight>
+
+## 整形と解析を分ける
+
+Prettierは表記を揃え、ESLintは設定した規則を検査します。整形のルールが重複すると、保存するたび修正が往復する場合があります。保存時に両方を動かす前に、担当を決めます。
+
+チームでPrettierを使うなら、`.vscode/settings.json`の例は次のとおりです。
+
+```json
+{
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  }
+}
+```
+
+対象はJavaScriptだけです。他の言語IDは意図して追加し、個人の設定を全ファイルへ強制せず、リポジトリの規約に従います。
+
+## 共有前に結果を確認する
+
+代表的なファイルに軽い整形差を作って保存し、差分を見ます。既知のlint違反も作り、エディターとコマンドの両方で出るか確認します。違う場合は出力ログや使用中の版を調べます。
+
+<Highlight color="flame">拡張機能の導入とワークスペースの信頼は、コード実行に関わる判断です。提供者を確認し、警告を消すためだけに未知のタスクを有効化しません。</Highlight>
+
+[VS Codeの管理ガイド](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace)に導入と制御の説明があります。共有する推奨機能と個人のテーマやキー設定を分けます。動作が遅いときは、プロジェクトを疑う前に拡張機能を一時停止して切り分けます。
+
+<RainbowHighlight block>重複した自動化を増やすより、少数の理解できる設定を整えましょう。</RainbowHighlight>

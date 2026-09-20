@@ -1,112 +1,45 @@
 ---
-date: 2025-09-15
-title: "How to Change to a Japanese Keyboard Layout in Ubuntu"
-description: "Configure IBus Mozc and Keyboard Settings for Japanese Input."
+date: "2025-09-15"
+title: "Japanese Input on Ubuntu: Layout and Mozc Are Different"
+description: "Configure Japanese text input without confusing a physical JIS keyboard layout with an input method."
 tags: ["Linux", "Developer Setup"]
 image: "/blog/images/how-to-change-to-a-japanese-keyboard-layout-in-ubuntu.png"
 ---
 
-Switching your Ubuntu system to a Japanese keyboard layout allows you to type in Japanese using the **Mozc input method**. Depending on your setup, you may need to adjust both **system settings** and some **configuration files** to ensure the layout works correctly. Below is a step-by-step guide.
+You can type Japanese on a US keyboard. A keyboard layout maps physical keys to symbols; an input method converts typed text into Japanese. Changing one does not automatically configure the other.
 
-### 1. Enable Japanese Language Support in Ubuntu
+<Highlight color="lemon">Choose the layout that matches your physical keyboard, then add Mozc for Japanese conversion.</Highlight>
 
-1. Open **Settings** → **Language Support**.
-2. Click **Install / Remove Languages…** and add **Japanese**.
-3. Apply the changes and restart if necessary.
+## Set the physical layout first
 
-### 2. Reconfigure the Keyboard from the Command Line
+On Ubuntu Desktop with GNOME, open Settings and locate Keyboard → Input Sources. On some releases this appears under Region & Language. Add English (US) for a US keyboard or the appropriate Japanese layout for a JIS keyboard. Use the layout preview and test punctuation such as `@`, `:`, and parentheses.
 
-If the layout still defaults to English, run the following in a terminal:
+Ubuntu documents input sources and switching in its [keyboard layout guide](https://help.ubuntu.com/stable/ubuntu-help/keyboard-layouts.html). Desktop environments other than GNOME may use different settings panels and input frameworks.
 
-```
-sudo dpkg-reconfigure keyboard-configuration
-```
+## Install and select the input method
 
-When prompted, select these options:
+If Japanese (Mozc) is not available, install the IBus integration through Ubuntu's package manager:
 
-- **Generic 105-key PC (intl.)**
-- **Japanese** → **Japanese**
-- Use the **default keyboard layout**
-- **No compose key**
-- **Yes** to apply the changes
-
-### 3. Configure Mozc for the Japanese Layout
-
-By default, **IBus Mozc** may use a “default” layout instead of explicitly binding to `jp`. You need to update the configuration files.
-
-#### Option A: System-wide Mozc XML
-
-Edit the Mozc component file:
-
-```
-sudo vim /usr/share/ibus/component/mozc.xml
+```bash
+sudo apt update
+sudo apt install ibus-mozc
 ```
 
-Find this line:
+Sign out and sign back in, then add Japanese (Mozc) as an input source. Use the input indicator to select it. Choose Hiragana mode if typing still produces direct Latin characters. Test `nihongo`, use Space to choose a conversion, and Enter to commit it.
 
-```
-<layout>default</layout>
-```
+A US physical keyboard can stay on a US mapping while Mozc provides conversion. If punctuation moves to unexpected keys only when Mozc is active, inspect the input method's layout settings rather than changing the whole system to JIS.
 
-Replace it with:
+## Diagnose the symptom
 
-```
-<layout>jp</layout>
-```
+| Symptom | First check |
+| --- | --- |
+| Wrong punctuation in every app | Physical layout selection |
+| Latin characters with Mozc selected | Direct-input versus Hiragana mode |
+| Mozc missing from the source list | Package installation and a fresh login |
+| Failure in only one application | That application's input-method support |
 
-Save and restart IBus:
+<Highlight color="flame">Do not start by editing package-owned files under /usr/share. Updates can replace them, and a layout change there may affect more than the problem you are investigating.</Highlight>
 
-```
-ibus restart
-```
+If you use KDE or Fcitx, follow that environment's input-method setup instead of mixing frameworks blindly. Keep one known-working input source available so you can enter passwords and troubleshoot. Once conversion works, verify the switching shortcut in Settings; custom shortcuts and desktop versions can change it.
 
-#### Option B: User Configuration (if XML does not contain `<layout>`)
-
-In newer versions, the `mozc.xml` may look like this:
-
-```
-<component>
-  <name>com.google.IBus.Mozc</name>
-  ...
-  <engines exec="/usr/lib/ibus-mozc/ibus-engine-mozc --xml" />
-</component>
-```
-
-In this case, the layout is stored in a user configuration file. Edit:
-
-```
-vim ~/.config/mozc/ibus_config.textproto
-```
-
-Look for:
-
-```
-engines {
-  name : "mozc-jp"
-  longname : "Mozc"
-  layout : "default"
-}
-```
-
-Change `layout : "default"` to:
-
-```
-layout : "jp"
-```
-
-Then restart IBus:
-
-```
-ibus restart
-```
-
-### 4. Verify the Layout
-
-1. Switch input method to **Mozc (Japanese)** using the system tray or keyboard shortcut.
-2. Open a text editor and try typing — your keyboard should now follow the Japanese layout.
-
-### Final Notes
-
-- If you are using a physical Japanese keyboard, this ensures keys match the printed layout.
-- If you are using an English keyboard but typing in Japanese, you can still switch layouts virtually, but key positions may differ.
-- Always restart IBus (or log out and log back in) after making configuration changes.
+<RainbowHighlight block>Fix key positions with a layout, and fix Japanese conversion with an input method.</RainbowHighlight>

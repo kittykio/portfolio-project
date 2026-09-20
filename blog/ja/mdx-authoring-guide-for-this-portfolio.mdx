@@ -1,32 +1,65 @@
 ---
-date: 2026-08-17
-title: "このポートフォリオでMDX記事を書く方法"
-description: "フロントマター、Markdown記法、カスタムMDXコンポーネントの実践リファレンス。"
-tags: ["MDX", "開発ツール", "ドキュメント"]
+date: "2026-08-17"
+title: "このポートフォリオで日英MDXを正しく書く"
+description: "実装に合うfrontmatterとコンポーネントを使い、タグと日英両版を確認して公開するためのガイドです。"
+tags: ["MDX", "ドキュメント"]
 image: "/blog/images/mdx-authoring-guide-for-this-portfolio.png"
 ---
 
-記事は `blog/`（日本語は `blog/ja/`）に、同じslugのMDXとして置きます。フロントマターには `date`、`title`、`description`、`tags`、`image` を指定します。
+このサイトは`blog/`から英語の記事を読み、`blog/ja/`から日本語版を読みます。ファイル名が言語版を結び、リアクションIDの生成にも使われるため、改稿時も既存名を保ちます。
+
+## メタデータを揃える
 
 ```mdx
 ---
-date: 2026-08-17
-title: "記事タイトル"
-description: "一覧に表示する説明"
-tags: ["MDX", "開発ツール"]
-image: "/blog/images/cover.png"
+date: "2026-09-16"
+title: "内容が分かる記事タイトル"
+description: "何を学べるか、できるようになるかを説明します。"
+tags: ["MDX", "ドキュメント"]
+image: "/blog/images/example.png"
 ---
 ```
 
-## 書き方のヒント
+両版で日付と画像パスを揃え、タイトル、説明、タグを自然に訳します。コードの動作は一致させます。画像URLに`public`は含めず、実体は`public/blog/images/`へ置きます。このガイドのパスは構文例であり、素材を作成するものではありません。
 
-- 見出しは `##` から使うと目次に反映されます。
-- コードには言語名を付けます（例: ```` ```ts ````）。
-- `RainbowHighlight` は文章の一部を虹色に、`Highlight` はレモン色のハイライトに使えます。
+<Highlight color="lemon">ページ側でタイトルを表示するため、本文の見出しはレベル2から始めます。</Highlight>
+
+## 役割に合うコンポーネントを使う
+
+通常の見出し、リスト、リンク、表、太字もサイトのレンダラーを通ります。名前付きコンポーネントは編集上の意味を加えます。前提はlemon、警告はflame、短い重要語句はUnderlineを使い、すべてを太字だけで表しません。
 
 ```mdx
-<RainbowHighlight>大切な一文</RainbowHighlight>
-<Highlight>レモンの強調</Highlight>
+<Highlight color="lemon">簡潔な前提条件。</Highlight>
+<Highlight color="flame">具体的な警告。</Highlight>
+<Underline>重要な語句。</Underline>
+<RainbowHighlight block>最後の実践的な要点。</RainbowHighlight>
+<Divider />
 ```
 
-英語と日本語は同じファイル名を使ってください。slugから安定したIDが作られるため、翻訳版でもいいねの集計が共有されます。
+各テキスト部品は開始タグ、本文、終了タグを一つの物理行へ置きます。画面では自動で折り返されます。特にRainbowHighlightは`block`でもspanなので、内部の空行や段落で不正なHTMLになり得ます。見出しや表の中へ入れたり、同じ語へ重ねたりしません。
+
+<Highlight color="flame">MDXは実行可能なコンテンツです。任意のアップロードを単なる文章として扱わず、信頼できる原稿をレビューして公開します。</Highlight>
+
+## 実際の構造にだけツリーを使う
+
+MDXFileTreeはディレクトリ用です。職種や利点の抽象的な一覧には使いません。このローダーはJavaScript式のpropsを除くため、配列を直接渡さず名前付きプリセットを指定します。新しいデータはアプリ側の対応表へ追加し、各ノードに一意なID、名前、file/folderの種別を付けます。このサイトの例示用プリセットは次のとおりです。
+
+<MDXFileTree preset="authoringGuide" />
+
+```mdx
+<MDXFileTree preset="authoringGuide" />
+```
+
+補助画像には実在する`src`、日本語の`alt`、正しい寸法を持つ`Img`を使います。`FileLink`は実在する配布ファイルだけに使います。Awkward、Spacey、Playful、Saucy、Loudはフォント表現、Sparklyは動く効果です。短い表現向けで、重要な手順の読みやすさを損なわないようにします。存在しない名前や記事内importを追加しません。
+
+## 発見しやすいタグを選ぶ
+
+本文で実際に扱う主題を一〜三個選びます。AI雇用の記事なら、広すぎるWeb開発よりAIとキャリアが適切です。フィルターや関連判定は文字列を使うため、同じ主題は同じ表記にします。
+
+前後の関連記事は共通タグを持つ記事を日付順に並べて選びます。最新の記事には次の記事がないことがあります。枠を埋めるためではなく、内容を表すためにタグを付けます。
+
+## 読む体験まで検証する
+
+実際のMDX処理で両版をコンパイルし、タグの閉じ忘れ、コードフェンス、画像、言語別リンク、目次を確認します。狭い画面で長いコードや強調も見ます。警告は具体的にし、必須のRainbowHighlightは参考資料の後、本文最後へ置きます。
+
+<RainbowHighlight block>役立つ内容を書き、実装に合うMDXで構造と意味を明確にしましょう。</RainbowHighlight>

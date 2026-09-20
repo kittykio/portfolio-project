@@ -1,9 +1,50 @@
 ---
-date: 2025-09-15
-title: "ターミナルに現在のGitブランチを表示する方法"
-description: "プロンプトにGitブランチを表示し、作業中の文脈を見失わないための設定。"
+date: "2025-09-15"
+title: "プロンプトを固定せず現在のGitブランチを表示する"
+description: "zshへ小さなブランチ表示を追加し、遅延評価とリポジトリ内外での動作を確認します。"
 tags: ["Git", "ターミナル"]
 image: "/blog/images/how-to-display-your-current-git-branch-in-the-terminal.png"
 ---
 
-ブランチ名をプロンプトに出すと、誤ったブランチへのコミットを減らせます。Zshならテーマや `vcs_info`、Bashなら `__git_ps1` を使う方法があります。色は控えめにし、Gitリポジトリ外では何も表示しない設定にすると読みやすくなります。
+ブランチ表示は、切り替えたときに更新されてこそ役立ちます。よくある誤りは、プロンプト代入時に関数を実行してしまい、設定を読み直すまで最初の名前を表示し続けることです。
+
+## 先にシェルを確認する
+
+ターミナルアプリではzsh、Bash、PowerShellなどを実行できますが、構文は異なります。次の例はmacOSでよく使うzsh向けです。既にテーマやプロンプト管理ツールがあるなら、その設定を使い、二つの定義を競合させません。
+
+編集前に`.zshrc`をバックアップし、不具合時に戻せるよう正常なターミナルも開いておきます。
+
+## ブランチだけ表示する
+
+```bash
+# zsh: add to ~/.zshrc after backing it up
+setopt PROMPT_SUBST
+branch_label() {
+  local branch
+  branch=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) || return
+  branch=${branch//\%/%%}
+  print -r -- " ($branch)"
+}
+PROMPT='%n@%m %~$(branch_label) %# '
+
+```
+
+外側をシングルクォートにすると、`$(branch_label)`はプロンプト描画時に評価されます。`PROMPT_SUBST`がその展開を有効にします。リポジトリ外やdetached HEADでは何も返しません。zshはパーセント記号を解釈するため、名前に含まれる記号は二重化しています。
+
+<Highlight color="lemon">設定読み込み時だけでなく、毎回の表示時にブランチを計算するよう遅延評価を使います。</Highlight>
+
+読み取り専用で、リモート更新の取得や未コミット状態の判定はしません。[Gitのsymbolic-ref説明](https://git-scm.com/docs/git-symbolic-ref)でブランチ参照とdetached HEADの違いを確認できます。
+
+## 必要な状態で試す
+
+新しいzshを開いてリポジトリへ入り、表示を確認します。使い捨てリポジトリの既存ブランチ間で切り替え、次のプロンプトが変わるか見ます。外へ移動すれば消えます。detached HEADで表示しないのはこの例の仕様です。コミットIDも必要なら、より完全なヘルパーを使います。
+
+<Underline>プロンプトは注意を促す表示であり、コミットの可否を保証しません。</Underline> 状態が重要な操作の前には`git status`で確認します。
+
+## BashとPowerShellでは別の設定を使う
+
+Bash用にはGitの[git-promptヘルパーと設定例](https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh)があります。HomebrewやLinuxのパスを決め付けず、実際の保存先を確認します。zshの例を`.bashrc`へ貼っても動きません。
+
+PowerShellではprompt関数か保守されているモジュールを選び、その資料に従います。既存テーマと重ねず、重いstatus処理を毎回行って大きなリポジトリを遅くしないようにします。
+
+<RainbowHighlight block>軽いブランチ表示はシェルで更新し、全体の状態はGitのコマンドで確かめましょう。</RainbowHighlight>

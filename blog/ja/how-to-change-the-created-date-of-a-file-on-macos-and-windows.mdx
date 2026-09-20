@@ -1,27 +1,63 @@
 ---
-date: 2025-09-15
-title: "macOSとWindowsでファイルの作成日を変更する方法"
-description: "標準ツールを使って作成日時・更新日時を扱うための手順。"
-tags: ["macOS", "Windows", "開発ワークフロー"]
+date: "2025-09-15"
+title: "macOSとWindowsのファイル日時：対象フィールドを正しく選ぶ"
+description: "作成・更新・メタデータ変更日時を区別し、作業用コピーで日時変更と確認を行います。"
+tags: ["macOS", "Windows", "ターミナル"]
 image: "/blog/images/how-to-change-the-created-date-of-a-file-on-macos-and-windows.png"
 ---
 
-日時の扱いはOSとファイルシステムで異なります。大事なファイルは先にバックアップしてください。
+ファイルには複数の日時があり、別のファイルシステムへコピーすると一部が変わる場合があります。変更したいのが作成日時、内容の更新日時、写真などに埋め込まれた日時のどれかを先に決めます。
 
-### macOS
-更新日時は `touch` で変更できます。
+<Highlight color="flame">使い捨てのコピーで試してください。ファイルシステムの日時は監査履歴の代わりではなく、変更してもファイル内部の日付は書き換わりません。</Highlight>
 
-```shell
-touch -t 202509151200 my-file.txt
+## macOSで先に確認する
+
+macOSの`stat`はBSD形式のオプションです。`sample.txt`なら次のように確認できます。
+
+```bash
+stat -f 'Created: %SB | Modified: %Sm | Metadata changed: %Sc' -t '%Y-%m-%d %H:%M:%S %z' sample.txt
 ```
 
-作成日時の変更には追加ツールやメタデータ操作が必要になる場合があります。
+メタデータ変更日時と作成日時は別です。更新日時をローカル時刻で指定するなら次を使います。
 
-### Windows
-PowerShellでは `LastWriteTime` などを操作できます。
-
-```powershell
-(Get-Item .\my-file.txt).LastWriteTime = Get-Date "2025-09-15 12:00"
+```bash
+touch -mt 202509141530.00 sample.txt
 ```
 
-表示だけを整えたいのか、監査上の意味を持つ日時を変更したいのかを区別しましょう。
+存在しないパスではファイルを作る可能性があるため、先に名前を確認します。これは一般的な作成日時の編集コマンドではありません。
+
+## macOSの作成日時は利用可能なツールを確認する
+
+Xcode Command Line Toolsの環境によっては`SetFile`があります。
+
+```bash
+xcrun --find SetFile
+```
+
+存在する場合は`SetFile -h`とローカルのマニュアルを読みます。日付オプションに対応する版では、次の形です。
+
+```bash
+SetFile -d '09/14/2025 15:30:00' sample.txt
+```
+
+その後`stat`を再実行します。古い開発用ツールなので、すべてのMacにあるとは仮定しません。更新日時だけのために開発ツールが必須というわけでもありません。使用中のフラグは`man stat`と`man touch`で確認します。
+
+## PowerShellではタイムゾーンを明示する
+
+Windowsの作業用ファイルでは、UTCプロパティを使うとローカル日時の曖昧さを避けられます。
+
+```plaintext
+$file = Get-Item -LiteralPath 'C:\Temp\sample.txt'
+$instant = [DateTimeOffset]::Parse('2025-09-14T15:30:00+09:00')
+$file.CreationTimeUtc = $instant.UtcDateTime
+$file.Refresh()
+$file | Format-List CreationTimeUtc,LastWriteTimeUtc,LastAccessTimeUtc
+```
+
+更新日時なら別の`LastWriteTimeUtc`を使います。[MicrosoftのCreationTimeUtc説明](https://learn.microsoft.com/en-us/dotnet/api/system.io.filesysteminfo.creationtimeutc)を参照し、精度や動作はファイルシステムに依存することも考慮します。
+
+<Highlight color="lemon">ファイル管理画面だけを信じず、変更した項目をタイムゾーン付きで読み直して確認しましょう。</Highlight>
+
+利用するアプリで結果を確認するまで元のコピーを残します。同期、圧縮、書き出しでは保持される項目が異なるため、日時を使う処理では転送全体を試します。
+
+<RainbowHighlight block>日時の意味を特定し、必要な項目だけを変え、転送後も結果を確かめましょう。</RainbowHighlight>

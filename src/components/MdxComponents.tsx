@@ -323,6 +323,29 @@ export const RainbowHighlight: FC<Omit<HighlightProps, 'color'>> = ({
 // --- MDX Component for File Tree ---
 
 const fileTreePresets = {
+  ciWorkflow: [
+    {
+      id: 'ci-github', name: '.github', type: 'folder', children: [
+        { id: 'ci-workflows', name: 'workflows', type: 'folder', children: [
+          { id: 'ci-file', name: 'ci.yml', type: 'file' },
+        ] },
+      ],
+    },
+  ] satisfies FileNode[],
+  appRouter: [
+    {
+      id: 'router-app', name: 'app', type: 'folder', children: [
+        { id: 'router-layout', name: 'layout.tsx', type: 'file' },
+        { id: 'router-page', name: 'page.tsx', type: 'file' },
+        { id: 'router-counter', name: 'counter.tsx', type: 'file' },
+        { id: 'router-api', name: 'api', type: 'folder', children: [
+          { id: 'router-health', name: 'health', type: 'folder', children: [
+            { id: 'router-handler', name: 'route.ts', type: 'file' },
+          ] },
+        ] },
+      ],
+    },
+  ] satisfies FileNode[],
   bilingualBlog: [
     {
       id: 'bilingual-blog',

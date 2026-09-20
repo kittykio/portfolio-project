@@ -1,47 +1,51 @@
 ---
-date: 2025-10-06
-title: "6 Visual Studio Code Extensions You’ll Be Glad to Know"
-description: "Take your coding workflow to the next level with these essential VS Code extensions that enhance productivity, collaboration, and code quality."
-tags: ["Developer Tools", "VS Code"]
+date: "2025-10-06"
+title: "Six VS Code Extensions: Choose the Friction You Want to Remove"
+description: "Compare six extensions by task, identify overlap with built-in features, and verify workspace configuration before enabling automation."
+tags: ["VS Code", "Developer Tools"]
 image: "/blog/images/6-visual-studio-code-extensions-youll-be-glad-to-know.png"
 ---
 
-### 1. **Error Lens**
+An extension is useful when it removes a problem you actually have. Install one at a time so you can identify whether it improves feedback, duplicates an existing feature, or introduces noise.
 
-Nothing slows down development like hidden syntax errors. Error Lens brings them into clear view by displaying errors and warnings directly in your code editor. Instead of switching between files or checking the terminal repeatedly, you get instant visual feedback right where you need it.
+## Match the extension to a job
 
-**Why it’s great:** It helps you spot and fix issues faster, making debugging less frustrating and more efficient.
+The links below point to the publishers' extension pages, where you can check current compatibility and configuration.
 
-### 2. **GitLens**
+| Extension | Useful for | Check before enabling |
+| --- | --- | --- |
+| [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) | Bringing existing diagnostics beside the code | It displays diagnostics; it does not replace a language server or linter. |
+| [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) | Exploring history and blame | Start with built-in Git; feature availability and account requirements vary. |
+| [Path Intellisense](https://marketplace.visualstudio.com/items?itemName=christian-kohler.path-intellisense) | Completing paths in supported contexts | Test whether built-in language completion already handles your files. |
+| [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) | Consistent formatting | Use the project's formatter version and configuration. |
+| [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) | Showing configured JavaScript/TypeScript lint findings | The project needs an appropriate ESLint setup. |
+| [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) | Reloading a static HTML preview | Framework applications need their own development server. |
 
-GitLens supercharges Git integration within VS Code. It shows you who changed a particular line of code, when it was changed, and why—right inside your editor. You can explore commit histories, compare revisions, and understand project evolution without opening your Git client.
+<Highlight color="lemon">Choose tools by the feedback they add, not by the number of extensions in your sidebar.</Highlight>
 
-**Why it’s great:** It boosts collaboration and code accountability, helping teams and solo developers track changes seamlessly.
+## Separate formatting from analysis
 
-### 3. **Path Intellisense**
+Prettier decides presentation; ESLint checks the configured code rules. Overlapping formatting rules can create edits that alternate on every save. Agree on one formatter and compatible lint rules before enabling both save actions.
 
-Typing long or nested file paths manually can be error-prone. Path Intellisense makes it effortless by autocompleting filenames and paths as you type. This reduces typos, saves time, and makes navigation smoother.
+For a team using Prettier, `.vscode/settings.json` can make the choice explicit:
 
-**Why it’s great:** It speeds up your workflow, especially in large projects with deeply nested directories.
+```json
+{
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  }
+}
+```
 
-### 4. **Prettier – Code Formatter**
+This only configures JavaScript files. Add other language IDs deliberately and follow the repository's conventions rather than imposing a personal setup on every file.
 
-Maintaining consistent formatting across a codebase can be a challenge. Prettier solves this by automatically formatting your code on save according to a shared style guide.
+## Verify before sharing settings
 
-**Why it’s great:** It eliminates style debates and ensures uniform formatting, making your code cleaner and easier to review.
+Open a representative file, introduce a harmless formatting difference, save, and inspect the diff. Then create a known lint violation and check whether both editor and command-line lint report it. If results differ, inspect the extension output and selected workspace version.
 
-### 5. **ESLint**
+<Highlight color="flame">Treat extension installation and workspace trust as code-execution decisions. Check the publisher and avoid enabling unfamiliar repository tasks just to dismiss a prompt.</Highlight>
 
-For anyone working with JavaScript or TypeScript, ESLint is indispensable. It enforces coding standards and identifies problematic patterns in your code. With the ESLint extension in VS Code, you get real-time linting feedback as you type.
+VS Code's [extension management documentation](https://code.visualstudio.com/docs/configure/extensions/extension-marketplace) covers installation and workspace controls. Keep workspace recommendations separate from personal themes and key bindings. Disable an extension temporarily when diagnosing editor slowdown before blaming the project itself.
 
-**Why it’s great:** It keeps your code consistent, prevents common errors, and enforces best practices—making it an essential tool for maintaining code quality.
-
-### 6. **Live Server**
-
-Frontend developers love Live Server for its instant preview capability. It spins up a local development server and refreshes your browser automatically whenever you save your work.
-
-**Why it’s great:** It streamlines the development process by allowing you to see changes immediately, perfect for HTML, CSS, and JavaScript projects.
-
-### Final Thoughts
-
-Visual Studio Code’s true power lies in its extensibility. By adding these six extensions—Error Lens, GitLens, Path Intellisense, Prettier, ESLint, and Live Server—you can transform your editor into a productivity powerhouse. Whether you’re a solo developer or part of a large team, these tools will help you write better code, faster, and with fewer errors.
+<RainbowHighlight block>A small, understood editor setup is more useful than a large collection of overlapping automation.</RainbowHighlight>

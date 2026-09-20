@@ -1,24 +1,18 @@
 ---
-date: 2026-09-11
+date: "2026-09-11"
 title: "Tests That Pass for the Wrong Reasons"
-description: "Learn to spot misleading tests, replace weak assertions, choose useful mock boundaries, and verify that your JavaScript tests reject realistic broken code."
-tags: ["Testing", "JavaScript", "Developer Workflow"]
+description: "Expose a vacuous assertion, replace it with independent expectations, and test asynchronous boundaries without hiding real behavior."
+tags: ["Testing", "JavaScript"]
 image: "/blog/images/tests-that-pass-for-the-wrong-reasons.png"
 ---
 
-A test can pass while the feature it names is completely broken. The runner has not necessarily made a mistake: the assertion may simply ask a much smaller question than you intended.
+A passing test means its assertions were satisfied. Whether those assertions protect the intended feature is a separate question. This exercise starts with a broken filter that passes, then builds evidence that distinguishes it from a correct implementation.
 
-This article is for developers who can write a basic test but want stronger evidence from their suite. We will make a deliberately broken function pass a weak test, improve the test so it catches the failure, and examine mocks, asynchronous checks, and coverage. The examples use JavaScript modules and Node.js 24, with no additional test package.
+## Define the behavior before its test
 
-## Translate the requirement into an observable result
+The filter must return every published post, exclude drafts, preserve input order, and leave the input unchanged. Each post has a string ID and a status of draft or published. Use Node.js 24 and `.mjs` files in a scratch directory; no test dependency is needed.
 
-Start with a sentence that describes behaviour, not implementation. For an article list: return every published post, exclude drafts, preserve the input order, and leave the input unchanged. A post has a unique string `id` and a `status` of either `draft` or `published`.
-
-Now ask what evidence would distinguish that behaviour from a plausible mistake. An array existing is not enough. Nor is every returned item being published: the function could return no items at all.
-
-A useful test specifies both what must appear and what must not appear. The expected result should come from the requirement and fixture, rather than being calculated with the same filtering expression as the implementation.
-
-<Highlight color="lemon">For each important test, name a realistic mistake that should make it fail.</Highlight>
+<Highlight color="lemon">Name a realistic incorrect implementation that each important test must reject.</Highlight>
 
 ## Watch a broken function pass
 
@@ -101,16 +95,6 @@ Both tests now pass. Returning all posts, dropping one published post, reversing
 
 The returned array still shares post objects with the input. The contract promises that filtering does not mutate them; it does not promise deep copies. Tests should enforce the actual contract without adding accidental requirements such as a particular internal helper or allocation strategy.
 
-## Keep the expected answer independent
-
-A common temptation is to compute the expected value by repeating production logic. If both expressions use the wrong status, rounding rule, or date boundary, they can agree while the feature remains incorrect.
-
-Use a small fixture with an answer a reviewer can determine without running the code. Choose inputs that expose the distinction you care about: mixed states, unequal values, a boundary case, or a different order. Large generated fixtures can be valuable later, but they should not hide what the basic example proves.
-
-Readable failure output matters too. Comparing the relevant records gives more information than a generic truthiness assertion. When the test fails, someone should be able to identify the violated expectation without debugging the test itself.
-
-This complements [reviewing AI-generated code before merging](/blog/post/how-to-review-ai-generated-code-before-you-merge): generated assertions need review just as much as generated implementations do. A detailed test name cannot strengthen a weak assertion underneath it.
-
 ## Mock a boundary, not the behaviour under test
 
 A mock can make a slow or unreliable dependency predictable. It can also remove the very behaviour you meant to verify. If the test replaces the function under test with a fake that returns the expected answer, it has demonstrated the fake.
@@ -164,28 +148,12 @@ Do not assume a missing `await` always produces a clean pass: runners may report
 
 <Highlight color="flame">A promise was created is not the same as the promised behaviour was verified. Await the result or return the promise to the runner.</Highlight>
 
-## Use coverage to find gaps, then challenge the assertions
+## Challenge the suite deliberately
 
-Coverage reports show which code executed under the selected measurement. Executing a line does not prove its result was checked. The weak `every()` example can run all of its tiny implementation and still miss the requirement.
+In a scratch copy, return all posts, reverse the filtered result, and return an empty array. Each change should fail the relevant expectation. Restore the correct implementation after every experiment. If a mutation survives, decide whether it exposes an untested requirement or is equivalent for the allowed inputs.
 
-Mutation testing takes another approach: deliberately alter code and see whether tests detect the alteration. [Stryker's documentation](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/) distinguishes detected mutations, surviving mutations, and mutations without coverage. A survivor deserves investigation, but may be equivalent for the allowed inputs; it is not automatically a missing requirement.
+<Underline>Coverage measures execution, not the strength of an expectation.</Underline> Use it to locate unexercised paths, then read the assertions. A snapshot or truthiness check can execute many lines while saying little about the result.
 
-You can begin manually in a scratch copy. Replace the filter with an empty result, reverse its output, or return drafts. Verify that the relevant test fails for the expected reason, then restore the implementation. Never keep these deliberate faults in the submitted change.
+For UI tests, perform the user's action and inspect visible feedback rather than asserting an internal helper was called. [Testing Library's guiding principles](https://testing-library.com/docs/guiding-principles/) describe that emphasis. Keep one integration check for important real boundaries that your unit tests replace.
 
-## Improve one test at a time
-
-Use this short review loop on a test you already have:
-
-1. Write the behaviour it should protect in one sentence.
-2. Identify a plausible incorrect result or side effect.
-3. Check whether the assertion rejects that mistake.
-4. Improve the fixture or expectation only where needed.
-5. Run the test against the correct implementation and a controlled incorrect variant.
-
-For UI tests, apply the same thinking to visible outcomes and user actions. [Testing Library's guiding principles](https://testing-library.com/docs/guiding-principles/) favour tests that resemble how software is used. Checking a private state variable is often less useful than checking the message or control the user encounters.
-
-## Conclusion
-
-A useful test draws a clear line between acceptable behaviour and a realistic mistake. Independent expectations, purposeful fixtures, sensible mock boundaries, and awaited checks make that line easier to see.
-
-<RainbowHighlight>Trust a green test more when you know what makes it turn red.</RainbowHighlight>
+<RainbowHighlight block>A green test is stronger evidence when you have shown which realistic mistakes make it fail.</RainbowHighlight>

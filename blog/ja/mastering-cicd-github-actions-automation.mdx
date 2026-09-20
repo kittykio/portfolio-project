@@ -1,170 +1,68 @@
 ---
 date: "2026-09-15"
-title: "GitHub ActionsによるCI/CD自動化のマスターガイド"
-description: "モジュール化されたGitHub Actionsワークフローと実践的な自動化パターンを活用し、保守性・安全性・パフォーマンスに優れたCI/CDパイプラインを構築します。"
-tags: ["GitHub", "開発ワークフロー", "開発ツール"]
+title: "GitHub Actions CI：動作を説明し検証できるワークフロー"
+description: "依存関係の導入、最小限の権限、キャッシュ、デプロイ判断を整理し、検証できるNode.js CIを作ります。"
+tags: ["GitHub", "CI/CD", "テスト"]
 image: "/blog/images/mastering-cicd-github-actions-automation.png"
 ---
 
-現代のソフトウェア開発において、自動配信パイプラインは極めて重要な役割を果たしています。継続的インテグレーション（CI）と継続的デリバリー（CD）を導入することで、コードの変更を常時検証・テストし、本番環境へ安全にデプロイできます。GitHub Actionsを使用すると、ビルドサーバーを個別に管理することなく、リポジトリ内で自動化を実行できます。
+継続的インテグレーションは、変更に対して繰り返し実行できる検証を提供します。不具合がないことを保証するものではなく、CI成功とデプロイも同じではありません。
 
-<Highlight color="lemon" block>コミットごとにテストとビルドを自動実行することで、ソフトウェアの先祖返り（レグレッション）が本番環境へ混入するのを防止できます。</Highlight>
+<Highlight color="lemon">最初は導入・テスト・ビルドを一つのジョブで成功させ、必要になってから分割しましょう。</Highlight>
 
-## GitHub Actionsの基本アーキテクチャ
+## リポジトリにワークフローを置く
 
-GitHub Actionsの理解は、その実行モデルを把握することから始まります。ワークフローとは、リポジトリの特定のイベントによって起動される1つ以上のジョブで構成された自動化プロセスです。
+例では`package-lock.json`がコミットされ、`lint`、`test`、`build`が動くことを前提とします。テストはwatchモードに入らず終了する必要があります。Nodeはプロジェクトの対応版を選び、ここでは24を例にします。
 
-```
-.github/
-└── workflows/
-    ├── ci.yml
-    └── deploy.yml
-```
-
-ワークフローはYAML形式で定義し、リポジトリの `.github/workflows` ディレクトリに保存します。
-
-| 用語 | スコープ | 機能 |
-| --- | --- | --- |
-| イベント | リポジトリ | ワークフローを実行するトリガー（例: `push`, `pull_request`）。 |
-| ワークフロー | パイプライン | YAMLで設定された最上位の自動化プロセス。 |
-| ジョブ | ランナー | 同一のランナーホスト上で順番に実行されるステップの集合体。 |
-| ステップ | 実行単位 | シェルコマンドまたはアクションを実行する個々のタスク。 |
-| アクション | 再利用可能ユニット | 特定のタスクを実行する独立したカスタムアプリケーションまたはスクリプト。 |
-
-## 実践的なCIワークフローの設計
-
-堅牢なCIワークフローは、高速に動作し、関心事を分離し、失敗したプルリクエストに対して明確なフィードバックを提供するべきです。以下のワークフローは、Node.jsアプリケーションの自動リンティング、単体テスト、ビルドを示しています。
+<MDXFileTree preset="ciWorkflow" />
 
 ```yaml
-name: Continuous Integration
-
+name: CI
 on:
   pull_request:
-    branches: [ main ]
   push:
-    branches: [ main ]
-
+    branches: [main]
+permissions:
+  contents: read
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
-  lint-and-test:
+  verify:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js runtime
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
         with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Run unit test suite
-        run: npm test
-
-  build:
-    needs: lint-and-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js runtime
-        uses: actions/setup-node@v4
+          persist-credentials: false
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
-          cache: 'npm'
-
-      - name: Build production bundle
-        run: npm run build
-```
-
-<Highlight color="flame" block>環境間での決定論的なビルドを保証するため、npm installではなくnpm ciを使用した依存関係の固定インストールを常に行なってください。</Highlight>
-
-## パイプラインの最適化とキャッシュ戦略
-
-ビルドの実行時間は開発速度に直結します。ワークフロー実行のたびに依存関係を再ダウンロードすることは、時間と帯域の浪費になります。GitHub Actionsは、実行間でパッケージアーカイブを保持するネイティブのキャッシュ機構を提供しています。
-
-```yaml
-- name: Cache node modules
-  uses: actions/cache@v4
-  with:
-    path: ~/.npm
-    key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-    restore-keys: |
-      ${{ runner.os }}-node-
-```
-
-<Underline>パッケージマネージャーのロックファイルをキャッシュすることにより、大規模プロジェクトにおけるパイプラインの実行時間を大幅に削減できます。</Underline>
-
-### パフォーマンス最適化のための主な戦略
-
-* **並列実行**: 依存関係のないジョブを順次実行せず、同時に並列実行します。
-* **並行性（Concurrency）ルール**: 新しいコミットがプルリクエストにプッシュされた際、古い実行を自動的にキャンセルします。
-* **パスフィルタリング**: 関連するディレクトリが変更された場合のみ特定ワークフローをトリガーします。
-
-```yaml
-on:
-  push:
-    paths:
-      - 'src/**'
-      - 'package-lock.json'
-```
-
-## セキュリティとシークレット管理
-
-CI/CD自動化では、APIキー、デプロイトークン、クラウドインフラへの接続情報など、機密リソースへのアクセスが必要になります。これらを安全に管理することは非常に重要です。
-
-<Highlight color="flame" block>APIキーやシークレット情報をワークフローのYAMLファイルに直接ハードコードしないでください。</Highlight>
-
-### リポジトリシークレットの保存とアクセス
-
-機密情報はリポジトリの **Settings > Secrets and variables > Actions** に保存します。ステップ内からは `secrets` コンテキストを使用して安全にアクセスします。
-
-```yaml
-- name: Deploy to Cloud
-  env:
-    DEPLOY_TOKEN: ${{ secrets.PRODUCTION_DEPLOY_TOKEN }}
-  run: ./scripts/deploy.sh
-```
-
-リスクを未然に防ぐため、デプロイ用シークレットアクセスは手動承認が必要な保護された環境（Environments）に制限することが推奨されます。
-
-## モジュール化された再利用可能ワークフロー
-
-リポジトリが大規模化すると、複数のワークフロー間でビルド設定を重複して作成することが保守上の負担となります。再利用可能ワークフロー（Reusable Workflows）を使用することで、処理ロジックを共通化できます。
-
-```yaml
-# .github/workflows/reusable-test.yml
-name: Reusable Test Pipeline
-
-on:
-  workflow_call:
-    inputs:
-      node-version:
-        required: true
-        type: string
-
-jobs:
-  run-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ inputs.node-version }}
+          node-version: '24'
+          cache: npm
       - run: npm ci
+      - run: npm run lint
       - run: npm test
+      - run: npm run build
 ```
 
-<RainbowHighlight block>再利用可能ワークフローを導入することで、チーム全体ですべてのプロジェクトに標準化されたデプロイガードレールを設定できます。</RainbowHighlight>
+アクションのメジャー版は[GitHubのNode.jsガイド](https://docs.github.com/en/actions/tutorials/build-and-test-code/nodejs)に合わせています。本番運用ではレビューしたリリースの完全なコミットSHAへ固定し、更新も管理します。メジャータグや`ubuntu-latest`は不変の入力ではありません。
 
-GitHub Actionsを使用した継続的インテグレーションとデリバリーの自動化は、現代のソフトウェア開発ワークフローにおいて一貫性、安全性、そして開発速度の向上をもたらします。
+## キャッシュの役割を知る
+
+この設定の`setup-node`はnpmのダウンロードデータをキャッシュします。`npm ci`を省略する仕組みではありません。ロックファイルでパッケージ版を制約しても、OS、ランタイム、インストールスクリプト、外部サービスは結果に影響します。
+
+<Highlight color="flame">別々のホステッドジョブは独立した環境です。テストとビルドを分ける場合は両方でコードと依存関係を用意するか、必要な成果物を明示的に受け渡します。</Highlight>
+
+`needs: test`は順序を指定しますが、テストジョブのファイルシステムは引き継ぎません。
+
+## PRの検証とデプロイを分ける
+
+PRにはインストールスクリプトを含む未信頼のコードが入る可能性があります。デプロイ認証情報を渡しません。公開用ワークフローでは、信頼できる起動条件、環境、権限、戻し方を定義します。提供元が対応していれば環境保護や短期的なIDを利用できます。
+
+<Underline>継続的デリバリーは公開できる能力であり、成功したビルドをすべて自動公開するという意味ではありません。</Underline> 識別できるリビジョンや成果物を公開し、稼働先でも確認します。ビルド成功だけでは本番設定を証明できません。
+
+## ワークフロー自体も検証する
+
+ブランチで意図的にテストを失敗させ、対象のマージ経路を止めるか確認し、元に戻して成功を確認します。必須チェックはリポジトリのルールでも設定します。ワークフローが存在するだけでは必須になりません。パス条件で必須チェックが実行されず待機したままにならないようにします。
+
+<RainbowHighlight block>信頼できるパイプラインは、入力・検証・権限・公開の判断を明確にします。</RainbowHighlight>

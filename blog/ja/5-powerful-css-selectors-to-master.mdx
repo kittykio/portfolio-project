@@ -1,26 +1,59 @@
 ---
-date: 2025-09-20
-title: "身につけたい5つの強力なCSSセレクタ"
-description: "重要なCSSセレクタで、より正確で保守しやすいスタイリングを行うための入門。"
+date: "2025-09-20"
+title: "一つのコンポーネントで理解する5つのCSSセレクター"
+description: "子・兄弟・属性・位置のセレクターを同じHTMLで比較し、対象になる要素と壊れにくい使い方を確認します。"
 tags: ["CSS", "フロントエンド"]
 image: "/blog/images/5-powerful-css-selectors-to-master.png"
 ---
 
-CSSセレクタを使い分けると、余計なクラスを増やさずに意図を表現できます。
+セレクターは、ルールを適用する要素の範囲を表します。クラスや上書きを増やす前に、どの関係を指定したいのか考えましょう。ここでは、JavaScriptを使わずに指定できる五つのパターンを同じHTMLで比較します。
 
-### `:is()` と `:where()`
-複数の候補をまとめたいときに便利です。`:where()` は詳細度を増やさないため、ベーススタイルに向いています。
+## 小さなHTMLで確かめる
 
-```css
-:where(article, aside) a { color: var(--flame-500); }
+次のHTMLをページに置き、後のCSSを一つずつ適用します。ブラウザーの開発者ツールで、対象要素も確認してください。
+
+```html
+<section class="notes">
+  <h2>Field notes</h2>
+  <p>Introduction</p>
+  <aside><p>Nested note</p></aside>
+  <p data-state="important">Bring a notebook.</p>
+  <ul><li>Map</li><li>Water</li><li>Camera</li></ul>
+</section>
 ```
 
-### `:has()`
-親要素を子要素の状態で選べます。対応ブラウザでは、フォームやカードの状態表現をシンプルにできます。
+## 偶然の見た目ではなく関係を指定する
 
 ```css
-.card:has(input:checked) { background: var(--lemon); }
+.notes > p { border-inline-start: 3px solid teal; }
+.notes h2 + p { font-size: 1.2rem; }
+.notes h2 ~ p { line-height: 1.8; }
+.notes [data-state="important"] { font-weight: 700; }
+.notes li:nth-child(odd) { text-decoration: underline; }
 ```
 
-### 属性・兄弟・構造セレクタ
-`[data-state="open"]`、`+`、`~`、`:nth-child()` は、意味のあるマークアップを保ちながら細かな見た目を制御できます。便利だからと深くネストしすぎず、読みやすさと詳細度の低さを優先しましょう。
+| セレクター | この例での対象 | 注意点 |
+| --- | --- | --- |
+| `> p` | Introductionとノート持参の段落 | aside内の段落は直下の子ではありません。 |
+| `h2 + p` | Introductionのみ | 直後の要素がpである必要があります。 |
+| `h2 ~ p` | 見出しより後にある外側の段落 | 見出しと同じ親を持つ要素が対象です。 |
+| `[data-state="important"]` | ノート持参の段落 | 見た目ではなく属性値を調べます。 |
+| `li:nth-child(odd)` | MapとCamera | 要素の兄弟順を1から数えます。 |
+
+詳しい定義は[CSSのセレクターと結合子](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Selectors/Selectors_and_combinators)で確認できます。空白やコメントは、兄弟の要素数に含まれません。
+
+<Highlight color="lemon">見た目を評価する前に、どの要素が選ばれるか予想しましょう。継承によって、選ばれていない子の見た目も変わることがあります。</Highlight>
+
+## HTMLの変更に耐えられるか
+
+見出しとIntroductionの間に別の要素を入れると、隣接兄弟のルールは一致しなくなります。一方、後続兄弟のルールは一致します。ノート持参の段落をaside内へ移すと、直下の子を指定するルールから外れます。この実験で、CSSがどの構造に依存するか分かります。
+
+<Underline>構造に依存するスタイルには、安定した構造が必要です。</Underline> 自由に並べ替えるカードなら、位置に頼るより`.notes__intro`のようなクラスの方が意図を保ちやすい場合があります。属性は実際の状態を表すときに使い、読み上げ用の情報とも一致させます。
+
+セレクターの不一致と、宣言の上書きは別問題です。開発者ツールで取り消し線が出ていたらカスケードを確認します。そもそも違う関係を指定している場合、詳細度を上げても解決しません。
+
+## 再利用前の確認
+
+空のリスト、項目が一つのリスト、入れ子のリストを試します。適用範囲は所有するコンポーネント内に絞り、重要な状態は色だけでなく文字などでも伝えましょう。
+
+<RainbowHighlight block>維持したい要素の関係を、最も単純なセレクターで表現しましょう。</RainbowHighlight>

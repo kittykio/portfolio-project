@@ -1,313 +1,46 @@
 ---
 date: "2026-09-16"
-title: "Why Tech Companies Are Moving Toward Open AI"
-description: "Why companies are adopting open and open-weight AI models, with real examples from Meta, Microsoft, AWS, and AT&T—and what the shift means for developers."
-tags: ["Developer Tools", "Web Development", "Developer Workflow"]
+title: "Why Teams Evaluate Open-Weight AI Models"
+description: "Compare model openness, hosting options, quality, and operating costs before choosing a provider or running a model yourself."
+tags: ["AI", "Software Architecture"]
 image: "/blog/images/why-tech-companies-are-moving-toward-open-ai.png"
 ---
 
-AI adoption used to look relatively simple: choose a leading hosted model, connect an API, and build the product around it. That approach is still common, but the choices available to engineering teams have changed significantly.
+An application team may want to compare a hosted proprietary model with an open-weight model. The useful question is what that choice changes for a real workload: quality, deployment control, cost, or the ability to customize.
 
-More companies are now experimenting with **open and open-weight AI models** alongside proprietary models. Meta has built its Llama strategy around openly available models. Microsoft Foundry provides access to models from OpenAI, Anthropic, Meta, Mistral, and other providers. AWS Bedrock offers a growing collection of open-weight models through a managed service. AT&T has described a multi-open-model strategy for large-scale telecom workloads.
+## Define what is actually open
 
-This does not mean proprietary AI is disappearing. Instead, companies increasingly treat the model itself as one component of a larger technology stack.
+Open weights means trained model parameters are available under some terms. It does not by itself establish access to training data, unrestricted commercial use, or compliance with an open-source definition. The [Open Source Initiative's AI definition](https://opensource.org/ai/open-source-ai-definition) sets out a broader framework. Evaluate the specific release and license, not a family name or marketing label.
 
-<Highlight color="lemon">The important shift is not from “closed AI” to “open AI.” It is from choosing one model to choosing the right model, deployment model, and level of control for each workload.</Highlight>
+<Highlight color="lemon">Model openness and hosting are separate axes: an open-weight model can still be consumed through a managed service.</Highlight>
 
-## What “open AI” means here
+A catalogue such as [Amazon Bedrock's supported models](https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html) illustrates model choice through managed infrastructure. Availability depends on model, region, and service conditions; a catalogue entry does not promise every deployment option.
 
-The terminology can be confusing.
+## Compare the whole operation
 
-“Open AI” in this article means **open AI models and open-weight AI**, not OpenAI, the company.
+| Question | Hosted API | Self-managed inference |
+| --- | --- | --- |
+| Capacity | Provider limits and quotas | Hardware and serving capacity you operate |
+| Updates | Provider release and retirement policy | Your rollout and compatibility testing |
+| Data handling | Provider terms and configured controls | Your network, logs, access, and storage |
+| Cost | Usage charges plus integration | Compute, idle capacity, operations, and integration |
 
-There is also an important distinction between open source and open weight. A model may make its trained weights available without exposing every part of its training process, data, or development infrastructure. Licenses can also place conditions on how a model is used.
+Private deployment may help meet a requirement, but it is not automatically private in practice. Logs, external tools, telemetry, and backups can still move data outside the intended boundary. Likewise, downloadable weights do not make GPU time free.
 
-For developers, the practical question is therefore less about whether a model has a particular label and more about what is actually available:
+## Evaluate one workload before building a gateway
 
-- Can the model weights be obtained?
-- Can the model run outside the original provider's infrastructure?
-- What license governs commercial use?
-- Can the model be fine-tuned?
-- Can it run in a private environment?
-- Which hardware and inference runtimes support it?
-- Who is responsible for security, updates, and operations?
+For a document-extraction feature, collect representative, approved examples and expected fields. Include missing values, conflicting text, long documents, and Japanese input if those occur in production. Define what constitutes an acceptable error before running the comparison.
 
-Those questions turn “open” from a marketing category into an engineering decision.
+Measure field accuracy, invalid outputs, latency distribution, and cost per successful extraction. Keep model version, prompt, and configuration with the results. A valid JSON response may still contain an incorrect value.
 
-## Why companies are interested in open models
+<Highlight color="flame">Do not treat a public benchmark score as proof that a model works on your documents.</Highlight>
 
-### 1. More control over deployment
+## Isolate the part you expect to change
 
-A hosted API is convenient, but it creates a dependency on the provider's infrastructure, pricing, availability, and product roadmap.
+Keep provider request formatting in a small adapter. Validate the returned data before application code uses it. Timeouts, bounded retries, and observable errors belong in the integration contract; prompts and supported output formats may still differ by model.
 
-An open-weight model can provide another option: run the model through a cloud provider, a managed inference service, or—in suitable cases—your own infrastructure.
+<Underline>A common interface reduces coupling, not evaluation work.</Underline> Start with one working provider and add a second when comparison, availability, or deployment requirements justify it. A fallback that silently changes output quality can be worse than a visible failure.
 
-That flexibility matters when a company has requirements around data handling, latency, geographic deployment, or infrastructure architecture.
+This is an architectural option, not evidence that every company is abandoning proprietary models. Select the simplest arrangement that meets the workload and that your team can operate.
 
-It does not automatically make self-hosting cheaper or easier. Running an AI model means taking responsibility for GPU capacity, inference optimization, scaling, monitoring, security, and model updates.
-
-### 2. Avoiding dependence on a single model provider
-
-A modern AI application can be designed around a model abstraction rather than a single model.
-
-Microsoft's FY2026 Q3 earnings materials provide a useful example. Microsoft said that more than 10,000 customers had used more than one model in Foundry, while 5,000 had used open-source models. Its Foundry platform includes models from OpenAI, Anthropic, open-source ecosystems, and other providers.
-
-This suggests a different architecture for AI applications:
-
-```text
-Application
-    |
-    v
-Model abstraction / AI gateway
-    |
-    +--> Proprietary model
-    |
-    +--> Open-weight model
-    |
-    +--> Specialized model
-    |
-    +--> Local model
-```
-
-The application does not necessarily need to know which model handles every request.
-
-A developer might use a powerful proprietary model for difficult reasoning, a smaller open model for high-volume classification, and a specialized model for another task.
-
-The best architecture depends on the workload rather than on loyalty to a particular provider.
-
-Of course, switching models is rarely completely frictionless. Different models have different capabilities, context limits, tool-calling behavior, safety characteristics, output formats, latency, and pricing.
-
-A model abstraction reduces coupling, but it does not eliminate compatibility work.
-
-### 3. Customization
-
-Open models can also give engineering teams more room to adapt models to specific domains.
-
-AT&T provides a concrete example. In its work on OTel2.0, the company described adopting a multi-open-model strategy. Through Microsoft Foundry, AT&T used models including Microsoft's Phi-4, an OSS-120B model, and Google's Gemma-4 for different parts of its workflow.
-
-The company said open models were useful because they provided flexibility around approved telecom data, domain-specific development, experimentation, cost, and deployment strategy.
-
-That is a very different use case from simply asking a chatbot questions.
-
-The model becomes part of an engineering pipeline.
-
-## Real-world example: Meta and Llama
-
-Meta is one of the clearest examples of a major technology company pursuing an open-model strategy.
-
-Meta introduced Llama 2 in 2023 and made it available for research and commercial use under its license. Microsoft became a preferred partner for Llama 2, making the model available through Microsoft's cloud ecosystem.
-
-Meta subsequently continued releasing newer generations of Llama.
-
-In December 2024, Meta reported that Llama and its derivatives had passed 650 million downloads. It also highlighted partnerships across the hardware and cloud ecosystem, including AWS, Microsoft Azure, Google Cloud, IBM, Oracle, NVIDIA, and others.
-
-The strategic idea is straightforward: if developers and companies build with Llama, the model becomes part of a broader ecosystem.
-
-Meta does not have to provide every piece of infrastructure itself.
-
-Instead, other companies can provide cloud hosting, hardware, databases, development platforms, inference infrastructure, and applications around the model.
-
-Meta's own explanation of the strategy is that wider adoption can make Llama a standard across the ecosystem.
-
-<Highlight color="lemon" block>An open model can create value for its publisher by becoming infrastructure that many other companies build around.</Highlight>
-
-## Real-world example: Microsoft
-
-Microsoft's position is particularly interesting because it is both a major partner of OpenAI and a platform provider for many other AI models.
-
-Azure AI Foundry does not require customers to use a single model family. Its catalog includes models from providers such as OpenAI, Meta, Mistral, and others.
-
-Microsoft has also made open and open-weight models available through its cloud platform.
-
-That changes the role of the cloud provider.
-
-Instead of asking customers to choose between “Microsoft AI” and “someone else's AI,” the platform can become the place where different models are evaluated, deployed, monitored, and integrated.
-
-For developers, this creates an important architectural possibility: **model choice can become an implementation detail**.
-
-An application can potentially move between models without rebuilding the entire product from scratch.
-
-Of course, switching models is rarely completely frictionless. Different models have different capabilities, context limits, tool-calling behavior, safety characteristics, output formats, latency, and pricing.
-
-A model abstraction reduces coupling, but it does not eliminate compatibility work.
-
-## Real-world example: AWS
-
-Amazon is taking a similar platform-oriented approach with Amazon Bedrock.
-
-AWS has progressively expanded Bedrock's selection of open-weight models. In December 2025, AWS announced 18 additional fully managed open-weight models, including models from Google, Mistral AI, NVIDIA, Qwen, Moonshot AI, MiniMax AI, and OpenAI.
-
-This is significant because developers do not necessarily have to choose between “open model” and “managed cloud service.”
-
-They can combine the two.
-
-The model can be relatively open while the operational layer remains managed:
-
-```text
-Your application
-       |
-       v
-Amazon Bedrock
-       |
-       +--> Open-weight model A
-       |
-       +--> Open-weight model B
-       |
-       +--> Proprietary model
-```
-
-The cloud provider handles much of the infrastructure complexity while the development team gets access to a wider model selection.
-
-That can be an attractive middle ground for teams that want model flexibility without operating their own GPU infrastructure.
-
-## The tradeoff: openness does not remove complexity
-
-The growing availability of open models can make AI development more flexible, but it also introduces new decisions.
-
-### Infrastructure
-
-A model that can technically be self-hosted may still require substantial compute resources.
-
-Developers need to consider:
-
-- GPU memory
-- quantization
-- inference engines
-- concurrency
-- latency
-- autoscaling
-- observability
-- model loading time
-- storage
-- hardware availability
-
-A small model that performs well on a developer workstation may behave very differently under production traffic.
-
-### Licensing
-
-“Open” does not mean “use it however you want.”
-
-Each model has its own license and terms. Before integrating a model into a commercial product, the engineering and legal teams should check the actual license rather than relying on the model's marketing description.
-
-### Quality and evaluation
-
-A model should not be selected simply because it is open.
-
-The relevant question is whether it performs adequately for the intended workload.
-
-A practical evaluation might compare:
-
-| Factor | Model A | Model B | Model C |
-|---|---|---|---|
-| Task accuracy | Measure | Measure | Measure |
-| Latency | Measure | Measure | Measure |
-| Cost per request | Measure | Measure | Measure |
-| Context requirements | Check | Check | Check |
-| Tool calling | Check | Check | Check |
-| Deployment options | Check | Check | Check |
-| License | Review | Review | Review |
-
-This is particularly important because benchmark results do not necessarily predict how a model will perform on a company's own data.
-
-## What this means for developers
-
-The most useful lesson is architectural.
-
-Instead of building an application around assumptions such as:
-
-> “This application uses model X.”
-
-it can be more robust to think:
-
-> “This application needs a model capable of doing Y under these constraints.”
-
-That small change encourages developers to define requirements before choosing the model.
-
-For example, a document-processing application might need:
-
-1. reliable extraction,
-2. Japanese language support,
-3. predictable JSON output,
-4. reasonable latency,
-5. private processing,
-6. and a sustainable inference cost.
-
-Those requirements can then be tested against several models.
-
-The result might be a proprietary API, an open-weight model, or a combination of both.
-
-## Open and proprietary models can coexist
-
-The current AI ecosystem is not simply dividing into two camps.
-
-A company can use OpenAI for one feature, Anthropic for another, an open model for a high-volume workflow, and a smaller local model for development or privacy-sensitive tasks.
-
-Microsoft's Foundry strategy illustrates this multi-model direction, while AWS Bedrock similarly exposes models from many providers through one managed platform.
-
-This means the competitive layer is shifting.
-
-The question is no longer only:
-
-**Which company has the best model?**
-
-For application developers, equally important questions are:
-
-**Which model is appropriate for this task?**
-
-**Where should it run?**
-
-**How much control is required?**
-
-**How easily can it be replaced?**
-
-**What happens when the model changes?**
-
-These are software architecture questions as much as AI questions.
-
-## A practical architecture for new projects
-
-For a new AI-enabled application, a reasonable starting point is to keep the model behind a small internal interface.
-
-```text
-UI
- |
- v
-Application API
- |
- v
-AI service
- |
- +--> Provider adapter
- |       |
- |       +--> Hosted proprietary model
- |
- +--> Open-model adapter
- |       |
- |       +--> Managed open-weight model
- |
- +--> Local adapter
-         |
-         +--> Developer / private inference
-```
-
-The goal is not to support every model.
-
-The goal is to avoid spreading provider-specific assumptions throughout the codebase.
-
-Prompt construction, structured-output validation, retries, logging, token accounting, and evaluation can then be handled in a consistent layer.
-
-That makes future model experiments much easier.
-
-<Highlight color="flame">Do not add multiple models just because they are available. Add abstraction when there is a real reason to change, compare, specialize, or isolate models.</Highlight>
-
-## The bigger shift
-
-The movement toward open AI is not simply about making models free.
-
-It is about making the AI stack more modular.
-
-Meta is using Llama to build an ecosystem around openly available models. Microsoft is positioning Foundry as a multi-model platform spanning proprietary and open models. AWS is doing something similar through Bedrock's managed model catalog. AT&T's multi-open-model strategy shows how this flexibility can appear inside a large enterprise workflow.
-
-For developers, that means AI is increasingly becoming another infrastructure layer that can be selected, swapped, optimized, and composed.
-
-The practical takeaway is simple: **design AI applications around requirements rather than around a single model provider.** Open models add another option to that architecture—not necessarily a replacement for every proprietary model, but a new level of flexibility worth evaluating.
+<RainbowHighlight block>Choose model and hosting together from measured task quality, deployment constraints, and total operating cost.</RainbowHighlight>

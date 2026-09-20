@@ -1,15 +1,74 @@
 ---
-date: 2025-09-20
-title: "JavaScript ES6機能の完全ガイド"
-description: "現代のJavaScriptを支える主要なES6機能を理解するための入門。"
+date: "2025-09-20"
+title: "ES2015の基本機能と、それでも起こる間違い"
+description: "変数束縛、アロー関数、分割代入、モジュール、Promiseを、制約が分かる具体例で整理します。"
 tags: ["JavaScript"]
 image: "/blog/images/javascript-es6-features-a-complete-guide.png"
 ---
 
-ES6は、より安全で表現しやすいJavaScriptを書くための基礎です。`let` と `const`、アロー関数、テンプレートリテラル、分割代入、スプレッド構文、Promise、class、modulesを少しずつ使いましょう。
+ES6とも呼ばれるES2015は、便利な構文やAPIを導入しました。ただし、短く書き換えることより意味を理解する方が重要です。この記事は主要機能の入門であり、言語全体のリファレンスではありません。
+
+## constが固定するのは束縛
 
 ```js
-const greeting = ({ name }) => `Hi, ${name}!`;
+const settings = { theme: 'light' };
+settings.theme = 'dark'; // Allowed: the object is mutable.
+let visits = 0;
+visits += 1;
 ```
 
-新しい構文そのものより、意図が伝わり、副作用が追いやすいコードにすることが大切です。
+`const`は変数の再代入を禁止しますが、オブジェクトの変更まで禁止しません。`let`と`const`はブロックスコープを持ち、初期化前の参照はエラーです。再代入が必要なら`let`を使います。
+
+<Highlight color="lemon">変数への再代入禁止と、オブジェクトの不変性は別です。</Highlight>
+
+## アロー関数はthisを引き継ぐ
+
+```js
+const doubled = [1, 2, 3].map(value => value * 2);
+const counter = {
+  value: 0,
+  increment() { this.value += 1; }
+};
+counter.increment();
+```
+
+上のコールバックにはアローが合います。しかし`increment`をアローへ変えると、呼び出し時のオブジェクトを`this`として受け取らなくなります。長さではなく動作で選びます。[MDNの説明](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)も参照してください。
+
+## デフォルト値の条件を知る
+
+```js
+function greet(name = 'Guest') { return `Hello, ${name}`; }
+console.log(greet(undefined)); // Hello, Guest
+console.log(greet(null));      // Hello, null
+const { title = 'Untitled' } = { title: '' };
+console.log(title);            // Empty string remains empty.
+```
+
+デフォルトは`undefined`に適用され、すべての偽と評価される値に適用されるわけではありません。空文字や`null`の意味を先に決めます。
+
+## 配列のspreadは浅いコピー
+
+```js
+const original = [{ title: 'First' }];
+const copy = [...original];
+copy[0].title = 'Changed';
+console.log(original[0].title); // Changed
+const sum = (...values) => values.reduce((total, value) => total + value, 0);
+```
+
+配列spreadは反復可能な値を展開し、restは引数を集めます。入れ子のオブジェクトは独立しません。オブジェクトspreadや`async`/`await`はES2015より後なので、現代のJavaScript全体とES6を同一視しません。
+
+## モジュールとPromiseで整理する
+
+`export`と`import`は、ブラウザーの`type="module"`やNodeの`.mjs`など、ESモジュール環境で使います。読み込み規則やパスは環境によって異なります。
+
+```js
+Promise.resolve(3)
+  .then(value => value * 2)
+  .then(value => console.log(value))
+  .catch(error => console.error(error));
+```
+
+Promiseは将来の完了を表します。ハンドラー内で始める非同期処理は返し、チェーンが追えるようにします。開始しただけで呼び出し元が待つわけではありません。クラス、Map、Set、イテレーターは、これらの基礎の後に別途学べるES2015の機能です。
+
+<RainbowHighlight block>スコープ、参照の共有、非同期の完了を理解したうえで、新しい構文を使いましょう。</RainbowHighlight>

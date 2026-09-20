@@ -1,9 +1,60 @@
 ---
-date: 2025-10-06
-title: "Next.jsで学ぶモダンWeb開発：Reactフレームワーク以上の理由"
-description: "フロントエンドとバックエンドの統合、性能、App RouterをNext.jsで理解する。"
-tags: ["Next.js", "Web開発"]
+date: "2025-10-06"
+title: "Next.js App Router：サーバーとクライアントの境界を理解する"
+description: "ページ、レイアウト、Server Components、操作、Route Handlersの役割と、性能やキャッシュを別途確認する理由を整理します。"
+tags: ["Next.js", "React"]
 image: "/blog/images/mastering-modern-web-development-with-nextjs.png"
 ---
 
-Next.jsはReactのUIに加え、ルーティング、サーバーでのレンダリング、データ取得、画像最適化、APIの境界をまとめて扱えます。App Routerでは、Server Componentsを基本にし、インタラクションが必要な部分だけをClient Componentsにします。まずはページの責務とデータの置き場所を明確にし、計測しながら最適化しましょう。
+Next.jsはReactにルーティングやサーバー機能を加えますが、機能に合う設計まで自動で決めるわけではありません。まず、各処理をどこで行うか考えます。
+
+## ファイルの役割を分ける
+
+App Routerではpageがルートの画面を、layoutが共通の枠を、route handlerがHTTP応答を担当します。
+
+<MDXFileTree preset="appRouter" />
+
+`app/api/health/route.ts`なら、次のように応答できます。
+
+```ts
+export async function GET() {
+  return Response.json({ status: 'ok' });
+}
+```
+
+これはハンドラーの応答を確認するだけで、DBの正常性は示しません。稼働準備の確認には、対象の依存先を含める必要があります。
+
+## 操作を小さなClient Componentへ置く
+
+pageとlayoutは標準でServer Componentsです。状態やイベントにはクライアント境界が必要です。[Next.jsの説明](https://nextjs.org/docs/app/getting-started/server-and-client-components)も参照してください。
+
+```tsx
+// app/counter.tsx
+'use client';
+import { useState } from 'react';
+
+export default function Counter() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(count + 1)}>Count: {count}</button>;
+}
+```
+
+これを`app/page.tsx`から読み込みます。一部の子に操作があるだけでページ全体をクライアント化する必要はありません。境界ではシリアライズ可能なデータを渡し、秘密情報はサーバー側に保ちます。
+
+<Highlight color="flame">サーバー描画は権限確認の代わりではありません。保護されたデータの読み書きを行うリクエストごとにアクセスを検証します。</Highlight>
+
+## 描画とキャッシュを別々に決める
+
+Server Componentsは処理場所の話であり、必ずリクエストごとにページを作り直すという意味ではありません。静的生成、リクエスト時の描画、ストリーミング、キャッシュは別の判断です。
+
+必要な鮮度、利用者固有の情報か、何で無効化するかを確認します。Next.jsのキャッシュ既定値は版によって変わります。すべての`fetch`が常にキャッシュされる、またはされないと決め付けず、使用版の資料を参照します。
+
+<Underline>実際に公開するページで測定しましょう。</Underline> サーバー処理も遅くなり、大きなクライアント領域は大量のJavaScriptを送る可能性があります。読み込み、失敗、hydrationも確認します。
+
+## 製品に合う選択をする
+
+画像は`next/image`、フォントは`next/font`のAPIを使います。一般的な組み込み`Font` JSXコンポーネントはありません。Nodeサーバー、マネージド環境、静的エクスポートでも実行可能な機能は異なります。静的出力には任意のリクエスト時処理を置けません。
+
+既存のPages Routerが目的に合うなら維持する選択もあります。移行は具体的な要件と検証を伴って判断します。
+
+<RainbowHighlight block>Next.jsでは、ルート・サーバー処理・クライアント操作の責任を明確に分けましょう。</RainbowHighlight>

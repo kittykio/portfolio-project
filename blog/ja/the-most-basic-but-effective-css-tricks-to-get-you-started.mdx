@@ -1,16 +1,53 @@
 ---
-date: 2025-09-16
-title: "すぐ使える、基本だけど効果的なCSSテクニック"
-description: "Webデザインの見た目を大きく改善するシンプルなCSSのコツ。"
-tags: ["CSS", "フロントエンド"]
+date: "2025-09-16"
+title: "崩れにくいカードレイアウトを作るCSSの基本"
+description: "予測できるサイズ、読みやすい文章、フォーカス表示を備えた柔軟なカード一覧を作り、実データで確認します。"
+tags: ["CSS", "フロントエンド", "アクセシビリティ"]
 image: "/blog/images/the-most-basic-but-effective-css-tricks-to-get-you-started.png"
 ---
 
-まずは `box-sizing: border-box`、余白の一貫性、読みやすい行間、柔軟な画像を整えます。
+短いタイトルが三つなら整って見えるレイアウトでも、長いURLや狭い画面では崩れることがあります。先に内容の増加に耐えるルールを作り、装飾は後から加えます。
+
+## 小さなレイアウトで始める
+
+`main`内に`.cards`を置き、その中に`card`クラスの`article`を複数作ります。それぞれ見出し、段落、実際のリンクを入れ、画像は任意とします。
 
 ```css
 *, *::before, *::after { box-sizing: border-box; }
-img { max-width: 100%; height: auto; }
+body { margin: 0; font-family: system-ui, sans-serif; line-height: 1.6; }
+main { width: min(70rem, calc(100% - 2rem)); margin-inline: auto; }
+.cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); }
+.card { min-width: 0; padding: 1rem; border: 1px solid #666; border-radius: 0.75rem; }
+.card h2 { overflow-wrap: anywhere; }
+.card img { display: block; max-width: 100%; height: auto; }
+a { color: #174fa3; text-underline-offset: 0.2em; }
+a:focus-visible { outline: 3px solid #174fa3; outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  a { transition: color 150ms ease; }
+}
+a:hover { color: #70248a; }
 ```
 
-色や角丸を場当たり的に増やすより、CSS変数でトークンを決める方が保守しやすくなります。モバイル幅で崩れないか、キーボード操作でも状態が分かるかを最後に確認しましょう。
+`border-box`は指定サイズに余白と境界線を含めます。外側は左右の余白と最大幅を持ちます。Gridの最小幅に`min()`を入れることで、空間が狭い場合は16remより小さくできます。
+
+<Highlight color="lemon">固定高さで隠すより、内容に合わせて縦方向へ伸びるカードにしましょう。</Highlight>
+
+## 文字設定を利用者の環境につなげる
+
+理由がなければルート文字サイズはブラウザーの標準を保ちます。相対的な余白と単位なし行間は調整しやすくなります。62.5%が常に10pxとは限りません。利用者の基準サイズに依存し、補正を忘れると文字が小さくなります。
+
+長い単語には折り返し対策が必要ですが、通常の段落まで無条件で細切れにしません。例では見出しだけに`overflow-wrap: anywhere`を使っています。
+
+## 操作状態もスタイルに含める
+
+リンクは下線を残し、キーボードの輪郭を付けます。hoverは追加の反応であり、操作可能性を示す唯一の手段ではありません。短い変化は動きを減らす希望がない場合だけ有効にします。[メディア特性の説明](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion)も参照してください。
+
+<Underline>レイアウトの正しさには操作中の状態も含まれます。</Underline> 静止画だけでなく、フォーカスと文字選択も試します。画像は比率を保ち、実寸に合うHTMLの寸法と代替テキストを用意します。
+
+## ルールを試す内容を入れる
+
+長いタイトル、URL、日本語、画像なしのカードを追加し、画面を狭め、文字を拡大し、Tabで移動します。横にはみ出た場合は原因を調べます。全体を`overflow-x: hidden`にすると、内容やフォーカスを切って隠すだけの場合があります。
+
+確認後に影や動きを追加します。サイズの基礎が安定していれば、装飾も調整しやすくなります。
+
+<RainbowHighlight block>実際の内容と操作に対応する土台を作ってから、CSSの見た目を磨きましょう。</RainbowHighlight>

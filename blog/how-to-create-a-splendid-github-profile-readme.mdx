@@ -1,132 +1,55 @@
 ---
-date: 2025-09-15
-title: "How to Create a Splendid GitHub Profile README"
-description: "Many say a developer's pride lays here."
-tags: ["GitHub", "Developer Workflow"]
+date: "2025-09-15"
+title: "Build a GitHub Profile README Around Evidence"
+description: "Create the profile repository, present a few meaningful projects, and keep badges and automation from obscuring your work."
+tags: ["GitHub", "Documentation", "Career"]
 image: "/blog/images/how-to-create-a-splendid-github-profile-readme.png"
 ---
 
-Your GitHub profile is more than just a list of repositories — it’s your **developer portfolio**, often the first thing potential collaborators, employers, or open-source communities will see. By adding a customized `README.md` to your profile, you can turn that blank profile page into a personal landing page that represents who you are, what you do, and how to connect with you.
+A profile README should help someone understand what you build and choose a useful next link. A wall of badges can look active while saying little about your work.
 
-This guide walks you through how to create a **splendid GitHub Profile README** that stands out.
+## Create the correct repository
 
-## 1. What is a GitHub Profile README?
+For a personal GitHub account named `example-user`, create a public repository named `example-user` and add a nonempty `README.md` at its root. These requirements are described in [GitHub's profile README documentation](https://docs.github.com/en/account-and-profile/how-tos/profile-customization/managing-your-profile-readme). A similarly named repository or a README inside a subfolder will not serve the same purpose.
 
-When you create a repository with the **exact same name as your GitHub username**, GitHub automatically displays the repository’s `README.md` file on your profile page.
+<Highlight color="lemon">Lead with the work you want readers to understand, then link to evidence they can inspect.</Highlight>
 
-For example:
+## Use a short structure
 
-- Username: `momo`
-- Repository: `momo`
-- File: `README.md`
-
-Whatever you put inside that `README.md` file becomes the content of your GitHub profile’s bio section.
-
-## 2. Setting Up Your Profile README
-
-1. Go to your GitHub account and create a new repository.
-2. Name it exactly as your **GitHub username**.
-3. Check the box **"Initialize this repository with a README"**.
-4. Push any edits to the `README.md` file — they will show up instantly on your profile.
-
-## 3. What to Include in Your Profile README
-
-Think of your README as a mix between a personal landing page and a developer resume. Here are ideas:
-
-### Must-Haves
-
-- **Introduction** – Who you are and what you do.
-- **Skills / Tech Stack** – Programming languages, frameworks, tools.
-- **Contact Info** – Email, website, or LinkedIn.
-
-### Nice-to-Haves
-
-- **Pinned projects** – Highlight open-source work.
-- **Badges** – GitHub stats, visitor counters, etc.
-- **Dynamic content** – Like latest blog posts or activity feeds.
-- **Fun personality** – Emojis, humor, or unique formatting.
-
-## 4. Adding Style to Your README
-
-Markdown supports **images, links, and badges**, making your README visually appealing.
-
-### Example: Basic Introduction
+This is an illustrative template; replace the project descriptions and example URLs with real work before publishing.
 
 ```markdown
-# Hi there 👋, I'm Momo
+# Hi, I'm Kiki
 
-💻 Full-stack developer | 🎨 UI tinkerer | 🌱 Currently learning Rust
+I build web applications with clear interfaces and dependable services.
 
-- 🔭 Working on: My open-source note-taking app
-- 🌐 Portfolio: [momo.dev](https://momo.dev)
-- 📫 Reach me at: momo@example.com
+## Selected work
+- [Queue application](https://example.com/queue): booking and status updates.
+  I designed the cancellation flow and tested duplicate submissions.
+- [Creative editor](https://example.com/editor): interactive poster tools.
+  I focused on keyboard access and export quality.
+
+## Currently learning
+Testing recovery paths in applications with background jobs.
+
+## Find me
+[Portfolio](https://example.com)
 ```
 
-### Example: Adding Badges
+A concrete contribution is more informative than a long list of tools. Name the problem, your responsibility, and a result you can substantiate. Do not invent usage numbers or disclose confidential client details to make a project sound impressive.
 
-Use Shields.io for cool badges.
+## Choose links that remain useful
 
-```markdown
-![JavaScript](https://img.shields.io/badge/Code-JavaScript-yellow?style=flat-square&logo=javascript)
-![React](https://img.shields.io/badge/Framework-React-blue?style=flat-square&logo=react)
-![Node.js](https://img.shields.io/badge/Backend-Node.js-green?style=flat-square&logo=node.js)
-```
+Link to a working demo and readable repository when available. If a project is private, explain the general problem and your contribution without implying the source is public. Keep contact details intentional; anything in this repository is public.
 
-### Example: GitHub Stats
+<Underline>The README is an introduction, not a second copy of every repository.</Underline> Use pinned repositories for the next layer of detail, and keep setup instructions in each project's own README.
 
-Use [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats).
+## Treat widgets as optional dependencies
 
-```markdown
-![Momo's GitHub stats](https://github-readme-stats.vercel.app/api?username=momo&show_icons=true&theme=radical)
-```
+External statistics images can fail, change terms, or omit private work. Give meaningful alt text and keep the profile understandable without them. Contribution totals are not a reliable measure of engineering quality.
 
-## 5. Advanced: Dynamic Content
+If an action updates the README, restrict its permissions and update only a clearly delimited section. Test the change on a branch so automation cannot casually overwrite hand-written content.
 
-You can use GitHub Actions to **auto-update sections** of your README.  
-Examples:
+Before finishing, open the profile on a narrow screen, follow every link while signed out, and check that the first few lines answer who you are and what you make.
 
-- Show your latest blog posts.
-- Display your current Spotify track.
-- Show coding streaks or contribution graphs.
-
-Check out repos like:
-
-- [github-readme-streak-stats](https://github.com/denvercoder1/github-readme-streak-stats)
-- [awesome-profile-readme](https://github.com/abhisheknaiidu/awesome-github-profile-readme)
-
-## 6. Keep It Splendid (Best Practices)
-
-- **Keep it readable** – Don’t clutter with too many widgets.
-- **Show personality** – Add emojis, quotes, or fun facts.
-- **Keep it updated** – Remove outdated links or inactive projects.
-- **Make it mobile-friendly** – Many recruiters and devs browse on their phones.
-
-## 7. Example of a Splendid README
-
-Here’s a simple but effective README structure:
-
-README.md`# Hey there, I'm Momo 👋
-
-## 🚀 About Me
-- 💻 Full Stack Developer
-- 📚 Learning Rust & Cloud Engineering
-- 🐧 Linux enthusiast
-
-## 🛠️ Tech Stack
-![JavaScript](https://img.shields.io/badge/-JavaScript-yellow?style=flat-square&logo=javascript)
-![React](https://img.shields.io/badge/-React-blue?style=flat-square&logo=react)
-![Node](https://img.shields.io/badge/-Node.js-green?style=flat-square&logo=node.js)
-
-## 📈 GitHub Stats
-![Momo's GitHub stats](https://github-readme-stats.vercel.app/api?username=momo&show_icons=true&theme=dracula)
-
-## 🌐 Connect with Me
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=flat-square&logo=linkedin)](https://linkedin.com/in/momo)
-[![Twitter](https://img.shields.io/badge/Twitter-%231DA1F2?style=flat-square&logo=twitter&logoColor=white)](https://twitter.com/momo)
-`
-
-## Wrapping up
-
-Your GitHub profile README is a **personal brand builder**. Whether you go for a sleek minimalist look or a fun, badge-heavy style, the key is to make it **authentic, clear, and memorable**.
-
-So go ahead — craft your splendid README and let your profile speak for you!
+<RainbowHighlight block>A memorable profile makes a few real contributions easy to understand and easy to explore.</RainbowHighlight>

@@ -1,15 +1,61 @@
 ---
-date: 2025-09-16
-title: "WSL 2完全ガイド：WindowsでLinuxを動かす方法"
-description: "仮想マシンやデュアルブートなしでWindows上のLinux開発環境を使う入門。"
-tags: ["Windows", "Linux", "開発環境"]
+date: "2025-09-16"
+title: "開発用WSL 2：導入・プロジェクト配置・動作確認"
+description: "WSL 2を導入し、Linux用プロジェクトの保存先、仮想マシンの仕組み、バックアップの注意点を確認します。"
+tags: ["Windows", "Linux", "ローカル開発"]
 image: "/blog/images/mastering-wsl-2-the-complete-guide-to-running-linux-on-windows.png"
 ---
 
-WSL 2はWindowsとLinuxの開発ツールを近くに置ける環境です。
+WSL 2は、管理された軽量仮想マシンでLinuxカーネルを動かします。Windows上の開発には便利ですが、仮想化がなくなるわけでも、両OSのファイルシステムが同じになるわけでもありません。
 
-```shell
+## 導入して版を確認する
+
+[Microsoftの導入要件](https://learn.microsoft.com/en-us/windows/wsl/install)を確認します。対応Windowsの管理者PowerShellで実行します。
+
+```plaintext
 wsl --install
 ```
 
-ディストリビューションを入れたら、Node.js、Git、エディタ連携を整えます。パフォーマンスのため、Linux側で使うプロジェクトはLinuxファイルシステム内に置くのがおすすめです。WindowsとLinuxのパス、改行コード、権限の違いを意識しましょう。
+必要なら再起動し、ディストリビューションを開いてLinuxユーザーを作ります。PowerShellへ戻り、状態を確認します。
+
+```plaintext
+wsl --list --verbose
+wsl --status
+```
+
+対象がバージョン2か確認します。`wsl --set-default-version 2`は今後の導入の既定値で、既存の全環境を変換しません。失敗時は表示された機能、更新、仮想化の条件を調べます。
+
+## Linuxの作業をLinux側へ置く
+
+ディストリビューション内で作業場所を作ります。
+
+```bash
+mkdir -p ~/projects
+cd ~/projects
+```
+
+Linux向けプロジェクトはここへcloneし、Linuxのランタイムで依存関係を導入します。`/mnt/c`などからWindows側にもアクセスできますが、境界を越えると性能や権限の違いが影響します。[Microsoftのファイルシステムガイド](https://learn.microsoft.com/en-us/windows/wsl/filesystems)も参照してください。
+
+<Highlight color="lemon">可能ならランタイム、依存関係、作業ツリーを同じ環境に揃えます。</Highlight>
+
+WindowsとLinuxで一つの`node_modules`やPython仮想環境を共有しません。ネイティブパッケージや実行パスが異なるためです。エディターのWSL連携からLinux側を開きます。
+
+## 開発の一連の流れを確認する
+
+Linux内でランタイム版を確認し、依存関係、テスト、サーバー起動まで試します。ブラウザーでURLを開き、接続できなければバインド先を調べます。localhost転送やネットワーク方式は設定で異なり、LAN端末からも接続できるとは限りません。
+
+## 環境変更前にバックアップする
+
+ソース、無視された設定、ローカルDBを保管します。PowerShellからエクスポートでき、`Ubuntu`は一覧に出る正確な名前へ置き換えます。
+
+```plaintext
+wsl --export Ubuntu C:\Backups\ubuntu.tar
+```
+
+先に保存先を作り、DBサービスは停止して整合性を保ちます。復旧方法とアーカイブを確認して初めて、役立つバックアップになります。
+
+<Highlight color="flame">unregisterはディストリビューションとデータを削除します。通常の再起動や気軽な調査用コマンドではありません。</Highlight>
+
+WSL全体を再起動する場合は作業を保存して`wsl --shutdown`を使います。すべての稼働中ディストリビューションが止まります。資源制限は他人の設定をコピーせず、実際の使用量から調整します。
+
+<RainbowHighlight block>WSLを、独自の依存関係・データ・復旧手順を持つLinux環境として扱いましょう。</RainbowHighlight>

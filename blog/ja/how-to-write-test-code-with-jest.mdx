@@ -1,15 +1,76 @@
 ---
-date: 2025-09-15
-title: "Jestでテストコードを書く方法"
-description: "JavaScriptアプリケーションでユニットテストを始めるための実践ガイド。"
+date: "2025-09-15"
+title: "Jestで振る舞い・エラー・非同期処理を検証する"
+description: "CommonJSの小さな例でJestを導入し、境界条件と非同期処理を、対象の実装を置き換えずに検証します。"
 tags: ["テスト", "JavaScript"]
 image: "/blog/images/how-to-write-test-code-with-jest.png"
 ---
 
-テストは実装の細部ではなく、利用者に見える振る舞いを守るために書きます。
+最初のテストでは、小さく明確な問いを検証します。ここでは価格を0以上の整数セント、割引率を0〜100の整数と定義します。「何か返るか」ではなく、この契約を確認します。
 
-```ts
-expect(formatName('kiki')).toBe('Kiki');
+## 独立した例を用意する
+
+新しいフォルダーで、選ぶJestの版に対応するNode.jsを使います。
+
+```bash
+npm init -y
+npm install --save-dev jest
+npm pkg set scripts.test="jest"
 ```
 
-ひとつのテストではひとつの意図を検証し、読みやすい名前を付けます。外部通信や時刻はモックし、失敗時に原因が分かる小さなテストを積み重ねましょう。
+例はCommonJSの`.cjs`と、Jestが標準で検出する名前を使います。ESM、TypeScript、Reactの既存プロジェクトでは、[Jestの導入ガイド](https://jestjs.io/docs/getting-started)にある変換やフレームワーク用の設定が必要です。型定義だけではTypeScriptはコンパイルできません。
+
+## 関数の契約を決める
+
+`discount.cjs`として保存します。
+
+```js
+function discountedCents(cents, percent) {
+  if (!Number.isInteger(cents) || cents < 0 ||
+      !Number.isInteger(percent) || percent < 0 || percent > 100) {
+    throw new RangeError('Invalid price or percentage');
+  }
+  return Math.round(cents * (100 - percent) / 100);
+}
+module.exports = { discountedCents };
+```
+
+これは学習用の小さな計算です。本番の請求には通貨、丸め、数値範囲を別途定義する必要があります。
+
+`discount.test.cjs`を作ります。
+
+```js
+const { discountedCents } = require('./discount.cjs');
+
+test.each([[1000, 10, 900], [999, 50, 500], [1000, 100, 0]])(
+  'discounts %i cents by %i percent to %i',
+  (price, rate, expected) => {
+    expect(discountedCents(price, rate)).toBe(expected);
+  }
+);
+
+test('rejects a negative price', () => {
+  expect(() => discountedCents(-1, 10)).toThrow(RangeError);
+});
+```
+
+`npm test -- --runInBand`で実行します。丸めの境界を含む期待値を明記しています。例外は関数を`expect`に渡して確認します。先に実行するとマッチャーの外で例外が発生します。
+
+<Highlight color="lemon">正しい動作とありがちな誤りを区別できる入力を選び、境界値と拒否する値も確かめましょう。</Highlight>
+
+## 非同期の検証を待つ
+
+アプリから読み込む非同期関数`loadUser`なら、Promiseを待つか返します。
+
+```js
+// Pattern only: supply your application's loadUser implementation.
+test('reports a missing user', async () => {
+  await expect(loadUser('missing')).rejects.toThrow('Not found');
+});
+```
+
+<Highlight color="flame">loadUser自体をモックして、その実装を検証したと考えてはいけません。必要なら外部依存を置き換え、対象の関数は実物を呼び出します。</Highlight>
+
+UIでは見える結果と操作を検証します。スナップショットは差分を検出できますが、確認せず更新すると不具合を受け入れる可能性があります。作業用コピーで戻り値を一度だけ誤らせ、対象テストが失敗することを確認したら元に戻しましょう。
+
+<RainbowHighlight block>有用なJestテストは独立した期待値を確認し、動作が間違ったときに失敗します。</RainbowHighlight>

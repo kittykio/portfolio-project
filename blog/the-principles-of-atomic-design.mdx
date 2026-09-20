@@ -1,83 +1,52 @@
 ---
-date: 2025-09-16
-title: "The Principles of Atomic Design"
-description: "The breaking down complex user interfaces into reusable, scalable components."
+date: "2025-09-16"
+title: "Atomic Design: Reuse Without Rigid Categories"
+description: "Apply atoms, molecules, organisms, templates, and pages to a search interface, including state ownership and real-content checks."
 tags: ["Design Systems", "UI/UX"]
 image: "/blog/images/the-principles-of-atomic-design.png"
 ---
 
-> Atomic Design, introduced by Brad Frost, provides a methodology for creating modular UIs by structuring them into atoms, molecules, organisms, templates, and pages.
+A shared button is useful only if it works in the places that need it. Atomic Design helps connect small components to complete pages so reuse can be judged in context.
 
-## Introduction
+Brad Frost's [Atomic Design methodology](https://atomicdesign.bradfrost.com/chapter-2/) describes five connected levels. They are a way to discuss a system, not a requirement to create five directories or build strictly from the bottom up.
 
-Designing a user interface (UI) can often feel overwhelming because of the many moving parts. But what if you could break everything down into smaller, reusable, and manageable pieces?
+## Apply the levels to a search page
 
-That’s where **Atomic Design** comes in. This methodology, developed by **Brad Frost**, gives designers and developers a structured way to build scalable UIs by thinking in terms of reusable components. The core idea is to view UI elements hierarchically, from the simplest building blocks to fully realized pages.
+| Level | Example | Responsibility |
+| --- | --- | --- |
+| Atom | Label, input, button | Semantics, appearance, basic interaction |
+| Molecule | Search form | Connect label, query input, and submission |
+| Organism | Search results section | Present result count, records, and empty state |
+| Template | Search page layout | Arrange major regions without assuming short content |
+| Page | An actual search result | Test the composition with real data and states |
 
-## The Five Stages of Atomic Design
+The same card may be a molecule in one team's vocabulary and an organism in another. Resolve that naming question quickly; it matters less than agreeing on the component's responsibilities.
 
-### 1. Atoms
+<Highlight color="lemon">Extract a component when it has a coherent job and a useful shared contract, not merely because a design has a small shape.</Highlight>
 
-Atoms are the most basic building blocks of any UI.  
-Examples include:
+## Define what the reusable part owns
 
-- Buttons
-- Input fields
-- Labels
-- Icons
+A search form can accept a query, an on-change handler, and a submit handler. The page can own fetching, URL state, and result data. This keeps the form usable in a header or a results page without silently starting network requests in both places.
 
-They cannot be broken down further while still keeping their function. Think of them as the **foundation elements** of your design system.
+Write the contract in plain language before adding props:
 
-### 2. Molecules
+- The input has an accessible name and can be submitted with Enter.
+- The submit control communicates pending work when applicable.
+- The caller decides when and where to search.
+- A failed request does not erase the query.
 
-Molecules are created by combining atoms into small, functional units.  
-Examples include:
+<Underline>Shared appearance does not imply shared business logic.</Underline> Two forms that look alike may validate different information or have different permission requirements. Share stable primitives rather than hiding unrelated behavior behind many boolean props.
 
-- A **search bar** made of an input field (atom) + button (atom)
-- A **form label** combined with a text input
+## Let pages challenge the components
 
-Molecules bring context to atoms and give them a clear purpose.
+Populate the page with a very long title, no results, a loading state, and an error. Try keyboard navigation, zoom, and Japanese text. A tidy placeholder page can hide overflow, inaccessible labels, and assumptions about word length.
 
-### 3. Organisms
+When a real page reveals a weakness, fix the lowest appropriate level. A missing focus outline belongs in the control. A confusing retry flow may belong in the results section or page. Do not patch every page separately when the shared component is responsible.
 
-Organisms are groups of molecules and atoms that work together as larger UI components.  
-Examples include:
+## Evolve without surprising consumers
 
-- A **website header**, which might include a logo (atom), navigation menu (molecule), and a search bar (molecule).
-- A **card component**, with an image, title, and action buttons.
+Document supported variants, defaults, and examples. Before changing a shared input, find its callers and test representative states. Keep feature-specific exceptions near the feature until repeated needs justify making them general.
 
-They form **distinct sections of a page**.
+A design system earns its abstraction through use. Fewer well-understood components are easier to maintain than a large catalogue of almost-identical wrappers.
 
-### 4. Templates
-
-Templates provide the overall structure and layout of a page by combining organisms, molecules, and atoms. They are **blueprints** that define hierarchy and positioning without yet including final content.
-
-Example:
-
-- A blog template with placeholders for a header organism, sidebar, and article list.
-
-### 5. Pages
-
-Pages are templates populated with actual content. They represent a fully realized UI design where usability, readability, and performance can be tested.
-
-Example:
-
-- A blog page filled with real articles, author bios, and navigation links.
-
-## Example to Visualize the Structure
-
-Let’s imagine building a simple **blog homepage** using Atomic Design:
-
-- **Atom**: A button, a text input, an avatar image.
-- **Molecule**: A search bar (text input + button).
-- **Organism**: A header (logo + navigation menu + search bar).
-- **Template**: A homepage layout (header + main article list + sidebar).
-- **Page**: A complete homepage with real article titles, author images, and links.
-
-This breakdown ensures consistency, reusability, and scalability. Changing a single atom (like a button style) cascades through molecules, organisms, templates, and pages, keeping the entire system unified.
-
-## Conclusion
-
-Atomic Design is not a rigid, step-by-step process—it’s a **mental model** that helps teams build robust design systems. By understanding how atoms, molecules, organisms, templates, and pages relate to one another, you can create modular, scalable, and user-friendly UIs.
-
-When applied well, Atomic Design helps bridge the gap between design and development, making interfaces easier to maintain and evolve.
+<RainbowHighlight block>Use Atomic Design to connect reusable parts to real page behavior, not to win arguments about component size.</RainbowHighlight>
