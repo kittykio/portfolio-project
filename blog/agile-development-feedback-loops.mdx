@@ -1,0 +1,123 @@
+---
+date: "2026-09-30"
+title: "Agile Development Is a Feedback System, Not a Meeting Schedule"
+description: "Use short feedback loops, clear outcomes, and working software to make agile development a practical way to reduce product risk."
+tags: ["Agile", "Developer Workflow", "Testing"]
+image: "/blog/images/agile-development-feedback-loops.png"
+---
+
+Agile development is often introduced through the visible parts: a board, a backlog, planning sessions, stand-ups, and sprints. Those practices can help, but none is the point on its own. Agile is useful when it gives a team a reliable way to learn whether it is solving the right problem before a large amount of time and money is committed.
+
+The original [Agile Manifesto](https://agilemanifesto.org/) values people and interactions, working software, customer collaboration, and responding to change. That does not remove the need for planning or documentation. It asks teams to use them in proportion to the uncertainty they are managing.
+
+<Highlight color="lemon">Treat every process step as a way to improve the next decision, not as proof that the team followed a ceremony.</Highlight>
+
+## Start with an outcome that can be observed
+
+A backlog item such as “improve onboarding” describes a direction, not a result. It leaves too much open: who is struggling, what part of the journey fails, and how the team will know whether the change helped.
+
+Before estimating implementation, write a short outcome statement. It should identify a user, a situation, and an observable change. For example:
+
+> When a first-time visitor creates an account, they can reach their first useful action without asking for setup help.
+
+That sentence does not dictate a screen or a technical solution. It gives design, engineering, and product a shared target for discovery. It also makes a review more useful: the question becomes “did this move the outcome?” instead of “did every ticket close?”
+
+<Underline>A useful agile plan is specific about the next learning goal and flexible about the implementation details that may change.</Underline>
+
+## Break work into slices that can teach you something
+
+Small tasks are not automatically valuable. A tiny ticket can still be a disconnected fragment of a feature that nobody can test or use. A better unit of work is a thin vertical slice: a small path through interface, behaviour, data, and verification that produces evidence.
+
+For an account-setting feature, compare these two approaches:
+
+| Plan | What happens | What the team learns |
+| --- | --- | --- |
+| Layer-by-layer | Build the database field, then the API, then the form, then tests | Little until the feature is nearly complete |
+| Vertical slice | Let a user update one preference end to end, with validation and a test | Whether the interaction and data contract are usable now |
+
+The second approach may still need follow-up work. Its advantage is that it exposes assumptions earlier. The team can see the real interface, inspect the API contract, and decide whether the rest of the feature is worth building in the same way.
+
+### Define “done” before implementation starts
+
+A story is not done because code exists on a branch. Define the quality conditions that make a slice safe to inspect or release. The exact list depends on the product, but it usually includes:
+
+- the intended user flow works in the supported environment;
+- validation and failure states are understandable;
+- relevant automated checks pass;
+- someone reviews the change for correctness and maintainability;
+- any changed behaviour is documented where future users or maintainers need it.
+
+The [Scrum Guide](https://scrumguides.org/scrum-guide.html) calls this shared quality standard a Definition of Done. Even outside Scrum, the idea matters: without an agreed finish line, progress reports mix verified value with partially complete work.
+
+<Highlight color="flame">Do not use a sprint boundary to hide unfinished work. If a slice cannot meet its quality conditions, make the remaining risk visible and re-plan it.</Highlight>
+
+## Use a short loop: decide, build, inspect, adapt
+
+An agile cycle does not need to be a two-week sprint. A bug fix may take hours; a risky product change may need several small experiments. The important part is the loop:
+
+1. **Decide what to learn or deliver next.** Choose the smallest meaningful slice and state why it matters.
+2. **Build with feedback close by.** Pair when the decision is risky, use prototypes for uncertain interactions, and keep tests near the behaviour they protect.
+3. **Inspect the result with the right people.** Review working software with users, stakeholders, or support staff when they can answer a product question. Review code with engineers when it can expose technical risk.
+4. **Adapt the plan.** Change scope, priority, design, or technical approach based on what the inspection revealed.
+
+The loop is only agile when the last step changes future work when necessary. A demo that cannot influence the backlog is reporting, not learning.
+
+<Divider />
+
+## Choose a framework only after you understand the problem
+
+Scrum and Kanban are common ways to structure work, but they solve different coordination needs. Scrum creates a regular planning and review cadence around a short goal. Kanban emphasizes visual flow and limiting work in progress. Many teams use practices from both without needing to claim a pure implementation.
+
+| Situation | A useful starting practice | Watch for |
+| --- | --- | --- |
+| A product team needs a regular decision rhythm | A short sprint goal and review | Filling the sprint with unrelated tickets |
+| Requests arrive continuously | A visible flow board and work-in-progress limits | Treating every urgent request as equally urgent |
+| A new feature has high uncertainty | Discovery spikes and small prototypes | Calling a prototype a production-ready solution |
+| Reliability work competes with features | Reserve capacity and make operational risk visible | Deferring maintenance until it becomes an outage |
+
+Framework labels are less important than whether work is visible, constraints are understood, and people can change course. In Scrum specifically, the framework is built around transparency, inspection, and adaptation; the events exist to support those three ideas, not to create more meetings.
+
+## Make planning honest
+
+Estimates are forecasts under uncertainty. They become misleading when they are treated as promises or used to compare individuals. Use estimates to start a conversation about size, dependencies, unknowns, and trade-offs.
+
+For each planned slice, ask:
+
+- What evidence makes us think this is the right next thing?
+- What could invalidate the approach?
+- What needs to be true before we can call it done?
+- Who needs to see the result before we invest further?
+
+If the unknown is large, plan a time-boxed investigation with a decision at the end. Its deliverable is not “research completed.” It is a documented recommendation, a prototype, a rejected option, or a clearer next slice.
+
+## Retrospectives need one owned experiment
+
+A retrospective should improve the way the team works, not become a catalogue of complaints. Review a concrete period of work and look for a constraint: a long review queue, unclear acceptance criteria, flaky tests, or a dependency that repeatedly blocks releases.
+
+Pick one change that is small enough to try during the next cycle. Give it an owner, say what signal will indicate improvement, and revisit it. For example:
+
+| Observation | Experiment | Signal to inspect |
+| --- | --- | --- |
+| Reviews wait several days | Keep changes focused on one behaviour | Time from ready-for-review to first response |
+| QA repeatedly finds the same edge case | Add a regression test when fixing it | Recurrence of that failure mode |
+| Planning contains hidden dependencies | Mark external dependencies before commitment | Work blocked after the cycle starts |
+
+This makes improvement observable. It also prevents the retro from becoming an extra meeting whose conclusions disappear into a document.
+
+## A practical starting point for a small team
+
+You do not need to install a complete agile operating system on day one. Start with a lightweight routine for the next few changes:
+
+1. Keep a visible, ordered list of candidate work.
+2. Write one outcome and one quality checklist for the selected slice.
+3. Limit the number of items actively in progress.
+4. Show working behaviour before calling the slice complete.
+5. Record one improvement experiment and inspect it in the next cycle.
+
+This is enough to reveal where more structure would help. If coordination becomes difficult, add a cadence. If work stalls, inspect flow. If quality is inconsistent, tighten the Definition of Done. Add a practice because it addresses a demonstrated constraint.
+
+## Conclusion
+
+Agile development is not an instruction to move quickly at all costs. It is a way to reduce the cost of being wrong. Small, usable slices create opportunities to inspect the real product; honest planning makes uncertainty visible; and regular adaptation lets a team respond before assumptions harden into expensive work.
+
+<RainbowHighlight block>Use agile practices to shorten the distance between an assumption, working evidence, and the next better decision.</RainbowHighlight>
