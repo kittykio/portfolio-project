@@ -82,37 +82,38 @@ export const TableOfContents = ({ headings, postItem, setPostItem }: TOCProps) =
   // -------------------------
   // Recursive render
   // -------------------------
-  const renderTree = (nodes: HeadingNode[]): JSX.Element => (
-    <ul className="space-y-1 whitespace-normal break-words">
+  const renderTree = (nodes: HeadingNode[], level = 0): JSX.Element => (
+    <ul className={`whitespace-normal break-words ${level === 0 ? 'space-y-2' : 'mt-1 ml-3 space-y-1 border-l border-border/70 pl-3'}`}>
       {nodes.map((node) => {
         const hasChildren = node.children.length > 0;
         const isExpanded = expanded[node.id] ?? true;
         const isActive = activeId === node.id;
 
         return (
-          <li key={node.id} className="ml-4 whitespace-normal break-words">
-            <div className="flex items-center gap-1">
+          <li key={node.id} className="whitespace-normal break-words">
+            <div className={`flex items-start gap-1 ${level === 0 ? 'text-sm leading-6' : 'text-xs leading-5'}`}>
               {hasChildren && (
                 <button
                   onClick={() => toggleExpand(node.id)}
                   type="button"
                   aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${node.title}`}
                   aria-expanded={isExpanded}
-                  className="text-content-muted hover:text-flame-500 transition"
+                  className="mt-1 shrink-0 text-content-muted hover:text-flame-500 transition"
                 >
                   {isExpanded ? <FaChevronDown size={14} /> : <FaChevronRight size={14} />}
                 </button>
               )}
+              {!hasChildren && <span aria-hidden className="mt-1 block size-[14px] shrink-0" />}
               <a
                 href={`#${node.id}`}
-                className={`block whitespace-normal break-words transition-colors duration-150 ${
-                  isActive ? 'text-flame-500 font-bodyBold' : 'hover:text-flame-500'
+                className={`block min-w-0 whitespace-normal break-words transition-colors duration-150 ${
+                  isActive ? 'text-flame-500 font-bodyBold' : 'text-content hover:text-flame-500'
                 }`}
               >
                 {node.title}
               </a>
             </div>
-            {hasChildren && isExpanded && renderTree(node.children)}
+            {hasChildren && isExpanded && renderTree(node.children, level + 1)}
           </li>
         );
       })}
