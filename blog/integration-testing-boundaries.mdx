@@ -1,0 +1,131 @@
+---
+date: "2026-10-22"
+title: "Integration Testing: Verify the Boundaries Where Software Breaks"
+description: "Learn how to write focused integration tests for UI, APIs, databases, and external services without creating slow, fragile test environments."
+tags: ["Testing", "Developer Workflow", "Web Development"]
+image: "/blog/images/integration-testing-boundaries.png"
+---
+
+Most expensive bugs do not live inside a single function. They appear where two parts of a system make slightly different assumptions: a form sends a shape the API rejects, a route writes data that a later query cannot read, or an external service returns an error the interface never considered.
+
+Integration tests are designed for those seams. They check that independently useful pieces of software cooperate correctly, while staying narrower and faster than a full browser journey whenever possible.
+
+<Highlight color="lemon">Test the boundary that carries the risk, rather than starting every test through the largest possible version of the system.</Highlight>
+
+## The term needs a clear scope
+
+“Integration test” means different things across teams. Some use it for a test against live services and a real database. Others use it for a focused test that runs their application code against a realistic test double. Both can be useful, but they have very different speed, setup, and failure characteristics.
+
+Martin Fowler distinguishes between narrow integration tests, which exercise the code responsible for communicating with another service against a double, and broad integration tests, which require live versions of many services. Being explicit about which one you mean prevents a test strategy from becoming needlessly slow or unclear.
+
+| Test level | Primary evidence | Main trade-off |
+| --- | --- | --- |
+| Unit | A small unit follows its local rules | Cannot prove that neighbouring pieces agree |
+| Integration | A meaningful boundary works as a contract | Needs controlled dependencies and deliberate setup |
+| E2E | A user can complete a critical journey | Slowest and most expensive layer to maintain |
+
+<Underline>A good integration test is focused enough to diagnose a broken contract and realistic enough to catch an incorrect assumption.</Underline>
+
+## Pick boundaries that have their own failure modes
+
+Start from a failure that could occur even when each local component appears correct. Common boundaries include:
+
+- a React form, its validation, and the request it sends;
+- an API route, its authentication rules, and database persistence;
+- a service client and an external REST, GraphQL, or webhook contract;
+- a queue producer and the worker that consumes the resulting message;
+- a cache layer and the data source it is expected to refresh.
+
+For each boundary, write the observable contract. It should answer what goes in, what comes out, which failures are expected, and which side owns the conversion. “The route works” is too broad. “A valid request creates a record and returns its public fields; an unauthenticated request returns 401 without writing data” is specific enough to test.
+
+### Keep the route under test real
+
+For an application route, prefer calling the real route handler or HTTP endpoint instead of mocking the application code that the test intends to verify. Mock only the dependency outside the boundary, such as a payment provider or a third-party email API.
+
+This keeps the test useful. It covers request parsing, validation, authorization, error mapping, and response shape together. At the same time, it does not require a live vendor account or an unreliable network connection.
+
+<Highlight color="flame">Mocking the very module your test is meant to integrate with can produce a passing test that proves almost nothing.</Highlight>
+
+## Use realistic, controllable dependencies
+
+The right dependency choice depends on the risk. A real test database can be worth the setup when migrations, constraints, transactions, or query behaviour are central to the change. An in-memory substitute can be misleading if it does not match the database you deploy.
+
+For an external HTTP dependency, a network-level mock is often a good middle ground. [Mock Service Worker](https://mswjs.io/docs/) intercepts requests in browser and Node.js environments, so an application can make its normal `fetch` request while the test controls the response. The same handlers can describe successful, empty, delayed, and failed responses.
+
+For a React screen, [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) encourages queries that resemble how a person uses the page: labels, roles, and visible text. This makes an integration test exercise UI behaviour without coupling it tightly to component internals.
+
+```ts
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+
+const server = setupServer(
+  http.post('/api/profile', async () => HttpResponse.json({ id: 'profile_123', name: 'Ari' })),
+);
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
+```
+
+The `onUnhandledRequest: 'error'` setting is deliberate. If a component starts calling an endpoint that the test has not described, the test fails instead of silently making a network request or accepting an accidental mock.
+
+## Test success, validation, and recovery together
+
+Happy-path-only integration tests miss the boundary conditions that users actually experience. For each contract, include the small number of states that change behaviour in a meaningful way:
+
+| Contract state | Example assertion |
+| --- | --- |
+| Valid input | The API returns the documented success payload and the UI shows the next action |
+| Invalid input | The request is rejected with a clear error and no unintended write happens |
+| Forbidden action | The response has the expected status and protected data is unchanged |
+| Dependency failure | The application shows a recoverable state rather than leaving the interface stuck |
+| Empty result | The UI gives an intentional empty state rather than treating it as an error |
+
+Do not duplicate every validation branch at every layer. A schema or validator can have detailed unit tests; the integration test needs representative cases that prove the schema, route, and client agree on the response.
+
+## Keep test data isolated
+
+Shared test data is one of the fastest ways to make a suite unreliable. A test that assumes “the first project belongs to me” can fail when another test deletes it, runs in parallel, or leaves a partial write behind.
+
+Use one of these patterns:
+
+1. Create a new record with a unique identifier for each test, then clean it up.
+2. Reset a dedicated database to a known fixture set between tests.
+3. Wrap database work in a transaction that rolls back after the assertion when the stack supports it.
+4. Seed only the data named in the test and avoid relying on default records with unclear ownership.
+
+The goal is not a perfectly production-like environment. It is an environment whose starting state is understandable and whose failure points are attributable to the change being tested.
+
+<Divider />
+
+## Run integration tests at the right time
+
+Integration tests are usually slower than unit tests but faster and easier to diagnose than E2E tests. That makes them a strong fit for pull-request CI, especially around routes, persisted data, and service contracts.
+
+```text
+pull request
+  ├── unit tests: local logic and edge cases
+  ├── integration tests: routes, data, and service boundaries
+  └── focused E2E smoke tests: critical user journeys
+
+release candidate
+  └── broader E2E and cross-browser checks where required
+```
+
+Keep the failure output useful. Include the request, response status, relevant payload fields with secrets removed, and enough context to reproduce the state. A test that fails with only “expected true to be false” makes a boundary problem harder to fix than it needs to be.
+
+## Avoid common shortcuts
+
+Three shortcuts frequently reduce confidence:
+
+- **Testing only mocks.** If every boundary is replaced by a hand-written fake, the test can pass while the real contract drifts.
+- **Using production services.** This makes tests slow, expensive, and unsafe. Use dedicated environments or controlled doubles instead.
+- **Sharing one giant setup.** A universal fixture becomes hard to understand and makes unrelated tests interfere with one another.
+
+Instead, keep setup near the contract it supports, test the real application code on your side of the boundary, and choose the smallest dependency implementation that still gives credible evidence.
+
+## Conclusion
+
+Integration tests give teams fast feedback about the seams where software is most likely to disagree with itself. They work best when contracts are explicit, dependencies are realistic but controllable, and data is isolated so each failure points to one broken interaction.
+
+<RainbowHighlight block>Integration tests should make a real boundary observable and controlled, so a failing result identifies a broken contract instead of an unpredictable environment.</RainbowHighlight>

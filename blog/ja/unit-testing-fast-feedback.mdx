@@ -1,0 +1,130 @@
+---
+date: "2026-10-22"
+title: "ユニットテスト: 大切な振る舞いに速いフィードバックを得る"
+description: "JestまたはVitestで、プロダクトのルールを説明し、境界条件を素早く見つけ、リファクタリング後も役立つユニットテストを書く方法を解説します。"
+tags: ["テスト", "JavaScript", "開発ワークフロー"]
+image: "/blog/images/unit-testing-fast-feedback.png"
+---
+
+ユニットテストは、気にしている振る舞いを繰り返し確認できるチェックにする、最も速い方法です。価格計算、権限判定、日付計算、validator、操作の背後にある状態遷移など、小さく理解しやすいソフトウェアの一部に集中すると力を発揮します。
+
+「unit」という名前ほど定義は厳密ではありません。一つの関数、一つのclass、密接に関連するcollaboratorの組み合わせを指すこともあります。重要なのは、速さ、責任の明確さ、環境全体ではなく局所的な判断を指す失敗です。
+
+<Highlight color="lemon">意味のあるルールを安全に変更でき、そのルールを素早く理解できるようにするテストには価値があります。</Highlight>
+
+## 現在の実装ではなく振る舞いをテストする
+
+長く役立つテストは、コードが何をすべきかを表し、現在の実装方法をそのまま写しません。内部helperが呼ばれたことを確認するテストは、無害なリファクタリングでhelperがなくなると壊れます。公開された結果を確認するテストは、実装が良くなっても役立ちます。
+
+たとえば、注文合計が最低額を満たすときだけ割引するルールを考えます。
+
+```ts
+export function discountedTotal(total: number, minimum: number, rate: number) {
+  if (total < minimum) return total;
+  return Math.round(total * (1 - rate));
+}
+```
+
+テストはプロダクトのルールを名前にし、意味のある境界を含めます。
+
+```ts
+import { expect, test } from 'vitest';
+import { discountedTotal } from './discountedTotal';
+
+test('applies the discount at the minimum order total', () => {
+  expect(discountedTotal(5_000, 5_000, 0.1)).toBe(4_500);
+});
+
+test('keeps an order below the minimum unchanged', () => {
+  expect(discountedTotal(4_999, 5_000, 0.1)).toBe(4_999);
+});
+```
+
+後で関数がmoney type、設定object、別の丸め方を使うかもしれません。公開ルールが変わらない限り、これらのテストは変わるべきではありません。
+
+<Underline>コードを行ごとに写すassertionより、読んだ人がプロダクトのルールとして説明できるassertionを選びましょう。</Underline>
+
+## 判断が表れるケースを選ぶ
+
+すべての入力をテストすることは、たいてい不可能で役にも立ちません。代わりに、各振る舞いの種類から代表を選びます。通常値、境界、無効値、過去に間違えた組み合わせです。
+
+| 状況 | 役立つ例 |
+| --- | --- |
+| 通常ルール | 有効な値が期待どおりの結果になる |
+| 境界 | しきい値と同じ、直前、直後 |
+| 無効な入力 | 欠けた値や不正な値が意図した失敗になる |
+| 過去の不具合 | 以前の失敗を再現する最小の入力 |
+| 組み合わせ | 割引と税の免除のように二つのルールが関わる |
+
+coverageを増やすだけのためにテストを書くことは避けます。coverageは実行されていないコードを見つけられますが、assertionが重要な成果を守るかまでは示しません。通るテストを読み、「プロダクトのルールが誤って変わったら、役立つ理由で失敗するか」と考えます。
+
+## 外部境界ではtest doubleを使う
+
+小さなルールがネットワーク、現在時刻、ファイルシステム、ベンダーAPIに依存すると、テストは遅く不安定になります。unit自身の判断が対象なら、その境界をtest doubleに置き換えます。
+
+たとえば、articleを公開するserviceは、validationの後にstorageを呼ぶ必要があります。ユニットテストはfake storage functionを渡し、受け取ったリクエストを確認できます。
+
+```ts
+import { expect, test, vi } from 'vitest';
+
+type SavePost = (post: { title: string; body: string }) => Promise<{ id: string }>;
+
+export async function publishPost(title: string, body: string, savePost: SavePost) {
+  if (!title.trim()) throw new Error('Title is required');
+  return savePost({ title: title.trim(), body });
+}
+
+test('sends a trimmed title to storage', async () => {
+  const savePost = vi.fn().mockResolvedValue({ id: 'post_123' });
+
+  await expect(publishPost('  Testing  ', 'Body', savePost)).resolves.toEqual({ id: 'post_123' });
+  expect(savePost).toHaveBeenCalledWith({ title: 'Testing', body: 'Body' });
+});
+```
+
+storageはテスト対象の判断の外にあるため、このmockは適切です。後で統合テストにより、実際のstorage adapterとデータベースが契約に合意していることを確認します。
+
+<Highlight color="flame">証明したい振る舞いそのものをmockしないでください。対象のルールを置き換えたテストは、セットアップしか確認できません。</Highlight>
+
+## 時刻と乱数を制御する
+
+時刻に基づくルールと生成された値は、不安定なテストのよくある原因です。ロジックの深い場所でglobal値を読むのではなく、clock、random generator、identifier factoryをlogicに渡します。本番コードは実際の依存を渡し、テストは固定値を渡します。
+
+```ts
+import { expect, test } from 'vitest';
+
+export function isTrialActive(expiresAt: Date, now: Date) {
+  return expiresAt.getTime() > now.getTime();
+}
+
+test('treats a trial ending now as expired', () => {
+  const now = new Date('2026-10-22T00:00:00.000Z');
+  expect(isTrialActive(now, now)).toBe(false);
+});
+```
+
+この方法は、すべてのテストでglobal timeを固定するより読みやすくなります。コード自体が処理をscheduleする場合は、フレームワークのfake timerを使います。ただし、通常の日付計算は可能な限り普通のデータとして扱います。
+
+## JestとVitestのどちらを選ぶか
+
+[Jest](https://jestjs.io/docs/getting-started) は、assertion、mock、setup hook、大きなエコシステムを持つ、定着したJavaScriptのテストフレームワークです。[Vitest](https://vitest.dev/guide/) は、Jestに似たAPIとViteプロジェクトへの近い統合を持つ、Viteベースのテストフレームワークです。どちらでも良いユニットテストを書けます。
+
+| 観点 | Jest | Vitest |
+| --- | --- | --- |
+| 既存のスイートとエコシステム | すでにJest toolingを使うプロジェクトで強い選択肢 | すでにVite toolingを使うプロジェクトで強い選択肢 |
+| APIの書き方 | `test`、`expect`、mock、setup hook | なじみのある`test`、`expect`、`vi` API |
+| プロジェクトとの相性 | 成熟した設定と広いコミュニティ例 | Viteネイティブのワークフローとモダンな統合 |
+
+リポジトリとチームに合うツールを選びます。別のrunnerに変えることだけを目的に、動いているスイートを移行しても、テスト品質はほとんど上がりません。明確な例、信頼できるローカルコマンド、焦点のあるassertionの方が、test runnerの名前より重要です。
+
+## 失敗を役立つものにする
+
+テストの失敗は、何が変わり、なぜ大切かを示すべきです。良いテスト名は条件と期待する結果を表します。各テストを一つの振る舞いに絞り、assertionの近くでtest dataを用意し、ライフサイクルが明示されていない可変setupを共有しないようにします。
+
+不具合が本番へ到達したら、修正前に元の発生条件で失敗する最小のregression testを追加します。そのテストは、チームが苦労して得た知識を残します。複数サービスやブラウザが必要なら、無理にユニットテストに押し込まず、統合またはE2Eレイヤーへ移します。
+
+## まとめ
+
+ユニットテストの目的は、すべての行が実行されたことを示すことではありません。プロダクトを形づくるルールのまわりに、速く信頼できるフィードバックループをつくることです。ルールの言葉でテストを書き、不安定な境界を分離し、より広い契約はほかのテストレイヤーに任せます。
+
+<RainbowHighlight block>ユニットテストは、重要なローカルの振る舞いを、アプリケーション全体の環境に頼らず検証、診断、変更しやすくするときに最も価値があります。</RainbowHighlight>

@@ -1,0 +1,130 @@
+---
+date: "2026-10-22"
+title: "Unit Testing: Fast Feedback for Behaviour That Matters"
+description: "Write unit tests that explain business rules, catch edge cases quickly, and stay useful through refactors with Jest or Vitest."
+tags: ["Testing", "JavaScript", "Developer Workflow"]
+image: "/blog/images/unit-testing-fast-feedback.png"
+---
+
+Unit tests are the fastest way to turn a behaviour you care about into a repeatable check. They work best when they focus on a small, understandable piece of software: a pricing rule, a permission decision, a date calculation, a validator, or the state transition behind an interaction.
+
+The name is less rigid than it sounds. A “unit” can be one function, one class, or a closely related group of collaborators. The important qualities are speed, clear ownership, and a failure that points to a local decision rather than an entire environment.
+
+<Highlight color="lemon">A unit test earns its place when it makes a meaningful rule safer to change and faster to understand.</Highlight>
+
+## Test behaviour, not the current implementation
+
+The most durable tests describe what code must do, not how its current version happens to do it. A test that asserts an internal helper was called can break when a harmless refactor removes that helper. A test that asserts the public result stays useful as the implementation improves.
+
+Consider a rule that applies a discount only when an order meets the minimum total:
+
+```ts
+export function discountedTotal(total: number, minimum: number, rate: number) {
+  if (total < minimum) return total;
+  return Math.round(total * (1 - rate));
+}
+```
+
+The test should name the business rule and include the edge that makes it interesting:
+
+```ts
+import { expect, test } from 'vitest';
+import { discountedTotal } from './discountedTotal';
+
+test('applies the discount at the minimum order total', () => {
+  expect(discountedTotal(5_000, 5_000, 0.1)).toBe(4_500);
+});
+
+test('keeps an order below the minimum unchanged', () => {
+  expect(discountedTotal(4_999, 5_000, 0.1)).toBe(4_999);
+});
+```
+
+The function could later use a money type, a configuration object, or a different rounding strategy. These tests should only change if the public rule changes.
+
+<Underline>Prefer an assertion that a reader can explain as a product rule over one that mirrors the code line by line.</Underline>
+
+## Select cases that expose decisions
+
+Testing every input is rarely possible or useful. Instead, choose representatives from each behaviour class: ordinary values, boundaries, invalid values, and combinations that have caused mistakes before.
+
+| Situation | Useful example |
+| --- | --- |
+| Normal rule | A valid value produces the expected result |
+| Boundary | Exactly at a threshold, just below it, and just above it |
+| Invalid input | A missing or malformed value produces a deliberate failure |
+| Historical bug | The smallest input that reproduces the earlier failure |
+| Combination | Two rules interact, such as a discount and a tax exemption |
+
+Avoid using a test only to increase coverage. Coverage can reveal unexecuted code, but it cannot tell you whether the assertions protect an important outcome. Read a passing test and ask: if the product rule changed incorrectly, would this fail for a helpful reason?
+
+## Use test doubles at external boundaries
+
+Tests become slow and unreliable when a small rule depends on the network, the current time, the file system, or a vendor API. Replace those boundaries with a test double when the unit’s own decision is the subject of the test.
+
+For example, a service that publishes an article may need to call storage after validation. The unit test can provide a fake storage function and inspect the request it received:
+
+```ts
+import { expect, test, vi } from 'vitest';
+
+type SavePost = (post: { title: string; body: string }) => Promise<{ id: string }>;
+
+export async function publishPost(title: string, body: string, savePost: SavePost) {
+  if (!title.trim()) throw new Error('Title is required');
+  return savePost({ title: title.trim(), body });
+}
+
+test('sends a trimmed title to storage', async () => {
+  const savePost = vi.fn().mockResolvedValue({ id: 'post_123' });
+
+  await expect(publishPost('  Testing  ', 'Body', savePost)).resolves.toEqual({ id: 'post_123' });
+  expect(savePost).toHaveBeenCalledWith({ title: 'Testing', body: 'Body' });
+});
+```
+
+The mock is appropriate because storage is outside the decision being tested. A separate integration test should later verify that the real storage adapter and database agree on their contract.
+
+<Highlight color="flame">Do not mock the logic whose behaviour you want to prove. A test that replaces the rule under test can only verify its own setup.</Highlight>
+
+## Keep time and randomness under control
+
+Time-based rules and generated values are common sources of flaky tests. Pass the clock, random generator, or identifier factory into your logic rather than reading a global value deep inside it. The production code can supply the real dependency; the test supplies a fixed one.
+
+```ts
+import { expect, test } from 'vitest';
+
+export function isTrialActive(expiresAt: Date, now: Date) {
+  return expiresAt.getTime() > now.getTime();
+}
+
+test('treats a trial ending now as expired', () => {
+  const now = new Date('2026-10-22T00:00:00.000Z');
+  expect(isTrialActive(now, now)).toBe(false);
+});
+```
+
+This approach is easier to read than freezing global time for every test. Use framework-provided fake timers when the code itself must schedule work, but keep ordinary date calculations as plain data whenever possible.
+
+## Jest or Vitest?
+
+[Jest](https://jestjs.io/docs/getting-started) is an established JavaScript testing framework with assertions, mocking, setup hooks, and a large ecosystem. [Vitest](https://vitest.dev/guide/) is a Vite-powered testing framework with a Jest-like API and close integration with Vite projects. Either can support good unit tests.
+
+| Consideration | Jest | Vitest |
+| --- | --- | --- |
+| Existing suite and ecosystem | Strong choice when the project already uses Jest tooling | Strong choice when the project already uses Vite tooling |
+| API style | `test`, `expect`, mocks, setup hooks | Familiar `test`, `expect`, and `vi` APIs |
+| Project fit | Mature configurations and broad community examples | Vite-native workflow and modern project integration |
+
+Choose the tool that fits the repository and team. Migrating a working suite solely for a different runner rarely improves test quality. Clear examples, reliable local commands, and focused assertions matter more than the brand of the test runner.
+
+## Make failing tests useful
+
+A test failure should tell someone what changed and why it matters. Good test names describe the condition and expected outcome. Keep each test focused on one behaviour, arrange test data close to the assertion, and avoid sharing mutable setup unless its lifecycle is explicit.
+
+When a bug reaches production, add the smallest regression test that fails for the original trigger before fixing it. That test captures knowledge the team gained the hard way. If it must involve multiple services or a browser, move it to the integration or E2E layer instead of forcing it into a unit test.
+
+## Conclusion
+
+Unit testing is not about proving every line ran. It is about creating a fast, trustworthy feedback loop around the rules that shape your product. Write tests in the language of those rules, isolate unstable boundaries, and let other test layers cover the broader contracts.
+
+<RainbowHighlight block>Unit tests are most valuable when they make important local behaviour easy to verify, diagnose, and change without relying on a full application environment.</RainbowHighlight>

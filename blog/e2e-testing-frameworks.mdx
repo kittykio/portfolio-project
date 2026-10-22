@@ -1,0 +1,123 @@
+---
+date: "2026-10-22"
+title: "End-to-End Testing: What to Test and How to Choose a Framework"
+description: "Build end-to-end tests that protect critical user journeys, stay reliable in CI, and match the browser automation framework your team needs."
+tags: ["Testing", "Developer Workflow", "Web Development"]
+image: "/blog/images/e2e-testing-frameworks.png"
+---
+
+End-to-end (E2E) testing checks a product through the same surface a user sees: a browser, a real route, rendered UI, and usually the services behind it. That makes E2E tests especially good at finding failures that unit tests cannot see alone—an unavailable button, a broken redirect, an incorrect client-server contract, or a checkout that does not complete.
+
+They are also the most expensive tests to maintain. A useful E2E suite is not a second copy of every unit and integration test. It is a small set of trustworthy journeys that answer one question: can a person still accomplish the work that matters?
+
+<Highlight color="lemon">Use E2E tests to protect high-value user outcomes, then use faster tests for the detailed logic underneath them.</Highlight>
+
+## What E2E testing is good at
+
+An E2E test drives a system through several boundaries. A sign-in journey, for example, can involve a browser, client-side validation, a network request, session handling, a redirect, and a protected page. Testing that whole path gives confidence that those parts work together.
+
+That does not mean the suite must depend on every external service. Reliable tests deliberately control the environment. They may use a dedicated test database, seed known data, or intercept a third-party integration that is not the subject of the test.
+
+| Test type | Best question | Typical scope |
+| --- | --- | --- |
+| Unit test | Does this small piece of logic behave correctly? | Function, utility, reducer, validator |
+| Integration test | Do these application pieces cooperate correctly? | Component with a service, route with a database |
+| E2E test | Can a user complete an important journey? | Browser, UI, routing, and selected real services |
+
+<Underline>An E2E test should prove a user-visible outcome, not merely click through implementation details.</Underline>
+
+## Choose journeys by risk, not by screen count
+
+Start with the paths where failure would be costly or hard to detect manually. For many products, the first set is small:
+
+- a visitor can register, sign in, and reach the first useful action;
+- a customer can complete the primary purchase, booking, or submission flow;
+- a signed-in person can edit or remove their own data safely;
+- a critical permission boundary blocks the wrong user and admits the right one;
+- a regression-prone bug has a focused reproduction path.
+
+Avoid writing a browser test for every visual variation or helper function. If a failure can be isolated and asserted faster in a component or integration test, put it there. A healthy test portfolio gives each layer a job.
+
+### State the outcome before writing selectors
+
+Write the test name as a promise to the user. “checks checkout form” is vague. “a signed-in customer can pay for an in-stock item and sees an order confirmation” says what behaviour is protected.
+
+Then keep the test focused on that promise. It may fill a form and assert the confirmation number, but it does not need to assert every CSS class or all secondary copy. Those assertions make the suite noisy when harmless presentation changes occur.
+
+<Highlight color="flame">Do not turn an E2E test into a snapshot of the page structure. DOM shape and styling are implementation details unless the user outcome depends on them.</Highlight>
+
+## Make browser tests reliable
+
+Flaky E2E tests usually expose an uncontrolled dependency: a timing assumption, shared state, asynchronous data, a fragile selector, or an external service. Adding arbitrary waits only hides the cause and makes CI slower.
+
+Use these habits instead:
+
+1. **Create independent test data.** Give each test a known starting state and avoid relying on the result of a previous test.
+2. **Prefer semantic locators.** Select controls by role, label, or test identifier that represents a stable user-facing concept.
+3. **Wait for observable state.** Wait for a URL, a visible confirmation, an enabled control, or a response that is part of the journey—not a fixed number of milliseconds.
+4. **Keep authentication cheap.** Reuse a prepared authenticated state when sign-in itself is not what the test is evaluating.
+5. **Keep evidence on failure.** Screenshots, videos, traces, browser logs, and network details should make a failed CI job diagnosable without rerunning it repeatedly.
+
+For a React app with accessible labels, a Playwright test can describe the journey in user language:
+
+```ts
+import { expect, test } from '@playwright/test';
+
+test('a customer can submit a support request', async ({ page }) => {
+  await page.goto('/contact');
+
+  await page.getByLabel('What would you like to make?').fill('A booking dashboard');
+  await page.getByLabel('Scope and context').fill('A calendar, reminders, and a client view.');
+  await page.getByLabel('Email or contact link').fill('alex@example.test');
+  await page.getByRole('button', { name: 'Send inquiry' }).click();
+
+  await expect(page.getByRole('status')).toHaveText(/received/i);
+});
+```
+
+The test waits for the confirmation that matters. It does not call `waitForTimeout`, and its selectors encourage accessible labels in the application itself.
+
+## Comparing popular E2E frameworks
+
+The right framework depends on the platforms you support, the languages your team uses, and the debugging experience you need. The table below is a starting point, not a ranking.
+
+| Framework | Strong fit | Consider when |
+| --- | --- | --- |
+| [Playwright](https://playwright.dev/docs/intro) | Modern web apps that need Chromium, Firefox, WebKit, parallel runs, traces, and first-class TypeScript support | You want one bundled test runner and browser automation toolkit for local work and CI |
+| [Cypress](https://docs.cypress.io/app/get-started/why-cypress) | Front-end teams that value an interactive local runner and a connected workflow for E2E, component, and accessibility testing | Your team already uses Cypress or wants its focused browser-testing experience |
+| [WebdriverIO](https://webdriver.io/docs/gettingstarted) | JavaScript and TypeScript teams that test web, mobile, desktop, or VS Code extensions | You need a configurable runner with broad platform integrations, including mobile through Appium |
+| [Selenium](https://www.selenium.dev/documentation/) | Organisations with established WebDriver infrastructure or multi-language browser automation needs | You need the W3C WebDriver ecosystem, Grid, or bindings beyond the JavaScript toolchain |
+
+Playwright includes a runner, assertions, isolation, parallel execution, and tooling such as trace viewing. Cypress combines browser-oriented testing with component and accessibility testing options. WebdriverIO supports multiple automation targets and framework choices. Selenium is a broad browser-automation project built around WebDriver and a large ecosystem.
+
+Those differences are real, but they are secondary to the test design. A poorly isolated workflow with fragile selectors will be unreliable in any framework. A small, meaningful suite with clear state control will be easier to maintain in all of them.
+
+## Put E2E tests in continuous integration deliberately
+
+Run a small smoke suite for every change that can affect a critical journey. Run the full cross-browser suite at the cadence your delivery risk needs: on a protected branch, before a release, or on a scheduled environment. Separate quick feedback from broader confidence so that a ten-minute suite does not unnecessarily block a two-minute code review check.
+
+A practical CI sequence often looks like this:
+
+```text
+pull request
+  ├── type check, lint, unit and integration tests
+  ├── build the application
+  └── run a focused E2E smoke suite against the built app
+
+main branch or release candidate
+  └── run the full E2E suite across required browsers
+```
+
+Use retries as a signal, not a success condition. A retry can keep a temporary infrastructure problem from blocking a release, but a test that frequently passes only on retry needs investigation. Track that pattern, find the dependency or race, and either remove it or move the assertion to a more appropriate layer.
+
+## Review failures as product evidence
+
+When an E2E test fails, first determine whether the application, the test, or the environment changed. Look at the screenshot or trace, the request and response, the test data, and the commit that introduced the failure. Do not immediately update selectors until you understand whether a user-facing contract changed.
+
+The same discipline helps when a test passes. Periodically remove tests that no longer protect a meaningful journey, replace duplicated paths with a smaller representative set, and keep test names tied to user outcomes. The suite should remain a source of useful evidence, not a dashboard number.
+
+## Conclusion
+
+E2E testing earns its cost when it verifies a few journeys that matter across the real boundaries of an application. Pick a framework that fits your platforms and team, make state and selectors deliberate, and use failure artifacts to improve the product and the test system together.
+
+<RainbowHighlight block>A reliable E2E suite protects critical user outcomes with isolated state, semantic selectors, and feedback that helps a team act on failures.</RainbowHighlight>

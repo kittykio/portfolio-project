@@ -1,0 +1,87 @@
+---
+date: "2026-10-22"
+title: "The Testing Pyramid Is a Portfolio, Not a Ratio"
+description: "Choose unit, integration, and end-to-end tests by risk, feedback speed, and diagnostic value—not a fixed percentage of each layer."
+tags: ["Testing", "Developer Workflow", "Web Development"]
+image: "/blog/images/testing-pyramid-risk-and-feedback.png"
+---
+
+The testing pyramid is useful because it reminds teams that tests have different costs. It becomes less useful when it turns into a quota: 70% unit tests, 20% integration tests, 10% end-to-end tests. A percentage cannot know which failure would hurt your users, how quickly your team needs feedback, or which boundary has changed.
+
+A better model is a <Underline>test portfolio</Underline>. Each test layer is an investment with a cost, a risk it covers, and a different quality of feedback. The goal is not to satisfy a geometric shape. The goal is to make important failures cheap to find and easy to understand.
+
+## Start with risk and feedback cost
+
+When a feature fails, ask two questions:
+
+1. What is the most realistic way this feature could fail?
+2. What is the cheapest test that would expose that failure with a useful diagnosis?
+
+This keeps test selection connected to product risk. A pricing rule may fail in a pure calculation. A database uniqueness rule may fail only with a real schema. A sign-in redirect may fail only when a browser, session, and router work together.
+
+| Failure risk | Best first home | Why |
+| --- | --- | --- |
+| Discount, eligibility, or formatting rule | Unit test | It is fast, local, and pinpoints the rule. |
+| Query, migration, serialization, or transaction | Integration test | It exercises the real application boundary and data shape. |
+| Sign-in redirect or checkout completion | Focused end-to-end test | It verifies the browser journey that users actually take. |
+| Provider request or webhook payload | Contract or integration test | It detects a boundary mismatch without rebuilding every journey. |
+| Keyboard flow or important visual state | Component/integration test plus a targeted browser check | It combines precise feedback with real interaction coverage. |
+
+<Highlight color="lemon">Choose the narrowest test that can reveal the risk honestly. Add a broader test when the boundary itself is the risk.</Highlight>
+
+## Different layers answer different questions
+
+Unit tests answer: “Does this rule produce the right result for this input?” They are excellent for calculations, parsing, state transitions, permission rules, and error mapping. Their feedback is fast because they avoid most outside dependencies.
+
+Integration tests answer: “Do these parts agree when they meet?” They are where a repository meets a database, a route meets validation, or a serializer meets a real payload. They cost more than unit tests, but they catch assumptions that mocks cannot.
+
+End-to-end tests answer: “Can a user complete this critical journey in a real browser?” They cover routing, browser behaviour, authentication, and wiring across the application. They are valuable, but they are usually slower and provide less precise failure information. [Google's guidance on test sizes](https://testing.googleblog.com/2010/12/test-sizes.html) offers another useful lens: classify tests by their dependency and runtime constraints, not only by names such as “unit” and “integration.”
+
+None of these layers replaces the others. They make different promises.
+
+## Build a portfolio for a real product
+
+Imagine an online booking flow. A healthy portfolio might include:
+
+- Unit tests for date calculations, pricing, cancellation rules, and availability transitions.
+- Integration tests for reservation persistence, duplicate booking protection, payment state changes, and email payload construction.
+- A few end-to-end tests for a guest completing a booking, a signed-in customer cancelling one, and an administrator resolving a conflict.
+- Contract checks for the payment provider and any incoming webhook.
+
+The exact count is irrelevant. If the payment provider changes its payload, another hundred unit tests will not help. If a date rule is wrong, waiting for a full browser suite is unnecessary. Rebalance the portfolio when the risk changes.
+
+## Make feedback part of the design
+
+Test cost includes more than elapsed time. It includes setup, flakiness, maintenance, test data, parallel execution, and how easily a failure explains itself.
+
+| Feedback quality | Useful signal | Common trade-off |
+| --- | --- | --- |
+| Fast and precise | A unit test names the broken rule and input. | It can miss wiring and real infrastructure. |
+| Representative | An integration test proves a real boundary. | It needs realistic setup and cleanup. |
+| User-level | An end-to-end test proves a critical journey. | It may be slower, more fragile, and harder to diagnose. |
+
+Run the fast, precise tests on every change. Run the representative checks where they protect the boundaries changed by the pull request. Keep browser coverage focused on high-value journeys, then use broader browser and cross-browser suites before releases or on a scheduled build.
+
+<Highlight color="flame">Do not replace every end-to-end test with lower-level checks. A critical user journey still needs at least one user-level proof.</Highlight>
+
+## Notice when the portfolio is out of balance
+
+An end-to-end-heavy suite often shows itself through slow pull requests, intermittent failures, expensive test data, and vague reports such as “checkout failed.” [Google's discussion of end-to-end test cost](https://testing.googleblog.com/2015/04/just-say-no-to-more-end-to-end-tests.html) is a useful reminder that rapid, diagnosable feedback matters as much as broad coverage.
+
+The opposite imbalance also exists. A repository can have many clean unit tests and still fail in production because the database schema, authentication cookie, CDN configuration, or external API was never exercised. When an incident crosses a boundary, add the smallest representative test that would have caught it.
+
+Martin Fowler describes the pyramid as a way to think about granularity and relative test counts, not a universal formula. His [practical test pyramid](https://martinfowler.com/articles/practical-test-pyramid.html) is useful context, especially when a team is tempted to turn the metaphor into a rulebook.
+
+## Review the portfolio after changes and incidents
+
+For each meaningful bug, ask where the earliest useful test could have lived. If the answer is a unit test, add one near the rule. If it is a real integration boundary, test that boundary. If only the full user journey exposes it, preserve a focused end-to-end check.
+
+This turns testing into product learning. The suite evolves with the architecture, the users, and the failures that matter rather than following a ratio chosen before the system existed.
+
+<Divider />
+
+## A practical starting point
+
+List the product's most expensive mistakes: lost money, lost data, incorrect permissions, inaccessible paths, and abandoned critical journeys. Give each one the fastest honest test you can. Then add broader tests only where the connection between parts is the thing you need to trust.
+
+<RainbowHighlight block>A strong test suite is not shaped like a perfect pyramid; it is balanced around risk, feedback, and the promises your product must keep.</RainbowHighlight>
