@@ -1,0 +1,127 @@
+---
+date: "2026-10-22"
+title: "日本で最初のテック職に就くための準備"
+description: "日本でのエントリーレベル技術職に向け、役立つ資格、日本語力の示し方、ポートフォリオ、応募、面接準備を実践的に解説する。"
+tags: ["キャリア", "開発ワークフロー", "ドキュメント"]
+image: "/blog/images/first-tech-job-japan-preparation.png"
+---
+
+日本で最初のテック職を得るには、複数の証拠の組み合わせが必要です。基礎知識、作って学べることを示すproject、チームに合うコミュニケーション、そして焦点の合った応募です。資格はrecruiterに出発点を伝える助けになります。ただしportfolio、面接、未知の問題を解ける証拠の代わりにはなりません。
+
+このガイドは、新卒、キャリアチェンジ、junior developerのためのものです。役立つ資格、実際に必須となる条件、日本の採用プロセスに向けた準備を説明します。すべての会社が同じだとは扱いません。
+
+<Highlight color="lemon">求人票は仕様書として読みます。必須スキル、言語レベル、勤務地、就労資格、面接プロセスは、その職種に属する条件であり、「日本のテック職」すべてに共通する条件ではありません。</Highlight>
+
+## 現実的な目標職種を選ぶ
+
+「IT」は幅広い仕事を含みます。frontend engineer、backend engineer、QA engineer、cloud support engineer、data analyst、implementation engineer、junior software engineerのように方向を決めると、最初の応募は強くなります。
+
+関心のある求人票を20件読み、繰り返し出る条件を書き出します。frontendならTypeScript、React、browser debugging、accessibility、デザインとの協働が多いかもしれません。backendならJava、Python、SQL、API、テスト、cloud基礎が中心かもしれません。QAならテスト設計、自動化、bug report、プロダクト思考が評価されることがあります。
+
+そのうえで、一つの主要stackを説明できる深さまで練習します。junior candidateにすべてのframeworkは必要ありません。システムを学び、役立つ変更を作り、その理由を伝えられることを示せばよいのです。
+
+## 資格: 必須、役立つもの、任意のもの
+
+日本のすべてのエントリーレベル技術職に必須の資格はありません。企業は学位、特定の経験、日本語力、職務に合う在留資格を求めることがあります。プロダクトエンジニア職の多くはcoding abilityとprojectを重視します。一方、国内企業の一部は共通の基準として国家IT試験を評価します。
+
+| 資格・条件 | 役立つ場面 | 証明しないこと |
+| --- | --- | --- |
+| 学位、卒業資格、関連授業 | 新卒採用や学歴条件のある職種 | 実際のアプリを届け・運用できること |
+| IPA ITパスポート（IP） | business寄りIT、support、IT概念の初期基礎 | software engineering能力 |
+| IPA 基本情報技術者（FE） | software、system、IT engineeringの強いentry-level signal | framework経験やportfolio |
+| IPA 情報セキュリティマネジメント（SG） | securityを意識する運用、support、governance/compliance周辺 | hands-onのsecurity engineering |
+| IPA 応用情報技術者（AP） | 基礎が固まった後の幅広いsignal | 経験の代わり。多くの初職に必須ではない |
+| cloud / platform資格 | 目標職種がAWS、Azure、GCP等を明示する場合 | architecture判断やincident経験 |
+| JLPT | 日本語の読解・聴解の証明が役立つ職種 | 会話、作文、会議進行、職場コミュニケーション |
+
+### IPA試験
+
+IPAは国家の情報処理技術者試験制度を実施しています。[公式の概要](https://www.ipa.go.jp/en/it-examinations/reference.html)では、ITパスポートはLevel 1、情報セキュリティマネジメントとFEはLevel 2です。IPAはFEをITエンジニアの登竜門と説明し、指導の下でsystemの設計・開発・integration・運用に貢献するための基礎知識と技能を扱うとしています。
+
+最初のsoftware engineering職には、時間があり必要な言語で受験できるなら、FEが最も筋の通った目標になることが多いです。algorithm、database、network、security、開発プロセス、projectの基礎を構造的に学べます。まだITを探っている、またはbusiness寄りの職種を目指すなら、IPは良い入口になります。資格のためだけに両方取るのではなく、目標に合うlevelを選びます。
+
+### 日本語資格
+
+JLPTはN5からN1までの5段階です。[公式のレベル案内](https://www.jlpt.jp/sp/e/about/levelsummary.html)では、N3を低いlevelと高いlevelの橋渡しと説明しています。日本語の求人票ではN2やN1をscreening signalにすることがあり、English-firstの企業では別の期待値を置くことがあります。実際の条件は求人票に従います。
+
+資格には重要な限界があります。JLPTが測るのは言語知識、読解、聴解であり、会話や書くことを通じたinteractionではありません。[公式のCEFR参照](https://www.jlpt.jp/e/about/cefr_reference.html)もこの点を明示しています。projectを紹介する、確認質問をする、bugを説明する、簡潔なfollow-upを書く練習を、チームが使う言語で別に行いましょう。
+
+### Vendor資格
+
+AWS、Azure、Google Cloud、Salesforceなどのvendor資格は、求人と合うなら役立ちます。service選択を説明できる小さなdeploymentやlabを作った後に最も価値が出ます。projectのない一般的なcloud badgeより、deployment、environment variable、log、access control、costのtrade-offを理解している小さなappの方が強いです。
+
+<Highlight color="flame">応募を避けるために、資格集めに何か月も使わないでください。関連する資格一つと、具体的なprojectの組み合わせは、関係のないbadgeの長い列より強いことが多いです。</Highlight>
+
+## 面接の質問に答えられるportfolioを作る
+
+entry-level applicantにとってportfolioは、働き方の証拠です。未完成のdemoを十個作るより、異なる強みを持つprojectを二、三個作ります。
+
+各project pageでは、次を見つけやすくします。
+
+- ユーザー課題と想定する利用者。
+- 自分の貢献と担当範囲。
+- 技術選択と、その課題に合う理由。
+- data model、API、または中心となるinteraction。
+- validation、error、accessibility、security、performanceへの対応。
+- 何をテストし、どのリスクをカバーしたか。
+- 時間があれば何を改善するか。
+
+安全に出せるならdeployed demo、整ったrepository、setup instructions、screenshotまたは短いwalkthroughを含めます。個人projectを商用規模と主張してはいけません。信頼できる説明は、「完全な機能がどう動くかを学ぶためにこのprojectを作り、trade-offを行う中でこれを学んだ」です。
+
+## 日本式の応募書類を準備する
+
+企業からresume、日本式の履歴書、経験者向けの職務経歴書、entry sheet（ES）、coding profile、GitHubやportfolioへのlinkを求められることがあります。会社が求める形式に従います。丁寧な応募は、制約に沿って仕事ができることを示します。
+
+小さなapplication kitを用意します。
+
+1. 一枚の英語resumeと、必要なら日本語が流暢な人に確認してもらった日本語resume。
+2. projectの一覧。role、stack、link、結果、技術的なchallengeを一つずつ。
+3. 企業を志望する理由、職種を志望する理由、今準備ができている理由の三つの文章。
+4. 日本語と英語をどのように業務で使えるかの明確な記載。
+5. private accessや壊れたsetupを必要としないlink。
+
+新卒採用では時期も重要です。厚生労働省が公開する2026年4月入社の例では、広報・entryは3月から、面接は6月から、内定は10月からとなっています。これは一般的な目安であり、企業固有の締切の代わりにはなりません。企業pageと大学のcareer centreを早めに確認しましょう。
+
+## 意図的に仕事を探す
+
+一つのjob boardだけに頼らず、企業のcareer page、大学のcareer service、技術community、alumni、internship、信頼できるrecruiter、公的な雇用支援を組み合わせます。外国人留学生・外国人求職者向けに、厚生労働省は東京、名古屋、大阪、福岡の外国人雇用サービスセンターで、相談、求人情報、internship、面接会を提供しています。
+
+応募を簡単なsheetで管理します。職種、要件、締切、連絡先、個別に調整した書類、面接段階、feedbackを残します。不採用や面接の後には、改善を一つ書きます。project説明を明確にする、SQLを練習する、日本語の自己紹介を良くする、より絞った応募をする、といった内容です。
+
+就労資格のsponsorshipや変更が必要なら、現在の状況を正確に伝え、職種の条件を早めに確認します。厚生労働省は、日本で働ける範囲は在留資格と許可された活動により異なると説明しています。内定に向けては、資格を推測せず、雇用主と関連する公的な入管案内で詳細を確認してください。
+
+## 想定される面接形式を練習する
+
+最初の技術職の面接では、志望動機、コミュニケーション、基礎、problem-solvingの組み合わせが試されることが多いです。最初のrecruiter面談、aptitudeまたは筆記試験、coding task、technical interview、team interview、最終面談という流れがあり得ます。順番は企業により異なります。
+
+次の答えを声に出して練習します。
+
+| 面接での問い | 良い答えに含めること |
+| --- | --- |
+| 「自己紹介をしてください」 | 現在の方向、関連する基礎、projectの成果一つ、その職種が次に合う理由。 |
+| 「なぜこの会社ですか」 | brandだけでなく、具体的なproduct、customer、技術課題、mission。 |
+| 「projectを説明してください」 | 課題、役割、architecture、challenge、判断、結果、次の改善。 |
+| 「失敗を教えてください」 | 何が起き、どう調べ、何を変え、何を学んだか。 |
+| 「この仕事をどう進めますか」 | 仮定を確認し、利用者と制約を特定し、小さな計画とtrade-offを示す。 |
+
+coding interviewでは、小さな問題を注意して読み、inputを確認し、trade-offを名前で説明し、最適化の前に正しいシンプルな解答を書く練習をします。take-home taskでは、指定時間を守り、READMEで仮定を説明し、すべての行を説明できるものを提出します。日本語面接では、短い自己紹介とproject説明を日本語で練習します。follow-up questionに合わせられない文章を丸暗記しないことが大切です。
+
+## 12週間の準備プラン
+
+| 週 | Focus |
+| --- | --- |
+| 1–2 | 目標職種を選び、求人票を分析し、skills gapを一つ決める。 |
+| 3–6 | portfolio projectを作る・改善する。Git、test、deployment、明確なdocumentationを練習する。 |
+| 7–8 | resume、project story、言語別の自己紹介を準備し、feedbackを得る。 |
+| 9–10 | 絞った職種に応募し、codingとbehavioural interviewを練習する。 |
+| 11–12 | 結果を振り返り、一つの弱点を改善し、丁寧にfollow-upし、次の応募cycleを続ける。 |
+
+この計画は調整できます。学生なら採用時期に合わせ、キャリアチェンジャーなら仕事と並行して使えます。理想的な時間割より、継続した出力と振り返りが大切です。
+
+<Divider />
+
+## 企業に見えるべきもの
+
+応募するとき、企業には方向、基礎、やり切る証拠が見えるべきです。資格はそのストーリーを理解しやすくします。project、説明、面接準備が、そのストーリーを信頼できるものにします。
+
+<RainbowHighlight block>最初のテック職に完璧なprofileは必要ありません。明確な目標、学びの信頼できる証拠、そしてどう貢献するかを説明する準備があれば十分です。</RainbowHighlight>
