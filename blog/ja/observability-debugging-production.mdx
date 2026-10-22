@@ -1,0 +1,104 @@
+---
+date: "2026-10-22"
+title: "オブザーバビリティ: 本番で問われる前に答えを設計する"
+description: "ログ、メトリクス、トレースをユーザージャーニーと障害時の問いに沿って設計し、本番障害を推測ではなく証拠で理解する方法。"
+tags: ["開発ワークフロー", "Web開発", "API設計"]
+image: "/blog/images/observability-debugging-production.png"
+---
+
+本番障害が、きれいな再現手順とともに届くことはほとんどありません。「checkoutが止まった」「ダッシュボードが時々遅い」「デプロイ後にAPIエラー率が上がったが一部のregionだけ」といった形で現れます。システムが自分の動きを説明できなければ、チームは不完全なログから推測を始めます。
+
+<Underline>オブザーバビリティとは、動いているシステムに有用な質問をして、証拠を得られる能力です。</Underline>障害後に足すダッシュボードではありません。ユーザーがサポートを必要とする前に、どの結果、境界、失敗が重要になるかを決める設計上の選択です。
+
+## まず答えたい質問を決める
+
+すべての変数をログに出すところから始めません。on-callの開発者やプロダクト担当者が、すぐ答えられるべき質問から始めます。
+
+- ユーザーのリクエストは成功、失敗、timeoutのどれだったか。
+- どのrelease、route、region、依存サービスが関係したか。
+- 意味のある各ステップにどれだけ時間がかかったか。
+- 一人の顧客、入力種別、providerだけに限られているか。
+- 意図して拒否したのか、予期せず失敗したのか。
+
+その質問が集めるべきsignalを決めます。[OpenTelemetryはtelemetryをtrace、metric、logとして説明しています](https://opentelemetry.io/docs/)。三つは共通の文脈を持つときに、はるかに役立ちます。
+
+<Highlight color="lemon">有用なsignalは、誰かが下す必要のある判断に答えます。ノイズになるsignalは、何かが起きたことだけを記録します。</Highlight>
+
+## 各signalに明確な役割を与える
+
+metricは時間ごとに集計された数値です。request rate、error rate、queue depth、cache hit rate、payment decline、latency percentileなど、システムの形を見るために使います。問題が<Underline>起きているか</Underline>、どれほど広がっているかを知るのに向いています。
+
+logは構造化されたイベント記録です。validation failureの理由、provider responseの分類、job identifier、release version、匿名化・最小化した業務文脈を残すために使います。特定のステップで<Underline>何が</Underline>起きたかを説明するのに向いています。
+
+traceは、一つのrequestまたは非同期workflowを、複数の操作にまたがって追います。database call、API request、queue work、内部serviceの順序と時間を見るために使います。時間が<Underline>どこで</Underline>使われたか、requestがどこで止まったかを示すのに向いています。
+
+| Signal | 最も適した質問 | 例 |
+| --- | --- | --- |
+| Metric | これはシステム全体の問題になっているか | release後に`checkout.failure_rate`が上がる。 |
+| Structured log | この特定の操作はなぜ失敗したか | 決済providerがカード拒否のcategoryを返した。 |
+| Trace | このrequestはどのステップで遅くなったか | 在庫検索が2秒のrequestのうち1.8秒を使った。 |
+
+## 証拠を関連付ける
+
+request identifierのないlog lineは、遅いchartと結びつけにくくなります。release versionのないtraceは、deployによる回帰を見つけにくくします。有用なdimensionのないmetricは、provider障害と問題のある一つのrouteを分けられません。
+
+request lifecycleにcorrelation identifierを運び、意味のある操作には少数で意図的なattributeを付けます。たとえば次のようにします。
+
+```ts
+logger.info("payment_authorization_failed", {
+  requestId,
+  traceId,
+  orderId,
+  provider: "stripe",
+  outcome: "declined",
+  release: process.env.GIT_SHA,
+});
+```
+
+どのlogging libraryを使うかより、名前の一貫性と安全なfieldの方が重要です。OpenTelemetryの[observability primer](https://opentelemetry.io/docs/concepts/observability-primer/)は、logをtraceやspanと関連付けると、個別のsignalがなぜ役立つかを説明しています。
+
+<Highlight color="flame">オブザーバビリティを、secret、決済情報、session token、無制限の個人情報を集める許可だと考えないでください。</Highlight>
+
+## エラーだけでなく結果を計測する
+
+`200 OK`を返していても、アプリケーションは不健全かもしれません。検索サービスが遅くなることもあります。決済フローでユーザーのキャンセルが急増することもあります。background jobが受け付けられたのに完了しないこともあります。
+
+プロダクト価値を表す結果を計測します。
+
+- Checkoutが完了、決済拒否、またはcheckout放棄になった。
+- File uploadが完了、処理開始、処理完了、または処理失敗になった。
+- Invitationが送信、承認、期限切れ、またはproviderに拒否された。
+- Searchが結果を返した、結果なし、またはresponse-time budgetを超えた。
+
+これにより、engineeringとproductは同じ現実を見られます。alertも意味を持ちます。価値の低いendpointで短いspikeが起きたなら観察でよいかもしれませんが、account recoveryの失敗は速い対応が必要です。
+
+## Alertを行動可能にする
+
+alertは、何が変わり、なぜ重要で、どこから調べるかを伝えるべきです。「CPUが高い」は多くの場合、行動ではなく出発点です。「release `abc123`後、payment provider `x`を中心にcheckout failure rateが10分間3%を超えた」なら、対応者に調査の道筋を渡せます。
+
+各alertについて、次を定義します。
+
+1. それが表すユーザーまたは事業への影響。
+2. thresholdとtime window。
+3. 最初に開くdashboard、trace query、runbook。
+4. responseのownerと安全なmitigation。
+
+一時的なexceptionごとにpageしないようにします。適切に集計し、継続するユーザー向けの症状でalertします。緊急度の低いsignalはdashboardで見えるようにし、通常の勤務時間に確認します。
+
+## 新機能に組み込む
+
+機能を計画するとき、受け入れ基準に三つの小さな問いを足します。
+
+- どの成功・失敗の結果を数えるか。
+- 一つのrequestを安全に追うためのidentifierは何か。
+- release後に遅くなった、または信頼性が下がったと分かるものは何か。
+
+障害中に証拠を再構成するより、通常はこちらの方が安く済みます。計測方法を決めると、曖昧な結果や不明確なownerが早く見えるため、実装設計も改善します。
+
+<Divider />
+
+## 実用的な最初の一歩
+
+重要なjourneyを一つ選び、browser actionから最終結果までを地図にします。duration metric、意味のある成功・失敗状態のstructured event、最も遅い依存関係をまたぐtraceを足します。その後、想定される失敗を一つ再現し、何が起きたかを数時間ではなく数分で答えられるか確かめます。
+
+<RainbowHighlight block>重要な質問の周りにtelemetryを作れば、本番は推測の源ではなく証拠の源になります。</RainbowHighlight>

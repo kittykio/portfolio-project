@@ -1,0 +1,104 @@
+---
+date: "2026-10-22"
+title: "Contract Testing: Protecting API Boundaries Without Full E2E"
+description: "Use consumer expectations and provider verification to catch API mismatches early, while keeping end-to-end tests focused on critical user journeys."
+tags: ["Testing", "API Design", "Developer Workflow"]
+image: "/blog/images/contract-testing-api-boundaries.png"
+---
+
+An API can be healthy in isolation and still break its users. A provider may rename a field, change an error shape, or quietly stop accepting a query parameter. Its own tests may pass. The frontend, mobile app, partner service, or webhook consumer can still fail the moment the change reaches production.
+
+<Underline>Contract testing turns an integration assumption into an executable agreement.</Underline> It sits between fast local tests and a full browser journey: focused enough to diagnose a boundary mismatch, realistic enough to catch the details mocks often hide.
+
+## What the contract actually protects
+
+A contract describes what one system needs from another at a boundary. For an HTTP API, that may include the method, path, headers, request shape, status code, and response fields a consumer depends on. For messages, it may include the event name and payload structure.
+
+It should describe a real interaction, not every theoretical feature of an API. [Pact's consumer-driven approach](https://docs.pact.io/) generates concrete interactions from consumer tests, then verifies that the provider can satisfy them. That makes a useful distinction: an OpenAPI document can describe an API broadly, while a consumer contract captures the behaviour a real caller uses.
+
+<Highlight color="lemon">A contract is most valuable when a change would otherwise be discovered only after two independently deployed systems meet.</Highlight>
+
+## A small example
+
+Suppose a dashboard asks for a customer's active subscription.
+
+```ts
+const subscription = await api.get(`/customers/${customerId}/subscription`);
+
+if (subscription.status === "active") {
+  showRenewalDate(subscription.renewsAt);
+}
+```
+
+The consumer depends on more than a successful `200`. It needs `status` to remain meaningful and `renewsAt` to be present when the subscription is active. A contract can make that expectation explicit:
+
+```ts
+// Conceptual interaction, independent of any one test library
+{
+  request: {
+    method: "GET",
+    path: "/customers/customer_123/subscription",
+  },
+  response: {
+    status: 200,
+    body: {
+      id: "subscription_123",
+      status: "active",
+      renewsAt: "2026-12-01T00:00:00.000Z",
+    },
+  },
+}
+```
+
+The consumer test proves that its UI behaves correctly for that interaction. Provider verification proves that the API can produce a compatible response. If the provider renames `renewsAt` or makes it absent, the contract fails before release.
+
+## Keep contracts consumer-led and precise
+
+Consumer-driven contracts work best when the caller records only what it truly needs. A consumer should not require every optional field, exact formatting it does not render, or an implementation detail it never observes. Overly strict contracts make harmless provider improvements look like breaking changes.
+
+At the same time, vague contracts offer false confidence. If `status` drives a billing screen, verify the meaningful values. If a date must be ISO 8601 for parsing, verify a matching value. If an error code controls a recovery action, include it.
+
+| Contract question | Good level of detail |
+| --- | --- |
+| Is the route and method correct? | Exact. They define the interaction. |
+| Does the consumer need a field? | Include it and verify its type or matching rule. |
+| Does the consumer ignore an extra field? | Do not make it required. |
+| Does a value control product behaviour? | Include a representative concrete example. |
+| Is a value only display decoration? | Avoid asserting it unless it affects the consumer. |
+
+<Highlight color="flame">Do not hand-author a contract solely from a schema and call it consumer protection. The consumer must exercise its real client code and express what it actually needs.</Highlight>
+
+## Where contract tests fit
+
+Contract tests complement the rest of a test portfolio. They do not replace unit, integration, or end-to-end coverage.
+
+- Use unit tests for local rules such as parsing, pricing, and error mapping.
+- Use integration tests for your application's database, framework, and internal boundaries.
+- Use contract tests where separately changing consumers and providers must remain compatible.
+- Use focused end-to-end tests to prove critical journeys across browser, authentication, routing, and the deployed application.
+
+A payment checkout still needs a user-level test. But it does not need every payment response permutation to be exercised through a full browser and a live provider. Contract checks catch many interface regressions sooner and with a clearer cause.
+
+## Add the verification to the delivery path
+
+The value comes from running both sides consistently:
+
+1. Write a consumer test through the real API client.
+2. Publish or share its generated contract artifact.
+3. Verify the contract against the provider in CI with controlled provider state.
+4. Block incompatible releases, or use a compatibility gate before deployment.
+5. Retire old expectations when consumers stop using them.
+
+Pact documents this flow as consumer tests producing a contract artifact and provider tests replaying it against the provider. The key is not the tool; it is making the agreement part of the release process.
+
+## Start with one costly boundary
+
+Choose an integration that changes often, has more than one deployment schedule, and has caused expensive coordination before: a frontend and backend, a public API and partner, or a service and webhook recipient. Capture one high-value interaction first. Keep the contract readable, verify it in CI, and let the next real mismatch show what else belongs there.
+
+<Divider />
+
+## The useful standard
+
+Good contract tests are small enough to explain a break and real enough to prevent it. They make the interface an explicit shared responsibility instead of an assumption discovered by users.
+
+<RainbowHighlight block>Test the agreement at the boundary so independently evolving systems can change without surprising each other.</RainbowHighlight>

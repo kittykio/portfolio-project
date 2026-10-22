@@ -1,0 +1,104 @@
+---
+date: "2026-10-22"
+title: "Observability: Design for Answers Before Production Asks"
+description: "Build logs, metrics, and traces around user journeys and failure questions so production incidents can be understood without guesswork."
+tags: ["Developer Workflow", "Web Development", "API Design"]
+image: "/blog/images/observability-debugging-production.png"
+---
+
+Production failures rarely arrive with a neat reproduction step. A customer says checkout froze. A dashboard is slow only sometimes. An API error rate rises after a deploy, but only for one region. If the system cannot explain what it was doing, the team starts guessing from incomplete logs.
+
+<Underline>Observability is the ability to ask a running system useful questions and get evidence back.</Underline> It is not a dashboard added after an incident. It is a design choice: deciding which outcomes, boundaries, and failures will matter before users need support.
+
+## Start with the questions you need answered
+
+Do not begin by logging every variable. Begin with questions an on-call developer or product owner should be able to answer quickly:
+
+- Did the user request succeed, fail, or time out?
+- Which release, route, region, or dependency was involved?
+- How long did each meaningful step take?
+- Is this isolated to one customer, input type, or provider?
+- Did the system reject the request intentionally, or fail unexpectedly?
+
+Those questions determine the signals to collect. [OpenTelemetry describes telemetry as traces, metrics, and logs](https://opentelemetry.io/docs/), and the three become much more useful when they share context.
+
+<Highlight color="lemon">A useful signal answers a decision someone needs to make. A noisy signal only records that something happened.</Highlight>
+
+## Give each signal a clear job
+
+Metrics are aggregated numbers over time. Use them to see the shape of the system: request rate, error rate, queue depth, cache hit rate, payment declines, or latency percentiles. They are good at telling you <Underline>that</Underline> a problem is happening and how widely it spreads.
+
+Logs are structured event records. Use them to preserve important details: validation failure reason, provider response category, job identifier, release version, and sanitized business context. They are good at explaining <Underline>what</Underline> happened at a particular step.
+
+Traces follow one request or asynchronous workflow through multiple operations. Use them to see the order and duration of database calls, API requests, queue work, and internal services. They are good at showing <Underline>where</Underline> time went or where a request stopped.
+
+| Signal | Best question | Example |
+| --- | --- | --- |
+| Metric | Is this becoming a system-wide problem? | `checkout.failure_rate` rises after a release. |
+| Structured log | Why did this specific action fail? | A payment provider returned a declined-card category. |
+| Trace | Which step made this request slow? | An inventory lookup consumed 1.8 seconds of a 2-second request. |
+
+## Correlate the evidence
+
+A log line without a request identifier is difficult to connect to a slow chart. A trace without a release version makes deploy regressions harder to spot. A metric without useful dimensions cannot separate a provider outage from one problematic route.
+
+Carry a correlation identifier through the request lifecycle, and attach a small, deliberate set of attributes to every meaningful operation. For example:
+
+```ts
+logger.info("payment_authorization_failed", {
+  requestId,
+  traceId,
+  orderId,
+  provider: "stripe",
+  outcome: "declined",
+  release: process.env.GIT_SHA,
+});
+```
+
+The exact logging library is less important than consistent names and safe fields. OpenTelemetry's [observability primer](https://opentelemetry.io/docs/concepts/observability-primer/) explains why correlating logs with traces and spans makes individual signals more useful.
+
+<Highlight color="flame">Never treat observability as permission to collect secrets, payment data, session tokens, or unbounded personal information.</Highlight>
+
+## Instrument outcomes, not only errors
+
+An application can be unhealthy while returning `200 OK`. A search service may become slow. A payment flow may see a sharp rise in user cancellations. A background job may be accepted but never complete.
+
+Instrument the outcomes that represent product value:
+
+- Checkout completed, payment declined, or checkout abandoned.
+- File uploaded, processing started, processing completed, or processing failed.
+- Invitation sent, accepted, expired, or rejected by the provider.
+- Search returned results, returned none, or exceeded the response-time budget.
+
+These events let engineering and product look at the same reality. They also make alerts more meaningful: a brief spike in a low-value endpoint may need observation, while failed account recovery needs attention quickly.
+
+## Make alerts actionable
+
+An alert should tell someone what changed, why it matters, and where to investigate. “CPU high” is often a starting point, not an action. “Checkout failure rate exceeded 3% for 10 minutes after release `abc123`, mostly from payment provider `x`” gives a responder a path.
+
+For every alert, define:
+
+1. The user or business impact it represents.
+2. The threshold and time window.
+3. The first dashboard, trace query, or runbook to open.
+4. Who owns the response and what a safe mitigation looks like.
+
+Avoid paging on every transient exception. Aggregate when appropriate, then alert on a sustained user-facing symptom. Keep lower-urgency signals visible in dashboards and review them during normal working hours.
+
+## Build it into new features
+
+When planning a feature, add three small questions to the acceptance criteria:
+
+- Which success and failure outcomes will we count?
+- Which identifiers will let us trace one request safely?
+- What would tell us this feature is slower or less reliable after release?
+
+This is usually cheaper than reconstructing evidence during an incident. It also improves implementation design: ambiguous outcomes and unclear ownership appear early when you decide how to observe them.
+
+<Divider />
+
+## A practical first step
+
+Pick one critical journey and map it from browser action to final outcome. Add a duration metric, structured events for meaningful success and failure states, and a trace across its slowest dependencies. Then simulate one expected failure and confirm you can answer what happened in minutes, not hours.
+
+<RainbowHighlight block>Build telemetry around the questions that matter, and production becomes a source of evidence instead of a source of guesses.</RainbowHighlight>

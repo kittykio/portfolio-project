@@ -1,0 +1,104 @@
+---
+date: "2026-10-22"
+title: "契約テスト: フルE2EなしでAPI境界を守る"
+description: "Consumerの期待とProviderの検証を使い、重要なE2Eテストをユーザージャーニーに集中させながら、APIの不整合を早く見つける方法。"
+tags: ["テスト", "API設計", "開発ワークフロー"]
+image: "/blog/images/contract-testing-api-boundaries.png"
+---
+
+APIは単体では健全でも、利用者を壊すことがあります。Providerがフィールド名を変えたり、エラーの形を変えたり、query parameterを静かに受け付けなくしたりするかもしれません。Provider自身のテストは通ります。それでも、フロントエンド、モバイルアプリ、パートナーサービス、WebhookのConsumerは、本番で接続した瞬間に失敗できます。
+
+<Underline>契約テストは、統合に関する仮定を実行可能な合意に変えます。</Underline>速いローカルテストと完全なブラウザジャーニーの間に位置します。境界の不一致を診断できるほど焦点が絞られ、モックが隠しがちな詳細を捉えられるほど現実的です。
+
+## 契約が実際に守るもの
+
+契約は、境界において一つのシステムが別のシステムに必要とするものを表します。HTTP APIなら、method、path、header、requestの形、status code、Consumerが依存するresponse fieldなどです。メッセージなら、event名とpayload構造です。
+
+契約は、APIの理論上のすべての機能ではなく、実際のやり取りを表すべきです。[Pactのconsumer-drivenなアプローチ](https://docs.pact.io/)では、Consumerテストから具体的なinteractionを生成し、Providerがそれを満たせるかを検証します。OpenAPI文書はAPIを広く説明できますが、Consumer契約は実際の呼び出し側が使う振る舞いを捉える、という違いがあります。
+
+<Highlight color="lemon">契約は、別々にデプロイされる二つのシステムが接続した後でしか分からない変更を、早く見つけるときに最も価値があります。</Highlight>
+
+## 小さな例
+
+ダッシュボードが顧客の有効なsubscriptionを取得するとします。
+
+```ts
+const subscription = await api.get(`/customers/${customerId}/subscription`);
+
+if (subscription.status === "active") {
+  showRenewalDate(subscription.renewsAt);
+}
+```
+
+Consumerが必要とするのは成功した`200`だけではありません。`status`が意味を保ち、subscriptionがactiveなら`renewsAt`が存在する必要があります。契約はその期待を明示できます。
+
+```ts
+// 特定のテストライブラリに依存しない概念上のinteraction
+{
+  request: {
+    method: "GET",
+    path: "/customers/customer_123/subscription",
+  },
+  response: {
+    status: 200,
+    body: {
+      id: "subscription_123",
+      status: "active",
+      renewsAt: "2026-12-01T00:00:00.000Z",
+    },
+  },
+}
+```
+
+Consumerテストは、そのinteractionでUIが正しく振る舞うことを証明します。Provider検証は、APIが互換性のあるresponseを出せることを証明します。Providerが`renewsAt`を改名したり省略したりすれば、リリース前に契約が失敗します。
+
+## Consumer主導で、必要な範囲に絞る
+
+Consumer-driven contractは、呼び出し側が本当に必要とするものだけを記録するときに最も良く働きます。Consumerは、使わないoptional field、表示しない正確な書式、観測しない実装詳細まで要求するべきではありません。厳しすぎる契約は、無害なProvider改善を破壊的変更のように見せます。
+
+同時に、曖昧な契約は誤った安心感を生みます。`status`が課金画面を動かすなら、意味のある値を検証します。日付をパースするためにISO 8601が必要なら、合う値を検証します。エラーコードが復旧操作を制御するなら、それも含めます。
+
+| 契約での問い | 適切な詳細度 |
+| --- | --- |
+| routeとmethodは正しいか | 正確に指定する。interactionを定義するため。 |
+| Consumerはfieldを必要とするか | 含めて、typeまたはmatching ruleを検証する。 |
+| Consumerは余分なfieldを無視するか | 必須にしない。 |
+| 値はプロダクトの振る舞いを制御するか | 代表的な具体例を含める。 |
+| 値は表示の飾りだけか | Consumerに影響しないなら検証を避ける。 |
+
+<Highlight color="flame">schemaだけから契約を手書きして、Consumer保護と呼ばないでください。Consumerは実際のclient codeを通して、本当に必要なものを表現する必要があります。</Highlight>
+
+## 契約テストの位置づけ
+
+契約テストは、他のテストポートフォリオを補完します。ユニット、統合、E2Eの代わりにはなりません。
+
+- パース、価格、エラーマッピングのようなローカルルールにはユニットテストを使います。
+- アプリ内のdatabase、framework、内部境界には統合テストを使います。
+- 別々に変化するConsumerとProviderの互換性には契約テストを使います。
+- browser、認証、routing、デプロイされたアプリをまたぐ重要な旅を証明するには、絞ったE2Eテストを使います。
+
+決済checkoutには、依然としてユーザー視点のテストが必要です。しかし、すべての決済responseの組み合わせを、フルブラウザとlive providerで試す必要はありません。契約チェックは、多くのinterface回帰をより早く、より明確な原因とともに見つけます。
+
+## 検証をリリースの流れに入れる
+
+価値は両側を一貫して実行することで生まれます。
+
+1. 実際のAPI clientを通してConsumerテストを書く。
+2. 生成されたcontract artifactを公開または共有する。
+3. 制御されたProvider stateで、CIからProviderに対して契約を検証する。
+4. 互換性のないリリースを止める、またはデプロイ前の互換性gateを使う。
+5. Consumerが使わなくなった古い期待を削除する。
+
+Pactはこの流れを、Consumerテストがcontract artifactを作り、ProviderテストがそれをProviderに対して再生するものとして説明しています。重要なのはツールではありません。合意をリリースプロセスの一部にすることです。
+
+## コストの高い境界を一つから始める
+
+変化が多く、デプロイ予定が別で、以前に高い調整コストを生んだ統合を選びます。フロントエンドとバックエンド、公開APIとパートナー、サービスとWebhook受信側などです。まず一つの価値の高いinteractionを記録します。契約を読みやすく保ち、CIで検証し、次の実際の不一致から何を追加すべきかを学びます。
+
+<Divider />
+
+## 役立つ基準
+
+良い契約テストは、壊れた理由を説明できるほど小さく、それを防げるほど現実的です。interfaceを、ユーザーが発見する仮定ではなく、明示された共同責任にします。
+
+<RainbowHighlight block>境界での合意をテストすれば、独立して進化するシステムも互いを驚かせずに変えられます。</RainbowHighlight>
