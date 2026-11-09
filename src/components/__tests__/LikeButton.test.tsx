@@ -16,12 +16,14 @@ describe('LikeButton', () => {
 
   it('loads the remote project total and awards one like on a click', async () => {
     const updateLike = jest.fn().mockResolvedValue(10); const setLikeItem = jest.fn(); const setLikeItemList = jest.fn();
-    render(<LikeButton likeItem={project()} likeItemList={[project()]} setLikeItem={setLikeItem} setLikeItemList={setLikeItemList} updateLike={updateLike} size={24} activate />);
+    const onLikeChange = jest.fn();
+    render(<LikeButton likeItem={project()} likeItemList={[project()]} setLikeItem={setLikeItem} setLikeItemList={setLikeItemList} updateLike={updateLike} onLikeChange={onLikeChange} size={24} activate />);
     await waitFor(() => expect(screen.getByText('9')).toBeInTheDocument());
     const now = jest.spyOn(Date, 'now').mockReturnValueOnce(1000).mockReturnValueOnce(1001);
     const button = screen.getByRole('button', { name: 'Like Seven. Current total: 9' }); fireEvent.mouseDown(button); fireEvent.mouseUp(button);
     await waitFor(() => expect(updateLike).toHaveBeenCalledWith({ _id: 7, seconds: 1 }));
     expect(setLikeItem).toHaveBeenCalledWith(expect.objectContaining({ like: 10, likesPerUser: 1 }));
+    expect(onLikeChange).toHaveBeenCalledWith(expect.objectContaining({ like: 10, likesPerUser: 1 }));
     const updater = setLikeItemList.mock.calls[0][0]; expect(updater([project()])[0]).toMatchObject({ like: 10, likesPerUser: 1 });
     await waitFor(() => expect(localStorage.getItem(getLikeStorageKey('project', 7))).toBe('1')); now.mockRestore();
   });

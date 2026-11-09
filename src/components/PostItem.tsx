@@ -24,10 +24,11 @@ type PostItemProps = {
   postItemList: PostType[];
   // State setter to update the list of posts after a like action.
   setPostItemList: Dispatch<SetStateAction<PostType[]>>;
+  onLikeChange?: (post: PostType) => void;
 };
 
 // A component that displays a single blog post item in a card format with a like button and details.
-const PostItem: FC<PostItemProps> = ({ index, post, postItemList, setPostItemList }) => {
+const PostItem: FC<PostItemProps> = ({ index, post, postItemList, setPostItemList, onLikeChange }) => {
   const { locale } = useLocale();
   return (
     // Wraps the card in a float wrapper to provide a subtle vertical floating animation.
@@ -45,6 +46,7 @@ const PostItem: FC<PostItemProps> = ({ index, post, postItemList, setPostItemLis
             likeItemList={postItemList}
             setLikeItemList={setPostItemList}
             updateLike={updateLike}
+            onLikeChange={onLikeChange}
             activate
             size={28}
           />
@@ -100,6 +102,7 @@ const PostItem: FC<PostItemProps> = ({ index, post, postItemList, setPostItemLis
               likeItemList={postItemList}
               setLikeItemList={setPostItemList}
               updateLike={updateLike}
+              onLikeChange={onLikeChange}
               activate
               size={28}
               hideBackground // Hides the background for a more integrated mobile look.

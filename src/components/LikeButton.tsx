@@ -12,6 +12,7 @@ const heartImages: string[] = Array.from(
 );
 
 type BaseLikeType = PostType | ProjectType;
+type LikesResponse = { likes?: Record<string, number> };
 
 type LikeButtonProps<T extends BaseLikeType> = {
   likeItem: T;
@@ -20,6 +21,7 @@ type LikeButtonProps<T extends BaseLikeType> = {
   setLikeItemList?: React.Dispatch<React.SetStateAction<T[]>>;
   /** Persists the bounded increment and returns the new aggregate count. */
   updateLike: (payload: { _id: number; seconds: number }) => Promise<number | undefined>;
+  onLikeChange?: (item: T) => void;
   size: number;
   /** Retained for compatibility with existing card call sites. */
   activate: boolean;
@@ -34,6 +36,7 @@ const LikeButton = <T extends BaseLikeType>({
   setLikeItem,
   setLikeItemList,
   updateLike,
+  onLikeChange,
   size,
   onClick,
   hideBackground = false,
@@ -47,7 +50,7 @@ const LikeButton = <T extends BaseLikeType>({
 
   useEffect(() => {
     fetch(`/api/likes?type=${type}&ids=${likeItem.id}`)
-      .then((response) => response.json())
+      .then((response) => response.json() as Promise<LikesResponse>)
       .then((data) => setRemoteLike(data.likes?.[likeItem.id] ?? likeItem.like))
       .catch(() => setRemoteLike(likeItem.like));
   }, [likeItem.id, likeItem.like, type]);
@@ -85,6 +88,7 @@ const LikeButton = <T extends BaseLikeType>({
       setLikeItemList((prev) => prev.map((item) => (item.id === updated.id ? updated : item)));
     }
     if (setLikeItem) setLikeItem(updated);
+    onLikeChange?.(updated);
 
     // The browser-side cap is per visitor; the database stores only the aggregate total.
     localStorage.setItem(getLikeStorageKey(type, likeItem.id), String(likesPerUser + seconds));

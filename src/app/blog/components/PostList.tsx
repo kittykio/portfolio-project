@@ -12,11 +12,10 @@ type PostListProps = {
   posts: PostType[];
   sortBy: SortOption;
   onSortChange: (option: SortOption) => void;
+  onLikeChange?: (post: PostType) => void;
 };
 
-type LikesResponse = { likes: Record<string, number> };
-
-const PostList: FC<PostListProps> = ({ posts, sortBy, onSortChange }) => {
+const PostList: FC<PostListProps> = ({ posts, sortBy, onSortChange, onLikeChange }) => {
   const [postItemList, setPostItemList] = useState<PostType[]>(posts);
 
   useEffect(() => {
@@ -27,25 +26,6 @@ const PostList: FC<PostListProps> = ({ posts, sortBy, onSortChange }) => {
     // Client-only localStorage hydration reconciles the visible cards after mount.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPostItemList(enriched);
-  }, [posts]);
-
-  useEffect(() => {
-    let cancelled = false;
-    const ids = posts.map((post) => post.id).join(',');
-
-    fetch(`/api/likes?type=blog&ids=${ids}`)
-      .then((response) => response.json())
-      .then((data: LikesResponse) => {
-        if (cancelled) return;
-        setPostItemList((current) =>
-          current.map((post) => ({ ...post, like: data.likes?.[post.id] ?? post.like })),
-        );
-      })
-      .catch(() => undefined);
-
-    return () => {
-      cancelled = true;
-    };
   }, [posts]);
 
   if (posts.length === 0) return null;
@@ -74,6 +54,7 @@ const PostList: FC<PostListProps> = ({ posts, sortBy, onSortChange }) => {
               post={post}
               postItemList={postItemList}
               setPostItemList={setPostItemList}
+              onLikeChange={onLikeChange}
             />
           </motion.div>
         ))}

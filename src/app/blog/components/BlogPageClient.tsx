@@ -6,7 +6,7 @@ import { PostType } from '@/types/PostType';
 import SectionWrapper from '@/components/SectionWrapper';
 import BlogFitler from '@/app/blog/components/BlogFitler';
 import { useEffect, useMemo, useState } from 'react';
-import SortTabs, { SortOption } from '@/components/SortTabs';
+import { SortOption } from '@/components/SortTabs';
 import { useLocale } from '@/components/LocaleContext';
 
 type BlogPageClientProps = {
@@ -89,6 +89,16 @@ const BlogPageClient = ({ allPosts, initialTags, limit }: BlogPageClientProps) =
     setActivePage(1);
   };
 
+  const handleLikeChange = (updatedPost: PostType) => {
+    setPostsWithLikes((current) =>
+      current.map((post) =>
+        post.id === updatedPost.id
+          ? { ...post, like: updatedPost.like, likesPerUser: updatedPost.likesPerUser }
+          : post,
+      ),
+    );
+  };
+
   useEffect(() => {
     const filterPath = selectedFilters.map(toTagPathSegment).join('/');
     const basePath = locale === 'ja' ? '/ja/blog' : '/blog';
@@ -106,10 +116,15 @@ const BlogPageClient = ({ allPosts, initialTags, limit }: BlogPageClientProps) =
         selectedFilters={selectedFilters}
         onFiltersChange={handleFiltersChange}
       />
-      <PostList posts={paginatedPosts} sortBy={sortBy} onSortChange={(option) => {
-        setSortBy(option);
-        setActivePage(1);
-      }} />
+      <PostList
+        posts={paginatedPosts}
+        sortBy={sortBy}
+        onSortChange={(option) => {
+          setSortBy(option);
+          setActivePage(1);
+        }}
+        onLikeChange={handleLikeChange}
+      />
       <Pagination
         activePage={activePage}
         limit={limit}

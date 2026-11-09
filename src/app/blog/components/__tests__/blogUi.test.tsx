@@ -16,7 +16,7 @@ jest.mock('@/components/SectionWrapper', () => ({ children, title, ...props }: R
 jest.mock('@/components/LikeButton', () => ({ likeItem }: { likeItem: { title: string } }) => <button>Like {likeItem.title}</button>);
 jest.mock('@/components/ShareButton', () => ({ title }: { title: string }) => <button>Share {title}</button>);
 jest.mock('@/components/SaveButton', () => ({ title }: { title: string }) => <button>Save {title}</button>);
-jest.mock('@/components/PostItem', () => ({ post }: { post: PostType }) => <article data-testid="post-item">{post.title}:{post.like}:{post.likesPerUser}</article>);
+jest.mock('@/components/PostItem', () => ({ post, onLikeChange }: { post: PostType; onLikeChange?: (post: PostType) => void }) => <article data-testid="post-item">{post.title}:{post.like}:{post.likesPerUser}<button onClick={() => onLikeChange?.({ ...post, like: post.like + 1 })}>Like {post.title}</button></article>);
 jest.mock('@/components/Tag', () => ({
   DisplayTag: ({ tag }: { tag: string }) => <span>{tag}</span>,
   FilterTag: ({ tag, handleOnChange, setRef, active }: { tag: string; handleOnChange: (tag: string) => void; setRef: (active: boolean) => void; active: boolean }) => <button aria-pressed={active} onClick={() => handleOnChange(tag)} onMouseEnter={() => setRef(true)} onMouseLeave={() => setRef(false)}>{tag}</button>,
@@ -40,9 +40,9 @@ describe('blog browsing UI', () => {
     rerender(<BlogFilter posts={posts} selectedFilters={['React']} onFiltersChange={change} />); fireEvent.click(screen.getByRole('button', { name: 'React' })); expect(change).toHaveBeenLastCalledWith([]); fireEvent.click(screen.getByRole('button', { name: /Clear All/ })); expect(change).toHaveBeenLastCalledWith([]);
   });
 
-  it('hydrates local and remote likes in the post list and changes sorting', async () => {
+  it('hydrates local likes in the post list and changes sorting', async () => {
     localStorage.setItem('portfolio-project:likes:blog:1', '2'); const sort = jest.fn(); render(<PostList posts={posts.slice(0, 2)} sortBy={null} onSortChange={sort} />);
-    await waitFor(() => expect(screen.getByText('Old React:8:2')).toBeInTheDocument()); fireEvent.click(screen.getByRole('button', { name: 'Popular' })); expect(sort).toHaveBeenCalledWith('mostPopular');
+    await waitFor(() => expect(screen.getByText('Old React:3:2')).toBeInTheDocument()); fireEvent.click(screen.getByRole('button', { name: 'Popular' })); expect(sort).toHaveBeenCalledWith('mostPopular');
   });
 
   it('renders no list for empty posts', () => { const { container } = render(<PostList posts={[]} sortBy={null} onSortChange={jest.fn()} />); expect(container).toBeEmptyDOMElement(); });
@@ -56,6 +56,22 @@ describe('blog browsing UI', () => {
     fireEvent.click(screen.getByRole('button', { name: '2' })); expect(screen.getByTestId('post-item')).toHaveTextContent('Popular React');
     locale = 'ja'; rerender(<BlogPageClient allPosts={posts} initialTags={[]} limit={2} />); await waitFor(() => expect(window.location.pathname).toBe('/ja/blog'));
     expect(screen.getByRole('heading', { name: 'ブログ' })).toBeInTheDocument();
+  });
+
+  it('re-sorts popular posts immediately when a post is liked', async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      json: () => Promise.resolve({ likes: { 1: 0, 2: 0, 3: 3, 4: 3 } }),
+    } as Response);
+    render(<BlogPageClient allPosts={posts} initialTags={[]} limit={4} />);
+    await waitFor(() => {
+      expect(screen.getAllByTestId('post-item').some((item) => item.textContent?.includes('Popular React:3:'))).toBe(true);
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Popular' }));
+
+    const titles = () => screen.getAllByTestId('post-item').map((item) => item.textContent);
+    expect(titles()[0]).toContain('Popular React');
+    fireEvent.click(screen.getByRole('button', { name: 'Like Fourth' }));
+    expect(titles()[0]).toContain('Fourth:4:');
   });
 
   it('ignores unknown initial tag segments and tolerates failed like fetching', async () => {
